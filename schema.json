@@ -890,6 +890,7 @@
           "z": { "type": "number" },
           "1": { "type": "number" }
         },
+        "isInside": { "type": "boolean" },
         "material": { "$ref": "#/$defs/material-no-map" }
       },
       "required": ["coefficients"],
