@@ -10,10 +10,22 @@
       "unevaluatedProperties": false,
       "properties": {
         "camera": {
-          "allOf": [
-            { "$ref": "#/$defs/has-optional-position" },
-            { "$ref": "#/$defs/has-optional-rotation" }
-          ]
+          "type": "object",
+          "unevaluatedProperties": false,
+          "properties": {
+            "position": { "$ref": "#/$defs/position" },
+            "direction": { "$ref": "#/$defs/direction" },
+            "rotation": { "$ref": "#/$defs/rotation" },
+            "lookAt": { "$ref": "#/$defs/position" }
+          },
+          "not": {
+            "oneOf": [
+              { "required": ["direction", "rotation"] },
+              { "required": ["rotation", "lookAt"] },
+              { "required": ["direction", "lookAt"] }
+            ]
+          },
+          "$ref": "#/$defs/has-optional-position"
         },
         "viewport": {
           "type": "object",
@@ -34,11 +46,6 @@
           "oneOf": [
             {
               "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "type of viewport",
-                  "enum": ["plane"]
-                },
                 "fovX": {
                   "description": "field of view for X axis, default is auto",
                   "$ref": "#/$defs/angle-fov-plane"
@@ -48,66 +55,54 @@
                   "$ref": "#/$defs/angle-fov-plane"
                 }
               },
-              "required": ["type"],
-              "anyOf": [{ "required": ["fovX"] }, { "required": ["fovY"] }],
-              "oneOf": [
+              "allOf": [
                 {
-                  "properties": {
-                    "nearDistance": {
-                      "type": "number",
-                      "description": "distance between ray origin and camera",
-                      "minimum": 0
-                    }
-                  }
+                  "anyOf": [{ "required": ["fovX"] }, { "required": ["fovY"] }]
                 },
                 {
-                  "properties": {
-                    "nearPlane": {
-                      "type": "number",
-                      "description": "distance between ray origin plane and camera",
-                      "minimum": 0
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "nearDistance": {
+                          "type": "number",
+                          "description": "distance between ray origin and camera",
+                          "minimum": 0
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "nearPlane": {
+                          "type": "number",
+                          "description": "distance between ray origin plane and camera",
+                          "minimum": 0
+                        }
+                      }
                     }
-                  }
+                  ],
+                  "not": { "required": ["nearDistance", "nearPlane"] }
                 }
               ]
             },
             {
               "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "type of viewport",
-                  "enum": ["curve"]
-                },
-                "fovX": {
+                "curveFovX": {
                   "description": "field of view for X axis, default is auto",
                   "$ref": "#/$defs/angle"
                 },
-                "fovY": {
+                "curveFovY": {
                   "description": "field of view for Y axis, default is auto",
                   "$ref": "#/$defs/angle"
+                },
+                "nearDistance": {
+                  "type": "number",
+                  "description": "distance between ray origin and camera",
+                  "minimum": 0
                 }
               },
-              "required": ["type"],
-              "anyOf": [{ "required": ["fovX"] }, { "required": ["fovY"] }],
-              "oneOf": [
-                {
-                  "properties": {
-                    "nearDistance": {
-                      "type": "number",
-                      "description": "distance between ray origin and camera",
-                      "minimum": 0
-                    }
-                  }
-                },
-                {
-                  "properties": {
-                    "nearPlane": {
-                      "type": "number",
-                      "description": "distance between ray origin plane and camera",
-                      "minimum": 0
-                    }
-                  }
-                }
+              "anyOf": [
+                { "required": ["curveFovX"] },
+                { "required": ["curveFovY"] }
               ]
             },
             {
@@ -124,7 +119,7 @@
                 },
                 "near": {
                   "type": "number",
-                  "description": "distance between ray origin plane and camera",
+                  "description": "distance between ray origin plane and camera, default is 0",
                   "minimum": 0
                 }
               },
@@ -157,19 +152,24 @@
             "shadow": { "type": "boolean", "description": "default is true" },
             "reflectionLimit": {
               "type": "integer",
-              "description": "maximum reflection count (up to Nx slow), default is 5",
+              "description": "maximum reflection count (up to 2^(n+m)x slow), default is 3",
               "minimum": 0
             },
             "refractionLimit": {
               "type": "integer",
-              "description": "maximum refraction count (up to 2^Nx slow), default is 2",
+              "description": "maximum refraction count (up to 2^(n+m)x slow), default is 2",
               "minimum": 0
+            },
+            "rayStrategy": {
+              "type": "string",
+              "description": "texture, or type of blend operation",
+              "enum": ["add"]
             },
             "hdr": {
               "oneOf": [
                 {
                   "type": "boolean",
-                  "description": "set false to disable HDR"
+                  "description": "set to false to disable HDR, true to default options"
                 },
                 {
                   "type": "object",
@@ -192,7 +192,7 @@
           }
         }
       },
-      "required": ["camera", "viewport"]
+      "required": ["viewport"]
     },
     "angle": {
       "oneOf": [
@@ -423,20 +423,12 @@
       ]
     },
     "has-optional-position": {
-      "type": "object",
-      "unevaluatedProperties": false,
-      "properties": { "position": { "$ref": "#/$defs/position" } },
-      "required": ["position"]
+      "properties": { "position": { "$ref": "#/$defs/position" } }
     },
     "has-optional-rotation": {
-      "type": "object",
-      "unevaluatedProperties": false,
-      "properties": { "rotation": { "$ref": "#/$defs/rotation" } },
-      "required": ["rotation"]
+      "properties": { "rotation": { "$ref": "#/$defs/rotation" } }
     },
     "has-optional-transform": {
-      "type": "object",
-      "unevaluatedProperties": false,
       "properties": { "transform": { "$ref": "#/$defs/transform" } }
     },
     "ldr-color": {
@@ -588,6 +580,50 @@
       },
       "required": ["type", "children"]
     },
+    "blend-translate": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "texture, or type of blend operation",
+          "enum": ["filter"]
+        },
+        "original": { "$ref": "#/$defs/map" },
+        "translate": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "translate distance [x, y]"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": ["type", "original", "translate"]
+    },
+    "blend-scale": {
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "texture, or type of blend operation",
+          "enum": ["filter"]
+        },
+        "original": { "$ref": "#/$defs/map" },
+        "scale": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "description": "scale [x, y]"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        }
+      },
+      "required": ["type", "original", "scale"]
+    },
     "blend-filter": {
       "type": "object",
       "unevaluatedProperties": false,
@@ -621,7 +657,7 @@
           ]
         }
       },
-      "required": ["type", "children"]
+      "required": ["type", "original", "filter"]
     },
     "blend": {
       "oneOf": [
@@ -630,6 +666,8 @@
         { "$ref": "#/$defs/blend-maximum" },
         { "$ref": "#/$defs/blend-minimum" },
         { "$ref": "#/$defs/blend-subtract" },
+        { "$ref": "#/$defs/blend-translate" },
+        { "$ref": "#/$defs/blend-scale" },
         { "$ref": "#/$defs/blend-filter" }
       ]
     },
@@ -689,14 +727,14 @@
           "description": "radius of sphere",
           "exclusiveMinimum": 0
         },
-        "material": { "$ref": "#/$defs/material" },
-        "allOf": [
-          { "$ref": "#/$defs/has-optional-position" },
-          { "$ref": "#/$defs/has-optional-rotation" },
-          { "$ref": "#/$defs/has-optional-transform" }
-        ]
+        "material": { "$ref": "#/$defs/material" }
       },
-      "required": ["type"]
+      "required": ["type"],
+      "allOf": [
+        { "$ref": "#/$defs/has-optional-position" },
+        { "$ref": "#/$defs/has-optional-rotation" },
+        { "$ref": "#/$defs/has-optional-transform" }
+      ]
     },
     "primitive-cone": {
       "type": "object",
@@ -730,14 +768,14 @@
               "maxItems": 2
             }
           ]
-        },
-        "allOf": [
-          { "$ref": "#/$defs/has-optional-position" },
-          { "$ref": "#/$defs/has-optional-rotation" },
-          { "$ref": "#/$defs/has-optional-transform" }
-        ]
+        }
       },
-      "required": ["type"]
+      "required": ["type"],
+      "allOf": [
+        { "$ref": "#/$defs/has-optional-position" },
+        { "$ref": "#/$defs/has-optional-rotation" },
+        { "$ref": "#/$defs/has-optional-transform" }
+      ]
     },
     "primitive-cylinder": {
       "type": "object",
@@ -771,14 +809,14 @@
               "maxItems": 3
             }
           ]
-        },
-        "allOf": [
-          { "$ref": "#/$defs/has-optional-position" },
-          { "$ref": "#/$defs/has-optional-rotation" },
-          { "$ref": "#/$defs/has-optional-transform" }
-        ]
+        }
       },
-      "required": ["type"]
+      "required": ["type"],
+      "allOf": [
+        { "$ref": "#/$defs/has-optional-position" },
+        { "$ref": "#/$defs/has-optional-rotation" },
+        { "$ref": "#/$defs/has-optional-transform" }
+      ]
     },
     "primitive-cube": {
       "type": "object",
@@ -812,15 +850,15 @@
               "maxItems": 3
             }
           ]
-        },
-        "allOf": [
-          { "$ref": "#/$defs/has-optional-position" },
-          { "$ref": "#/$defs/has-optional-rotation" },
-          { "$ref": "#/$defs/has-optional-transform" }
-        ]
+        }
       },
-      "required": ["type"]
-    },
+      "required": ["type"],
+      "allOf": [
+        { "$ref": "#/$defs/has-optional-position" },
+        { "$ref": "#/$defs/has-optional-rotation" },
+        { "$ref": "#/$defs/has-optional-transform" }
+      ]
+  },
     "primitive-torus": {
       "type": "object",
       "unevaluatedProperties": false,
@@ -840,14 +878,14 @@
           "description": "minor radius of torus",
           "exclusiveMinimum": 0
         },
-        "material": { "$ref": "#/$defs/material" },
-        "allOf": [
-          { "$ref": "#/$defs/has-optional-position" },
-          { "$ref": "#/$defs/has-optional-rotation" },
-          { "$ref": "#/$defs/has-optional-transform" }
-        ]
+        "material": { "$ref": "#/$defs/material" }
       },
-      "required": ["type"]
+      "required": ["type"],
+      "allOf": [
+        { "$ref": "#/$defs/has-optional-position" },
+        { "$ref": "#/$defs/has-optional-rotation" },
+        { "$ref": "#/$defs/has-optional-transform" }
+      ]
     },
     "primitive-plane": {
       "type": "object",
@@ -921,7 +959,8 @@
           "items": { "$ref": "#/$defs/csg-model" }
         }
       },
-      "required": ["type", "children"]
+      "required": ["type", "children"],
+      "$ref": "#/$defs/has-optional-transform"
     },
     "csg-intersection": {
       "type": "object",
@@ -939,7 +978,8 @@
           "minItems": 2
         }
       },
-      "required": ["type", "children"]
+      "required": ["type", "children"],
+      "$ref": "#/$defs/has-optional-transform"
     },
     "csg-difference": {
       "type": "object",
@@ -953,7 +993,8 @@
         "from": { "$ref": "#/$defs/csg-model" },
         "subtract": { "$ref": "#/$defs/csg-model" }
       },
-      "required": ["type", "from", "subtract"]
+      "required": ["type", "from", "subtract"],
+      "$ref": "#/$defs/has-optional-transform"
     },
     "constructive-model": {
       "oneOf": [
@@ -965,6 +1006,8 @@
     "csg-model": {
       "oneOf": [
         {
+          "type": "object",
+          "unevaluatedProperties": false,
           "allOf": [
             { "$ref": "#/$defs/has-optional-transform" },
             {
@@ -992,7 +1035,7 @@
           "oneOf": [
             {
               "type": "boolean",
-              "description": "set false to disable HDR",
+              "description": "set to false to make non-transparent",
               "enum": [false]
             },
             {
@@ -1003,7 +1046,7 @@
                   "type": "number",
                   "description": "transparency",
                   "exclusiveMinimum": 0,
-                  "exclusiveMaximum": 0
+                  "exclusiveMaximum": 1
                 },
                 "color": {
                   "description": "transmission filter color",
@@ -1122,7 +1165,8 @@
       ]
     },
     "object": {
-      "$ref": "#/$defs/has-optional-transform",
+      "type": "object",
+      "unevaluatedProperties": false,
       "oneOf": [
         { "$ref": "#/$defs/group" },
         { "$ref": "#/$defs/model" },
