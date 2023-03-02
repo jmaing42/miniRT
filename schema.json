@@ -828,14 +828,19 @@
           "enum": ["cube"]
         },
         "size": {
-          "type": "array",
-          "items": {
-            "type": "number",
-            "description": "size [x, y, z]",
-            "exclusiveMinimum": 0
-          },
-          "minItems": 3,
-          "maxItems": 3
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "description": "size [x, y, z]",
+                "exclusiveMinimum": 0
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            { "type": "number", "exclusiveMinimum": 0 }
+          ]
         },
         "material": {
           "oneOf": [
@@ -858,7 +863,7 @@
         { "$ref": "#/$defs/has-optional-rotation" },
         { "$ref": "#/$defs/has-optional-transform" }
       ]
-  },
+    },
     "primitive-torus": {
       "type": "object",
       "unevaluatedProperties": false,
