@@ -711,7 +711,7 @@
         "children": { "type": "array", "items": { "$ref": "#/$defs/object" } }
       },
       "required": ["type", "children"],
-      "$ref": "#/$defs/has-optional-transform"
+      "allOf": [{ "$ref": "#/$defs/has-optional-transform" }]
     },
     "primitive-sphere": {
       "type": "object",
@@ -932,7 +932,7 @@
         "material": { "$ref": "#/$defs/material-no-map" }
       },
       "required": ["coefficients"],
-      "$ref": "#/$defs/has-optional-transform"
+      "allOf": [{ "$ref": "#/$defs/has-optional-transform" }]
     },
     "primitive-model": {
       "oneOf": [
@@ -960,7 +960,7 @@
         }
       },
       "required": ["type", "children"],
-      "$ref": "#/$defs/has-optional-transform"
+      "allOf": [{ "$ref": "#/$defs/has-optional-transform" }]
     },
     "csg-intersection": {
       "type": "object",
@@ -979,7 +979,7 @@
         }
       },
       "required": ["type", "children"],
-      "$ref": "#/$defs/has-optional-transform"
+      "allOf": [{ "$ref": "#/$defs/has-optional-transform" }]
     },
     "csg-difference": {
       "type": "object",
@@ -994,7 +994,7 @@
         "subtract": { "$ref": "#/$defs/csg-model" }
       },
       "required": ["type", "from", "subtract"],
-      "$ref": "#/$defs/has-optional-transform"
+      "allOf": [{ "$ref": "#/$defs/has-optional-transform" }]
     },
     "constructive-model": {
       "oneOf": [
@@ -1006,16 +1006,9 @@
     "csg-model": {
       "oneOf": [
         {
-          "type": "object",
-          "unevaluatedProperties": false,
-          "allOf": [
-            { "$ref": "#/$defs/has-optional-transform" },
-            {
-              "oneOf": [
-                { "$ref": "#/$defs/primitive-model" },
-                { "$ref": "#/$defs/constructive-model" }
-              ]
-            }
+          "oneOf": [
+            { "$ref": "#/$defs/primitive-model" },
+            { "$ref": "#/$defs/constructive-model" }
           ]
         },
         { "$ref": "#/$defs/ref" }
