@@ -969,7 +969,7 @@
         "type": {
           "type": "string",
           "description": "type of operation",
-          "enum": ["union"]
+          "enum": ["intersection"]
         },
         "children": {
           "type": "array",
