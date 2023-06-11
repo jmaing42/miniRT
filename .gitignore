@@ -1,0 +1,8 @@
+/tmp
+/build
+*.a
+*.so
+*.exe
+/.vscode
+
+/.cache
