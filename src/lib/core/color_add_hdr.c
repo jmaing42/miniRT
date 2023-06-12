@@ -10,15 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_FUNCS_H
-# define MINIRT_FUNCS_H
+#include "minirt/core/math.h"
 
-# include "./minirt_types.h"
-
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
-
-#endif
+t_minirt_color	minirt_color_add_hdr(
+	t_minirt_color a,
+	t_minirt_color b
+)
+{
+	return ((t_minirt_color){
+		a.r + b.r,
+		a.g + b.g,
+		a.b + b.b,
+	});
+}

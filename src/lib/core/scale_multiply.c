@@ -10,15 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#include "minirt/core/math.h"
 
-# include "./minirt_types.h"
-
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
-
-#endif
+t_minirt_scale	minirt_scale_multiply(
+	t_minirt_scale scale,
+	t_minirt_float f
+)
+{
+	return ((t_minirt_scale){
+		scale.x * f,
+		scale.y * f,
+		scale.z * f,
+	});
+}

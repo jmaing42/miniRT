@@ -16,29 +16,14 @@
 # include <stddef.h>
 
 # include "minirt/base_types.h"
-# include "minirt/core/minirt_f.h"
+# include "minirt/core/math_types.h"
 
 typedef struct s_minirt_image
 {
-	size_t		width;
-	size_t		height;
-	t_minirt_f3	pixels[];
+	size_t			width;
+	size_t			height;
+	t_minirt_color	pixels[];
 }	t_minirt_image;
-
-typedef struct s_minirt_normal
-{
-	t_minirt_f3	normal;
-}	t_minirt_normal;
-
-typedef struct s_minirt_position
-{
-	t_minirt_f3	position;
-}	t_minirt_position;
-
-typedef struct s_minirt_color
-{
-	t_minirt_f3	color;
-}	t_minirt_color;
 
 // -----------------------------------------------------------------------------
 // material
@@ -53,9 +38,9 @@ typedef t_err	(*t_minirt_material_get_color)(
 					struct s_minirt_material *self,
 					t_minirt_color *out);
 
-typedef t_err	(*t_minirt_material_get_f)(
+typedef t_err	(*t_minirt_material_get_float)(
 					struct s_minirt_material *self,
-					t_minirt_f *out);
+					t_minirt_float *out);
 
 typedef struct s_minirt_material
 {
@@ -63,7 +48,7 @@ typedef struct s_minirt_material
 	t_minirt_material_get_color	ambient;
 	t_minirt_material_get_color	diffuse;
 	t_minirt_material_get_color	specular;
-	t_minirt_material_get_f		specular_lobe;
+	t_minirt_material_get_float	specular_lobe;
 }	t_minirt_material;
 
 // -----------------------------------------------------------------------------
@@ -127,8 +112,8 @@ typedef t_err	(*t_minirt_camera_free)(
 
 typedef t_err	(*t_minirt_camera_ray)(
 					struct s_minirt_camera *self,
-					t_minirt_f x,
-					t_minirt_f );
+					t_minirt_float x,
+					t_minirt_float y);
 
 typedef struct s_minirt_camera
 {

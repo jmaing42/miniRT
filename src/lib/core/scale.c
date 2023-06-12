@@ -10,28 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef BMP_FUNCS_H
-# define BMP_FUNCS_H
+#include "minirt/core/math.h"
 
-# include <stddef.h>
-
-# include "minirt/base_types.h"
-# include "./bmp_types.h"
-
-/**
- * @brief deserialize buffer into BMP
- *
- * @param buffer buffer
- * @param length length of buffer
- * @param out result image, or NULL if buffer isn't valid image
- * @return t_err true on malloc() failure
- * @remarks *out may be NULL even if return value indicates non-error
- */
-t_err	minirt_bmp_deserialize(
-			const void *buffer,
-			size_t length,
-			t_minirt_bmp **out);
-char	*minirt_bmp_serialize(
-			const t_minirt_bmp *bmp);
-
-#endif
+t_minirt_scale	minirt_scale(
+	t_minirt_float x,
+	t_minirt_float y,
+	t_minirt_float z
+)
+{
+	return ((t_minirt_scale){
+		x,
+		y,
+		z,
+	});
+}

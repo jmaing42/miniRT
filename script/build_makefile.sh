@@ -18,32 +18,36 @@ echo "norm: $(cd ../src && find . -name '*.c' -o -name '*.h' | cut -c 3- | sed '
 
 cat build_makefile.mk
 
+# norminette for /include
 find ../include -name '*.h' | cut -c 4- | while IFS= read -r FILE
 do
-  printf "root/%s.norm:\n" "$FILE"
-  printf "\tmkdir -p %s\n" "root/$(dirname "$FILE")"
-  printf "\tnorminette ../%s\n" "$FILE"
-  printf "\ttouch \$@\n"
+  printf 'root/%s.norm:\n' "$FILE"
+  printf '\t(cd .. && norminette ./%s)\n' "$FILE"
+  printf '\tmkdir -p %s\n' "root/$(dirname "$FILE")"
+  printf '\ttouch $@\n'
 done
 
+# norminette for src/include
 find ../src -name '*.c' -o -name '*.h' | cut -c 8- | while IFS= read -r FILE
 do
-  printf "%s.norm:\n" "$FILE"
-  printf "\tmkdir -p %s\n" "$(dirname "$FILE")"
-  printf "\tnorminette ../src/%s\n" "$FILE"
-  printf "\ttouch \$@\n"
+  printf '%s.norm:\n' "$FILE"
+  printf '\t(cd .. && norminette ./src/%s)\n' "$FILE"
+  printf '\tmkdir -p %s\n' "$(dirname "$FILE")"
+  printf '\ttouch $@\n'
 done
 
+# non-fPIC compilation
 find ../src -name '*.c' | cut -c 8- | while IFS= read -r FILE
 do
-  printf "%s.o:\n" "$FILE"
-  printf "\tmkdir -p %s\n" "$(dirname "$FILE")"
+  printf '%s.o:\n' "$FILE"
+  printf '\tmkdir -p %s\n' "$(dirname "$FILE")"
   printf "\t\$(CC) \$(CPPFLAGS) \$(CFLAGS) -c -o %s.o ../src/%s\n" "$FILE" "$FILE"
 done
 
+# -fPIC compilation for lib
 find ../src/lib -name '*.c' | cut -c 8- | while IFS= read -r FILE
 do
-  printf "%s.-fPIC.o:\n" "$FILE"
-  printf "\tmkdir -p %s\n" "$(dirname "$FILE")"
+  printf '%s.-fPIC.o:\n' "$FILE"
+  printf '\tmkdir -p %s\n' "$(dirname "$FILE")"
   printf "\t\$(CC) \$(CPPFLAGS) \$(CFLAGS) -fPIC -c -o %s.-fPIC.o ../src/%s\n" "$FILE" "$FILE"
 done

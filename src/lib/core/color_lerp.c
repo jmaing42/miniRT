@@ -10,15 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#include "minirt/core/math.h"
 
-# include "./minirt_types.h"
+t_minirt_color	minirt_color_lerp(
+	t_minirt_color a,
+	t_minirt_color b,
+	t_minirt_float ratio
+)
+{
+	const t_minirt_float	diff_r = b.r - a.r;
+	const t_minirt_float	diff_g = b.g - a.g;
+	const t_minirt_float	diff_b = b.b - a.b;
 
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
-
-#endif
+	return ((t_minirt_color){
+		a.r + diff_r * ratio,
+		a.g + diff_g * ratio,
+		a.b + diff_b * ratio,
+	});
+}

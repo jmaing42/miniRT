@@ -1,24 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fake_file_name (file name is useless too)          :+:      :+:    :+:   */
+/*   minirt_float_types.h                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42header-remover <whatever@example.com>    +#+  +:+       +#+        */
+/*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:00 by file history     ###   ########.fr       */
+/*   Updated: 2023/06/12 16:20:29 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#ifndef MINIRT_FLOAT_TYPES_H
+# define MINIRT_FLOAT_TYPES_H
 
-# include "./minirt_types.h"
+# if defined(MINIRT_PRECISION) && MINIRT_PRECISION == 0
 
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
+typedef float		t_minirt_float;
+
+# elif defined(MINIRT_PRECISION) && MINIRT_PRECISION == 2
+
+typedef long double	t_minirt_float;
+
+# else
+
+#  ifdef MINIRT_PRECISION
+#   undef MINIRT_PRECISION
+#  endif
+#  define MINIRT_PRECISION 1
+
+typedef double		t_minirt_float;
+
+# endif
 
 #endif

@@ -10,20 +10,44 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/core/minirt_funcs.h"
+#ifndef MATH_TYPES_H
+# define MATH_TYPES_H
 
-#include <stdbool.h>
+# include "minirt/core/minirt_float_types.h"
 
-t_err	minirt_render(
-	t_minirt_image *target_image,
-	const t_minirt_world *world,
-	const t_minirt_camera *camera,
-	t_minirt_renderer *renderer
-)
+typedef struct s_minirt_normal
 {
-	(void)target_image;
-	(void)world;
-	(void)camera;
-	(void)renderer;
-	return (true);
-}
+	t_minirt_float	x;
+	t_minirt_float	y;
+	t_minirt_float	z;
+}	t_minirt_normal;
+
+typedef struct s_minirt_scale
+{
+	t_minirt_float	x;
+	t_minirt_float	y;
+	t_minirt_float	z;
+}	t_minirt_scale;
+
+typedef struct s_minirt_position
+{
+	t_minirt_float	x;
+	t_minirt_float	y;
+	t_minirt_float	z;
+}	t_minirt_position;
+
+typedef struct s_minirt_distance
+{
+	t_minirt_float	x;
+	t_minirt_float	y;
+	t_minirt_float	z;
+}	t_minirt_distance;
+
+typedef struct s_minirt_color
+{
+	t_minirt_float	r;
+	t_minirt_float	g;
+	t_minirt_float	b;
+}	t_minirt_color;
+
+#endif

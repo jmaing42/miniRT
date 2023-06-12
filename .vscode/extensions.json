@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "streetsidesoftware.code-spell-checker",
+    "secondfry.42header-long",
+    "mariusvanwijk-joppekoers.codam-norminette-3",
+    "ms-vscode.cpptools",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "vadimcn.vscode-lldb",
+    "editorconfig.editorconfig",
+    "timonwong.shellcheck",
+  ],
+}

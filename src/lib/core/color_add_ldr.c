@@ -10,15 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#include "minirt/core/math.h"
 
-# include "./minirt_types.h"
+#include "minirt/core/minirt_float.h"
 
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
-
-#endif
+t_minirt_color	minirt_color_add_ldr(
+	t_minirt_color a,
+	t_minirt_color b
+)
+{
+	return ((t_minirt_color){
+		minirt_min(a.r + b.r, 1),
+		minirt_min(a.g + b.g, 1),
+		minirt_min(a.b + b.b, 1),
+	});
+}

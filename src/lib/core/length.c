@@ -10,41 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_F_H
-# define MINIRT_F_H
+#include "minirt/core/math.h"
 
-# if defined(MINIRT_PRECISION) && MINIRT_PRECISION == 0
+#include "minirt/core/minirt_float.h"
 
-typedef float		t_minirt_f;
+t_minirt_float	minirt_length(
+	t_minirt_distance distance
+)
+{
+	const t_minirt_float	x = minirt_square(distance.x);
+	const t_minirt_float	y = minirt_square(distance.y);
+	const t_minirt_float	z = minirt_square(distance.z);
 
-# elif defined(MINIRT_PRECISION) && MINIRT_PRECISION == 2
-
-typedef long double	t_minirt_f;
-
-# else
-
-typedef double		t_minirt_f;
-
-# endif
-
-typedef struct s_minirt_f3 {
-	t_minirt_f	x;
-	t_minirt_f	y;
-	t_minirt_f	z;
-}	t_minirt_f3;
-
-typedef struct s_minirt_f4 {
-	t_minirt_f	x;
-	t_minirt_f	y;
-	t_minirt_f	z;
-	t_minirt_f	w;
-}	t_minirt_f4;
-
-typedef struct s_minirt_f4x4 {
-	t_minirt_f3	x;
-	t_minirt_f3	y;
-	t_minirt_f3	z;
-	t_minirt_f3	w;
-}	t_minirt_f4x4;
-
-#endif
+	return (minirt_sqrt(x + y + z));
+}

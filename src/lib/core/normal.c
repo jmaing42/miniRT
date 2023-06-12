@@ -10,15 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#include "minirt/core/math.h"
 
-# include "./minirt_types.h"
+t_minirt_normal	minirt_normal(
+	t_minirt_distance distance
+)
+{
+	const t_minirt_float	length = minirt_length(distance);
 
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
-
-#endif
+	return ((t_minirt_normal){
+		distance.x / length,
+		distance.y / length,
+		distance.z / length,
+	});
+}

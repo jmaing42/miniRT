@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/bmp/bmp_funcs.h"
+#include "minirt/bmp/bmp.h"
 
 #include <stdbool.h>
 #include <stdint.h>

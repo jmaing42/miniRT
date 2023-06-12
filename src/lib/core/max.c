@@ -10,15 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#include "minirt/core/minirt_float.h"
 
-# include "./minirt_types.h"
-
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
-
-#endif
+t_minirt_float	minirt_max(t_minirt_float a, t_minirt_float b)
+{
+	if (a > b)
+		return (a);
+	else
+		return (b);
+}

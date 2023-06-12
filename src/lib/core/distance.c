@@ -10,15 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#include "minirt/core/math.h"
 
-# include "./minirt_types.h"
-
-t_err	minirt_render(
-			t_minirt_image *target_image,
-			const t_minirt_world *world,
-			const t_minirt_camera *camera,
-			t_minirt_renderer *renderer);
-
-#endif
+t_minirt_distance	minirt_distance(
+	t_minirt_position from,
+	t_minirt_position to
+)
+{
+	return ((t_minirt_distance){
+		to.x - from.x,
+		to.y - from.y,
+		to.z - from.z,
+	});
+}
