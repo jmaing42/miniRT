@@ -4,6 +4,7 @@ set -e
 
 cd "$(dirname "$0")"
 
+[ ! -d ../build ] || sh build_makefile.sh > ../build/Makefile
 [ ! -d ../build ] || exit 0
 
 

@@ -15,7 +15,7 @@
 
 # include <stddef.h>
 
-# include "minirt/base/types.h"
+# include "minirt/base_types.h"
 # include "./bmp_types.h"
 
 /**

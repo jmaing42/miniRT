@@ -16,14 +16,14 @@
 
 t_err	minirt_render(
 	t_minirt_image *target_image,
-	t_minirt_world *world,
-	t_minirt_camera *camera,
-	t_minirt_context *context
+	const t_minirt_world *world,
+	const t_minirt_camera *camera,
+	t_minirt_renderer *renderer
 )
 {
 	(void)target_image;
 	(void)world;
 	(void)camera;
-	(void)context;
+	(void)renderer;
 	return (true);
 }

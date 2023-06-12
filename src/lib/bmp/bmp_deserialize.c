@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/bmp_funcs.h"
+#include "minirt/bmp/bmp_funcs.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -29,6 +29,36 @@ typedef struct s_context
 	const uint8_t	*str;
 }	t_context;
 
+static uint16_t	le_u16(uint16_t u16)
+{
+	const uint16_t		test = 42;
+	const char *const	source = (const char *)&u16;
+	uint16_t			result;
+	char *const			dest = (char *)&result;
+
+	if (*((char *)&test))
+		return (u16);
+	dest[0] = source[1];
+	dest[1] = source[0];
+	return (result);
+}
+
+static uint32_t	le_u32(uint32_t u32)
+{
+	const uint32_t		test = 42;
+	const char *const	source = (const char *)&u32;
+	uint32_t			result;
+	char *const			dest = (char *)&result;
+
+	if (*((char *)&test))
+		return (u32);
+	dest[0] = source[3];
+	dest[1] = source[2];
+	dest[2] = source[1];
+	dest[3] = source[0];
+	return (result);
+}
+
 static void	fill(void *context, size_t x, size_t y, t_minirt_bmp_pixel *out)
 {
 	t_context *const	l = context;
@@ -41,18 +71,18 @@ static void	fill(void *context, size_t x, size_t y, t_minirt_bmp_pixel *out)
 		actual_x = l->width - 1 - x;
 	if (!l->reverse_height)
 		actual_y = l->height - 1 - y;
-	out->x = l->str[
+	out->r = l->str[
 		l->offset + l->row_size * (l->height - actual_y - 1) + 3 * actual_x + 2
 	];
-	out->y = l->str[
+	out->g = l->str[
 		l->offset + l->row_size * (l->height - actual_y - 1) + 3 * actual_x + 1
 	];
-	out->z = l->str[
+	out->b = l->str[
 		l->offset + l->row_size * (l->height - actual_y - 1) + 3 * actual_x + 0
 	];
 }
 
-static size_t	abs(int32_t i, bool *out_was_negative)
+static size_t	abs_ex(int32_t i, bool *out_was_negative)
 {
 	*out_was_negative = (i < 0);
 	if (*out_was_negative)
@@ -69,19 +99,18 @@ static t_minirt_bmp	*new(
 {
 	const size_t		size
 		= sizeof(t_minirt_bmp) + sizeof(t_minirt_bmp_pixel) * width * height;
-	t_minirt_bmp *const	result = wrap_malloc(size);
+	t_minirt_bmp *const	result = malloc(size);
 	size_t				y;
 	size_t				x;
 
 	result->width = width;
 	result->height = height;
-	t_minirt_bmp_fill(result, fill, context);
 	y = -1;
-	while (++y < self->height)
+	while (++y < result->height)
 	{
 		x = -1;
-		while (++x < self->width)
-			fill(context, x, y, &self->extra[y * self->width + x]);
+		while (++x < result->width)
+			fill(context, x, y, &result->extra[y * result->width + x]);
 	}
 	return (result);
 }
@@ -92,17 +121,18 @@ t_err	minirt_bmp_deserialize(
 	t_minirt_bmp **out
 )
 {
-	t_context	l;
+	t_context			l;
+	const char *const	str = buffer;
 
 	*out = NULL;
-	if (length <= 54 || str[0] != 'B' || str[1] != 'M' || ft_io_le_convert_u16(
-			*((uint16_t *)&str[28])) != 24 || ft_io_le_convert_u32(*(
+	if (length <= 54 || str[0] != 'B' || str[1] != 'M' || le_u16(
+			*((uint16_t *)&str[28])) != 24 || le_u32(*(
 				(uint32_t *)&str[30])) != 0)
 		return (false);
 	l.offset = *((uint32_t *)&str[10]);
-	l.width = abs((int32_t)ft_io_le_convert_u32(*((uint32_t *)&str[18])),
+	l.width = abs_ex((int32_t)le_u32(*((uint32_t *)&str[18])),
 			&l.reverse_width);
-	l.height = abs((int32_t)ft_io_le_convert_u32(*((uint32_t *)&str[22])),
+	l.height = abs_ex((int32_t)le_u32(*((uint32_t *)&str[22])),
 			&l.reverse_height);
 	l.row_padding = (4 - (l.width * 3) % 4) % 4;
 	l.row_size = l.width * 3 + l.row_padding;

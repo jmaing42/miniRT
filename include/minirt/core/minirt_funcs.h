@@ -13,14 +13,12 @@
 #ifndef MINIRT_FUNCS_H
 # define MINIRT_FUNCS_H
 
-# include "minirt/base_tyeps.h"
-
 # include "./minirt_types.h"
 
 t_err	minirt_render(
 			t_minirt_image *target_image,
-			t_minirt_world *world,
-			t_minirt_camera *camera,
-			t_minirt_context *context);
+			const t_minirt_world *world,
+			const t_minirt_camera *camera,
+			t_minirt_renderer *renderer);
 
 #endif

@@ -10,17 +10,41 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_F3_H
-# define MINIRT_F3_H
+#ifndef MINIRT_F_H
+# define MINIRT_F_H
 
 # if defined(MINIRT_PRECISION) && MINIRT_PRECISION == 0
 
-typedef float	t_minirt_f3;
+typedef float		t_minirt_f;
+
+# elif defined(MINIRT_PRECISION) && MINIRT_PRECISION == 2
+
+typedef long double	t_minirt_f;
 
 # else
 
-typedef double	t_minirt_f3;
+typedef double		t_minirt_f;
 
 # endif
+
+typedef struct s_minirt_f3 {
+	t_minirt_f	x;
+	t_minirt_f	y;
+	t_minirt_f	z;
+}	t_minirt_f3;
+
+typedef struct s_minirt_f4 {
+	t_minirt_f	x;
+	t_minirt_f	y;
+	t_minirt_f	z;
+	t_minirt_f	w;
+}	t_minirt_f4;
+
+typedef struct s_minirt_f4x4 {
+	t_minirt_f3	x;
+	t_minirt_f3	y;
+	t_minirt_f3	z;
+	t_minirt_f3	w;
+}	t_minirt_f4x4;
 
 #endif

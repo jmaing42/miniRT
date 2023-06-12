@@ -1,9 +1,12 @@
 TARGET = minirt.exe libminirt.so
-EXTRA_TARGET = libminirt_core.a
-ALL_TARGET = $(TARGET) $(EXTRA_TARGET)
+EXTRA_TARGET = libminirt_bmp.a libminirt_core.a
+EVERYTHING = $(TARGET) $(EXTRA_TARGET)
 
 all: $(TARGET)
 .PHONY: all
+
+.PHONY: everything
+everything: $(EVERYTHING)
 
 .PHONY: clean
 clean:
@@ -11,16 +14,21 @@ clean:
 
 .PHONY: fclean
 fclean: clean
-	rm -f $(ALL_TARGET)
+	rm -f $(EVERYTHING)
 
 .PHONY: re
 re:
 	$(MAKE) fclean
 	$(MAKE) all
 
-$(ALL_TARGET): build
+$(EVERYTHING): build
 	cd build && make $@
 	cp build/$@ .
 
-build norm:
-	sh script/make_$@.sh
+.PHONY: norm
+norm: build
+	cd build && make -k norm
+
+.PHONY: build
+build:
+	sh script/make_build.sh
