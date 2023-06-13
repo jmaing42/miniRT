@@ -1,5 +1,14 @@
 TARGET = minirt.exe libminirt.so
-EXTRA_TARGET = libminirt_bmp.a libminirt_core.a
+EXTRA_TARGET = \
+	libminirt_bmp.a \
+	libminirt_common.a \
+	libminirt_core.a \
+	libminirt_json.a \
+	libminirt_plugin_rtinrt.a \
+	libminirt_plugin_portal.a \
+	libminirt_scene.a \
+	minirt_validate.exe \
+
 EVERYTHING = $(TARGET) $(EXTRA_TARGET)
 
 all: $(TARGET)
