@@ -32,7 +32,7 @@ t_err	minirt_json_tokenize_add_simple_token(
 	}
 	*token = type;
 	node->next = NULL;
-	node->free_value = (void (*)(t_minirt_json_token))free;
+	node->free_value = *((void (**)(t_minirt_json_token))(&free));
 	node->value.type = token;
 	if (list->head)
 		list->tail->next = node;

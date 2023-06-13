@@ -52,7 +52,7 @@ t_err	minirt_json_tokenize_add_number_token(
 		= (t_minirt_json_token_number){MINIRT_JSON_TOKEN_TYPE_NUMBER, number};
 	node->next = NULL;
 	node->value.number = token;
-	node->free_value = (void (*)(t_minirt_json_token))free;
+	node->free_value = *((void (**)(t_minirt_json_token))(&free));
 	if (list->head)
 		list->tail->next = node;
 	else
