@@ -129,19 +129,19 @@ for i in 0 1 2; do
 
   find ../src -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do
-    printf '%s.o:\n' "$FILE.$MINIRT_PRECISION"
+    printf '%s.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
     printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -c -o \$@.tmp ../src/%s\n" "$FILE"
     printf "\tmv \$@.tmp \$@\n"
 
-    printf '%s.debug.o:\n' "$FILE.$MINIRT_PRECISION"
+    printf '%s.debug.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
     printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -g -c -o \$@.tmp ../src/%s\n" "$FILE"
     printf "\tmv \$@.tmp \$@\n"
 
-    printf '%s.debug.address.o:\n' "$FILE.$MINIRT_PRECISION"
+    printf '%s.debug.address.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
     printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -g -fsanitize=address -c -o \$@.tmp ../src/%s\n" "$FILE"
@@ -150,7 +150,7 @@ for i in 0 1 2; do
 
   find ../src/lib -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do
-    printf '%s.-fPIC.o:\n' "$FILE.$MINIRT_PRECISION"
+    printf '%s.-fPIC.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
     printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -O -fPIC -c -o \$@.tmp ../src/%s\n" "$FILE"
