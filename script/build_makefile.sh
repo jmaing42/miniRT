@@ -8,6 +8,7 @@ echo '##########################################################'
 echo '# THIS FILE IS AUTO GENERATED. DO NOT MODIFY IT MANUALLY #'
 echo '##########################################################'
 echo ''
+echo 'CC = clang-13'
 echo 'CFLAGS = -Wall -Wextra -Werror'
 echo 'CPPFLAGS = -I../include -I../src/include'
 echo ''
@@ -26,7 +27,7 @@ print_norm() {
   printf "norm: %s.norm\n" "$1"
   printf '%s.norm: %s\n' "$1" "../$2"
   printf '\t(cd .. && norminette %s)\n' "./$2"
-  printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
+  printf "\tmkdir -p \$(@D)\n"
   printf '\ttouch $@\n'
 }
 
@@ -129,19 +130,19 @@ for i in 0 1 2; do
   find ../src -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do
     printf '%s.o:\n' "$FILE.$MINIRT_PRECISION"
-    printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
+    printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -c -o \$@.tmp ../src/%s\n" "$FILE"
     printf "\tmv \$@.tmp \$@\n"
 
     printf '%s.debug.o:\n' "$FILE.$MINIRT_PRECISION"
-    printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
+    printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -g -c -o \$@.tmp ../src/%s\n" "$FILE"
     printf "\tmv \$@.tmp \$@\n"
 
     printf '%s.debug.address.o:\n' "$FILE.$MINIRT_PRECISION"
-    printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
+    printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -g -fsanitize=address -c -o \$@.tmp ../src/%s\n" "$FILE"
     printf "\tmv \$@.tmp \$@\n"
@@ -150,7 +151,7 @@ for i in 0 1 2; do
   find ../src/lib -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do
     printf '%s.-fPIC.o:\n' "$FILE.$MINIRT_PRECISION"
-    printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
+    printf "\tmkdir -p \$(@D)\n"
     printf "\trm -f \$@ \$@.tmp\n"
     printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -O -fPIC -c -o \$@.tmp ../src/%s\n" "$FILE"
     printf "\tmv \$@.tmp \$@\n"

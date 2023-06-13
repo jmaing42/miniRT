@@ -14,6 +14,7 @@ cleanup() {
 
 trap cleanup EXIT
 
+rm -rf ../tmp
 mkdir ../tmp
 sh build_makefile.sh > ../tmp/Makefile
 mv ../tmp ../build
