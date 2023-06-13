@@ -67,7 +67,7 @@ print_norm() {
   printf "norm: %s.norm\n" "$1"
   printf '%s.norm: %s\n' "$1" "../$2"
   printf '\t(cd .. && norminette %s)\n' "./$2"
-  printf '\tmkdir -p %s\n' "$(dirname "$1")"
+  printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
   printf '\ttouch $@\n'
 }
 
@@ -84,13 +84,17 @@ done
 find ../src -name '*.c' | cut -c 8- | while IFS= read -r FILE
 do
   printf '%s.o:\n' "$FILE"
-  printf '\tmkdir -p %s\n' "$(dirname "$FILE")"
-  printf "\t\$(CC) \$(CPPFLAGS) \$(CFLAGS) -c -o %s.o ../src/%s\n" "$FILE" "$FILE"
+  printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
+  printf "\trm -f \$@ \$@.tmp\n"
+  printf "\t\$(CC) \$(CPPFLAGS) \$(CFLAGS) -c -o \$@.tmp ../src/%s\n" "$FILE"
+  printf "\tmv \$@.tmp \$@\n"
 done
 
 find ../src/lib -name '*.c' | cut -c 8- | while IFS= read -r FILE
 do
   printf '%s.-fPIC.o:\n' "$FILE"
-  printf '\tmkdir -p %s\n' "$(dirname "$FILE")"
-  printf "\t\$(CC) \$(CPPFLAGS) \$(CFLAGS) -fPIC -c -o %s.-fPIC.o ../src/%s\n" "$FILE" "$FILE"
+  printf "\t[ -d \$(@D) ] || (rm -f \$(@D) && mkdir -p \$(@D))\n"
+  printf "\trm -f \$@ \$@.tmp\n"
+  printf "\t\$(CC) \$(CPPFLAGS) \$(CFLAGS) -fPIC -c -o \$@.tmp ../src/%s\n" "$FILE"
+  printf "\tmv \$@.tmp \$@\n"
 done
