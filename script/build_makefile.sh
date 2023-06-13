@@ -8,10 +8,19 @@ echo '##########################################################'
 echo '# THIS FILE IS AUTO GENERATED. DO NOT MODIFY IT MANUALLY #'
 echo '##########################################################'
 echo ''
-echo 'CC = clang-13'
+
+
+# ==============================================================================
+# basic variables
+# ==============================================================================
+
 echo 'CFLAGS = -Wall -Wextra -Werror'
-echo 'CPPFLAGS = -I../include -I../src/include'
-echo ''
+echo 'CPPFLAGS = -I./include -I./src/include'
+
+
+# ==============================================================================
+# vscode debug configuration
+# ==============================================================================
 
 printf '.PHONY: launch.json\n'
 printf 'launch.json:\n'
@@ -20,6 +29,11 @@ printf "\t(printf '{\\\\n  \"version\": \"0.2.0\",\\\\n  \"configurations\": [\\
 printf '.PHONY: tasks.json\n'
 printf 'tasks.json:\n'
 printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && echo \$^ | xargs -n 1 echo | sort | xargs cat && echo '  ],\\\\n}\\\\n') > \$@\n"
+
+
+# ==============================================================================
+# norminette
+# ==============================================================================
 
 echo ".PHONY: norm"
 
@@ -41,81 +55,147 @@ do
   print_norm "$FILE" "src/$FILE"
 done
 
-for i in 0 1 2; do
 
-  MINIRT_PRECISION=$i
+# ==============================================================================
+# util functions
+# ==============================================================================
 
-  find_sources() {
-    (cd "$1" && find "$2" -name '*.c' | sed "s/\$/$3/" | xargs)
+# list of source files
+find_sources() {
+  SRC_PATH="$1"
+
+  (cd ../src && find "$SRC_PATH" -name '*.c')
+}
+
+# list of objs for given lib
+list_lib_objs() {
+  LIB_NAME="$1"
+  SUFFIX="$2"
+
+  find_sources "lib/$LIB_NAME" | sed "s/\$/$SUFFIX.o/"
+}
+
+# list of objs for given exe
+list_exe_objs() {
+  EXE_NAME="$1"
+  SUFFIX="$2"
+
+  find_sources "exe/$EXE_NAME" | sed "s/\$/$SUFFIX.o/"
+}
+
+# map space-separated list of lib name to list of lib file name
+libs_to_filenames() {
+  LIB_NAMES="$(echo "$1" | xargs -n 1 echo)"
+  SUFFIX="$2"
+
+  echo "$LIB_NAMES" | sed 's/^/libminirt_/' | sed "s/\$/$SUFFIX.a/"
+}
+
+# map space-separated list of lib name to list of LDFLAGS
+libs_to_ldlibs() {
+  LIB_NAMES="$(echo "$1" | xargs -n 1 echo)"
+  SUFFIX="$2"
+
+  echo "$LIB_NAMES" | sed 's/^/-lminirt_/' | sed "s/\$/$SUFFIX/"
+}
+
+# emit obj rule
+emit_o() {
+  SRC_PATH="$1"
+  SUFFIX="$2"
+  EXTRA_FLAGS="$3"
+
+  printf '%s%s.o: ../src/%s\n' "$SRC_PATH" "$SUFFIX" "$SRC_PATH"
+  printf "\tmkdir -p \$(@D)\n"
+  printf "\trm -f \$@ \$@.tmp\n"
+  printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/%s)\n" "$EXTRA_FLAGS" "$SRC_PATH"
+  printf "\tmv \$@.tmp \$@\n"
+}
+
+# emit lib rule
+emit_a() {
+  LIB_NAME="$1"
+  SUFFIX="$2"
+
+  printf 'libminirt_%s%s.a: %s\n' "$LIB_NAME" "$SUFFIX" "$(list_lib_objs "$LIB_NAME" "$SUFFIX" | xargs)"
+  printf '\trm -f $@ $@.tmp\n'
+  printf '\tar cr $@.tmp $^\n'
+  printf '\tmv $@.tmp $@\n'
+}
+
+# emit exe rule
+emit_exe() {
+  EXE_NAME="$1"
+  SUFFIX="$2"
+  DEPENDENCY_LIBS="$3"
+  EXTRA_FLAGS="$4"
+  EMIT_VSCODE_SETTINGS="$5"
+
+  printf '%s%s.exe: %s\n' "$EXE_NAME" "$SUFFIX" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | xargs) $(libs_to_filenames "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)"
+  printf '\trm -f $@ $@.tmp\n'
+  printf "\t(cd .. && \$(CC) \$(LDFLAGS) -L build %s %s -o build/\$@.tmp %s)\n" "$(libs_to_ldlibs "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)" "$EXTRA_FLAGS" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | sed s#^#build/# | xargs)"
+  printf '\tmv $@.tmp $@\n'
+
+  if [ "$EMIT_VSCODE_SETTINGS" = "1" ]; then
+    NAME="$EXE_NAME ($(printf '%s' "$SUFFIX" | sed s/^\\.//))"
+    if [ "$NAME" = "$EXE_NAME ()" ]; then
+      NAME="$EXE_NAME"
+    fi
+
+    printf 'launch.json: %s%s.launch.json.debug.part\n' "$EXE_NAME" "$SUFFIX"
+    printf '%s%s.launch.json.debug.part:\n' "$EXE_NAME" "$SUFFIX"
+    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": [\"./assets/map/minimal.rt\"],\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@\n" "$NAME" "$EXE_NAME" "$SUFFIX" "$NAME"
+
+    printf 'tasks.json: %s%s.tasks.json.debug.part\n' "$EXE_NAME" "$SUFFIX"
+    printf '%s%s.tasks.json.debug.part:\n' "$EXE_NAME" "$SUFFIX"
+    printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@\n" "$NAME" "$EXE_NAME" "$SUFFIX"
+  fi
+}
+
+
+# ==============================================================================
+# per-precision
+# ==============================================================================
+
+for MINIRT_PRECISION in 0 1 2; do
+
+  print_exe_obj() {
+    SRC_PATH="$1"
+
+    emit_o "$SRC_PATH" ".$MINIRT_PRECISION" "-DMINIRT_PRECISION=$MINIRT_PRECISION -O"
+    emit_o "$SRC_PATH" ".$MINIRT_PRECISION.debug" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g"
+    emit_o "$SRC_PATH" ".$MINIRT_PRECISION.debug.address" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
   }
 
-  find_lib_objs() {
-    find_sources ../src "lib/$1" "$2.o"
-  }
+  print_lib_obj() {
+    SRC_PATH="$1"
 
-  find_exe_objs() {
-    find_sources ../src "exe/$1" "$2.o"
-  }
-
-  libs_to_filenames() {
-    echo "$1" | xargs -n 1 echo | sed 's/^/libminirt_/' | sed "s/\$/$2.a/" | xargs
-  }
-
-  libs_to_ldlibs() {
-    printf '%s' '-L. '
-    echo "$1" | xargs -n 1 echo | sed 's/^/-lminirt_/' | sed "s/\$/$2/" | xargs
+    print_exe_obj "$SRC_PATH"
+    emit_o "$SRC_PATH" ".$MINIRT_PRECISION.-fPIC" "-DMINIRT_PRECISION=$MINIRT_PRECISION -O -fPIC"
   }
 
   print_lib() {
-    printf 'libminirt_%s.a: %s\n' "$1.$MINIRT_PRECISION" "$(find_lib_objs "$1" ".$MINIRT_PRECISION")"
-    printf '\trm -f $@ $@.tmp\n'
-    printf '\tar cr $@.tmp $^\n'
-    printf '\tmv $@.tmp $@\n'
+    LIB_NAME="$1"
 
-    printf 'libminirt_%s.debug.a: %s\n' "$1.$MINIRT_PRECISION" "$(find_lib_objs "$1" ".$MINIRT_PRECISION.debug")"
-    printf '\trm -f $@ $@.tmp\n'
-    printf '\tar cr $@.tmp $^\n'
-    printf '\tmv $@.tmp $@\n'
-
-    printf 'libminirt_%s.debug.address.a: %s\n' "$1.$MINIRT_PRECISION" "$(find_lib_objs "$1" ".$MINIRT_PRECISION.debug.address")"
-    printf '\trm -f $@ $@.tmp\n'
-    printf '\tar cr $@.tmp $^\n'
-    printf '\tmv $@.tmp $@\n'
+    emit_a "$LIB_NAME" ".$MINIRT_PRECISION"
+    emit_a "$LIB_NAME" ".$MINIRT_PRECISION.debug"
+    emit_a "$LIB_NAME" ".$MINIRT_PRECISION.debug.address"
   }
 
   print_exe() {
-    printf '%s.exe: %s\n' "$1.$MINIRT_PRECISION" "$(find_exe_objs "$1" ".$MINIRT_PRECISION") $(libs_to_filenames "$2" ".$MINIRT_PRECISION")"
-    printf '\trm -f $@ $@.tmp\n'
-    printf "\t\$(CC) \$(LDFLAGS) %s -o \$@.tmp \%s\n" "$(find_exe_objs "$1" ".$MINIRT_PRECISION")" "$(libs_to_ldlibs "$2" ".$MINIRT_PRECISION")"
-    printf '\tmv $@.tmp $@\n'
+    EXE_NAME="$1"
+    DEPENDENCY_LIBS="$2"
+    EXTRA_FLAGS="$3"
 
-    printf '%s.debug.exe: %s\n' "$1.$MINIRT_PRECISION" "$(find_exe_objs "$1" ".$MINIRT_PRECISION") $(libs_to_filenames "$2" ".$MINIRT_PRECISION.debug")"
-    printf '\trm -f $@ $@.tmp\n'
-    printf "\t\$(CC) \$(LDFLAGS) %s -o \$@.tmp \%s\n" "$(find_exe_objs "$1" ".$MINIRT_PRECISION")" "$(libs_to_ldlibs "$2" ".$MINIRT_PRECISION.debug")"
-    printf '\tmv $@.tmp $@\n'
-
-    printf '%s.debug.address.exe: %s\n' "$1.$MINIRT_PRECISION" "$(find_exe_objs "$1" ".$MINIRT_PRECISION") $(libs_to_filenames "$2" ".$MINIRT_PRECISION.debug.address")"
-    printf '\trm -f $@ $@.tmp\n'
-    printf "\t\$(CC) \$(LDFLAGS) %s -fsanitize=address -o \$@.tmp \%s\n" "$(find_exe_objs "$1" ".$MINIRT_PRECISION")" "$(libs_to_ldlibs "$2" ".$MINIRT_PRECISION.debug.address")"
-    printf '\tmv $@.tmp $@\n'
-
-    printf 'launch.json: %s.launch.json.debug.part\n' "$1.$MINIRT_PRECISION"
-    printf '%s.launch.json.debug.part:\n' "$1.$MINIRT_PRECISION"
-    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"%s (debug)\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s.debug.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": [\"./assets/map/minimal.rt\"],\\\\n      \"preLaunchTask\": \"build %s (debug)\",\\\\n    },\\\\n' > \$@\n" "$1.$MINIRT_PRECISION" "$1.$MINIRT_PRECISION" "$1.$MINIRT_PRECISION"
-    printf 'launch.json: %s.launch.json.debug.address.part\n' "$1.$MINIRT_PRECISION"
-    printf '%s.launch.json.debug.address.part:\n' "$1.$MINIRT_PRECISION"
-    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"%s (debug, address)\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s.debug.address.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": [\"./assets/map/minimal.rt\"],\\\\n      \"preLaunchTask\": \"build %s (debug, address)\",\\\\n    },\\\\n' > \$@\n" "$1.$MINIRT_PRECISION" "$1.$MINIRT_PRECISION" "$1.$MINIRT_PRECISION"
-    printf 'tasks.json: %s.tasks.json.debug.part\n' "$1.$MINIRT_PRECISION"
-    printf '%s.tasks.json.debug.part:\n' "$1.$MINIRT_PRECISION"
-    printf "\tprintf '    {\\\\n      \"label\": \"build %s (debug)\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s.debug.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@\n" "$1.$MINIRT_PRECISION" "$1.$MINIRT_PRECISION"
-    printf 'tasks.json: %s.tasks.json.debug.address.part\n' "$1.$MINIRT_PRECISION"
-    printf '%s.tasks.json.debug.address.part:\n' "$1.$MINIRT_PRECISION"
-    printf "\tprintf '    {\\\\n      \"label\": \"build %s (debug, address)\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s.debug.address.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@\n" "$1.$MINIRT_PRECISION" "$1.$MINIRT_PRECISION"
+    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION" "$DEPENDENCY_LIBS" "-DMINIRT_PRECISION=$MINIRT_PRECISION"
+    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug" "$DEPENDENCY_LIBS" "-DMINIRT_PRECISION=$MINIRT_PRECISION" 1
+    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug.address" "$DEPENDENCY_LIBS" "-DMINIRT_PRECISION=$MINIRT_PRECISION -fsanitize=address" 1
   }
 
-  printf 'libminirt%s.so: %s\n' ".$MINIRT_PRECISION" "$(find_sources ../src lib ".$MINIRT_PRECISION.-fPIC.o")"
-  printf '\trm -f $@\n'
-  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@ \$<\n"
+  printf 'libminirt%s.so: %s\n' ".$MINIRT_PRECISION" "$(find_sources lib | sed "s/\$/.$MINIRT_PRECISION.-fPIC.o/" | xargs)"
+  printf '\trm -f $@ $@.tmp\n'
+  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp \$<\n"
+  printf "\tmv \$@.tmp \$@\n"
 
   print_lib bmp
   print_lib common
@@ -127,34 +207,14 @@ for i in 0 1 2; do
   print_exe minirt_validate "common json plugin_portal plugin_rtinrt scene"
   print_exe minirt "bmp common core json plugin_portal plugin_rtinrt scene"
 
-  find ../src -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
+  find ../src/exe -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do
-    printf '%s.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
-    printf "\tmkdir -p \$(@D)\n"
-    printf "\trm -f \$@ \$@.tmp\n"
-    printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -c -o \$@.tmp ../src/%s\n" "$FILE"
-    printf "\tmv \$@.tmp \$@\n"
-
-    printf '%s.debug.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
-    printf "\tmkdir -p \$(@D)\n"
-    printf "\trm -f \$@ \$@.tmp\n"
-    printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -g -c -o \$@.tmp ../src/%s\n" "$FILE"
-    printf "\tmv \$@.tmp \$@\n"
-
-    printf '%s.debug.address.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
-    printf "\tmkdir -p \$(@D)\n"
-    printf "\trm -f \$@ \$@.tmp\n"
-    printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -g -fsanitize=address -c -o \$@.tmp ../src/%s\n" "$FILE"
-    printf "\tmv \$@.tmp \$@\n"
+    print_exe_obj "$FILE"
   done
 
   find ../src/lib -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do
-    printf '%s.-fPIC.o: ../src/%s\n' "$FILE.$MINIRT_PRECISION" "$FILE"
-    printf "\tmkdir -p \$(@D)\n"
-    printf "\trm -f \$@ \$@.tmp\n"
-    printf "\t\$(CC) \$(CPPFLAGS) -DMINIRT_PRECISION=$MINIRT_PRECISION \$(CFLAGS) -O -fPIC -c -o \$@.tmp ../src/%s\n" "$FILE"
-    printf "\tmv \$@.tmp \$@\n"
+    print_lib_obj "$FILE"
   done
 
 done
