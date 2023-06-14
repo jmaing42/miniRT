@@ -16,6 +16,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "bmp_internal.h"
+
 typedef struct s_context
 {
 	size_t			offset;
@@ -90,31 +92,6 @@ static size_t	abs_ex(int32_t i, bool *out_was_negative)
 	return (i);
 }
 
-static t_minirt_bmp	*new(
-	size_t width,
-	size_t height,
-	void (*fill)(void *context, size_t x, size_t y, t_minirt_bmp_pixel *out),
-	void *context
-)
-{
-	const size_t		size
-		= sizeof(t_minirt_bmp) + sizeof(t_minirt_bmp_pixel) * width * height;
-	t_minirt_bmp *const	result = malloc(size);
-	size_t				y;
-	size_t				x;
-
-	result->width = width;
-	result->height = height;
-	y = -1;
-	while (++y < result->height)
-	{
-		x = -1;
-		while (++x < result->width)
-			fill(context, x, y, &result->extra[y * result->width + x]);
-	}
-	return (result);
-}
-
 t_err	minirt_bmp_deserialize(
 	const void *buffer,
 	size_t length,
@@ -140,7 +117,7 @@ t_err	minirt_bmp_deserialize(
 	l.str = (uint8_t *)str;
 	if (length < l.offset + l.whole_size)
 		return (false);
-	*out = new(l.width, l.height, fill, &l);
+	*out = minirt_bmp_new(l.width, l.height, fill, &l);
 	if (!*out)
 		return (true);
 	return (false);

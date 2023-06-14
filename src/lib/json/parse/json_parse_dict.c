@@ -98,6 +98,12 @@ static t_err	fill_entries(
 	return (false);
 }
 
+static t_err	syntax_error(t_minirt_json_value_dict *out)
+{
+	out->type = MINIRT_JSON_VALUE_TYPE_ERROR;
+	return (false);
+}
+
 t_err	minirt_json_parse_dict(
 	t_minirt_json_token_list_node **head,
 	t_minirt_json_value_dict *out
@@ -110,10 +116,7 @@ t_err	minirt_json_parse_dict(
 		|| (*(*head)->next->value.type != MINIRT_JSON_TOKEN_TYPE_STRING
 			&& *(*head)->next->value.type
 			!= MINIRT_JSON_TOKEN_TYPE_BRACE_CLOSE))
-	{
-		out->type = MINIRT_JSON_VALUE_TYPE_ERROR;
-		return (false);
-	}
+		return (syntax_error(out));
 	curr = curr->next;
 	out->type = MINIRT_JSON_VALUE_TYPE_DICT;
 	out->value.head = NULL;
@@ -125,8 +128,7 @@ t_err	minirt_json_parse_dict(
 			&& out->value.tail->value->type == MINIRT_JSON_VALUE_TYPE_ERROR))
 	{
 		minirt_json_value_dict_free(out);
-		out->type = MINIRT_JSON_VALUE_TYPE_ERROR;
-		return (false);
+		return (syntax_error(out));
 	}
 	*head = curr->next;
 	return (false);

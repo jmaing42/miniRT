@@ -16,12 +16,10 @@
 
 static t_err	special(
 	t_minirt_json_token_list_node **head,
-	t_minirt_json_value_internal *out
+	t_minirt_json_value_internal *out,
+	t_err result
 )
 {
-	t_err	result;
-
-	result = false;
 	if (*(*head)->value.type == MINIRT_JSON_TOKEN_TYPE_NULL)
 		out->type = MINIRT_JSON_VALUE_TYPE_NULL;
 	else if (*(*head)->value.type == MINIRT_JSON_TOKEN_TYPE_TRUE
@@ -62,5 +60,5 @@ t_err	minirt_json_parse_value(
 		return (minirt_json_parse_list(head, &out->list));
 	if (minirt_json_parse_next_is_dict(*(*head)->value.type))
 		return (minirt_json_parse_dict(head, &out->dict));
-	return (special(head, out));
+	return (special(head, out, false));
 }

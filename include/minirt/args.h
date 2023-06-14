@@ -34,12 +34,12 @@ typedef union u_minirt_args_value {
 typedef struct s_minirt_args_parameter {
 	char				*key;
 	t_minirt_args_value	*value;
-}	s_minirt_args_parameter;
+}	t_minirt_args_parameter;
 
 typedef struct s_minirt_args
 {
 	char					**args;
-	s_minirt_args_parameter	*parameters;
+	t_minirt_args_parameter	*parameters;
 }	t_minirt_args;
 
 typedef enum e_minirt_args_error_type
