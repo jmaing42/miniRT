@@ -130,6 +130,10 @@ emit_exe() {
   DEPENDENCY_LIBS="$3"
   EXTRA_FLAGS="$4"
   EMIT_VSCODE_SETTINGS="$5"
+  DEBUG_ARGS="$6"
+  if [ "$DEBUG_ARGS" = "" ]; then
+    DEBUG_ARGS='[]'
+  fi
 
   printf '%s%s.exe: %s\n' "$EXE_NAME" "$SUFFIX" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | xargs) $(libs_to_filenames "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
@@ -144,7 +148,7 @@ emit_exe() {
 
     printf 'launch.json: %s%s.launch.json.debug.part\n' "$EXE_NAME" "$SUFFIX"
     printf '%s%s.launch.json.debug.part:\n' "$EXE_NAME" "$SUFFIX"
-    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": [\"./assets/map/minimal.rt\"],\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@\n" "$NAME" "$EXE_NAME" "$SUFFIX" "$NAME"
+    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": %s,\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@\n" "$NAME" "$EXE_NAME" "$SUFFIX" "$DEBUG_ARGS" "$NAME"
 
     printf 'tasks.json: %s%s.tasks.json.debug.part\n' "$EXE_NAME" "$SUFFIX"
     printf '%s%s.tasks.json.debug.part:\n' "$EXE_NAME" "$SUFFIX"
