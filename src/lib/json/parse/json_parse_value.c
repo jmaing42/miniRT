@@ -12,7 +12,7 @@
 
 #include "json_internal.h"
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 
 static t_err	special(
 	t_minirt_json_token_list_node **head,

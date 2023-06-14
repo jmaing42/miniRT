@@ -14,7 +14,7 @@
 
 #include <stdbool.h>
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 #include "json_internal.h"
 
 bool	minirt_json_dict_has_key(t_minirt_json value, const char *key)

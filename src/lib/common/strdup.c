@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 
 #include <stdlib.h>
 

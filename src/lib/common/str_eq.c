@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 
 bool	minirt_str_eq(const char *a, const char *b)
 {

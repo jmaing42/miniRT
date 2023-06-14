@@ -12,7 +12,7 @@
 
 #include "minirt/json.h"
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 #include "json_internal.h"
 
 t_minirt_json	minirt_json_get_dict(t_minirt_json value, const char *key)

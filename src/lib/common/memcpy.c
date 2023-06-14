@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 
 void	minirt_memcpy(void *dest, const void *source, size_t size)
 {

@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 
 static t_minirt_json_stringbuilder_node	*internal(
 	t_minirt_json_stringbuilder *self,

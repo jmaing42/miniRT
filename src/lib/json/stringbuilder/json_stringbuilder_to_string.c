@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 
-#include "minirt/common.h"
+#include "minirt/common/libc.h"
 
 char	*minirt_json_stringbuilder_to_string(
 	t_minirt_json_stringbuilder *self,
