@@ -1,5 +1,9 @@
 include common.mk
 
+.NOTPARALLEL: $(EVERYTHING) .vscode/launch.json .vscode/tasks.json
+
+MAKEFLAGS = -j 1
+
 MAKE_J = $(MAKE) -j $(shell sh script/nproc.sh)
 
 $(EVERYTHING): build
