@@ -122,6 +122,7 @@ typedef struct s_minirt_args_options_map
 	const char							*name;
 	char								short_name;
 	t_minirt_args_options_duplicate_key	on_duplicate;
+	bool								allow_empty;
 }	t_minirt_args_options_map;
 
 typedef enum e_minirt_args_options_duplicate_value
@@ -150,6 +151,8 @@ typedef struct s_minirt_args_options_scalar
 	const char									*name;
 	char										short_name;
 	t_minirt_args_options_duplicate_parameter	on_duplicate;
+	bool										accept_number;
+	bool										accept_keyword;
 }	t_minirt_args_options_scalar;
 
 typedef enum e_minirt_args_options_unknown_parameter
@@ -173,5 +176,33 @@ t_err	minirt_args(
 			char **argv,
 			t_minirt_args_options options,
 			t_minirt_args_result *out);
+
+void	minirt_args_free(
+			t_minirt_args *self);
+void	minirt_args_free_error(
+			t_minirt_args_error *error);
+char	*minirt_args_get_string(
+			t_minirt_args *self);
+bool	minirt_args_set_has(
+			t_minirt_args *self,
+			const char *name,
+			const char *value);
+char	*minirt_args_map_get(
+			t_minirt_args *self,
+			const char *name,
+			const char *key);
+bool	minirt_args_get_boolean(
+			t_minirt_args *self,
+			const char *name);
+t_err	minirt_args_set_foreach(
+			t_minirt_args *self,
+			const char *name,
+			void *context,
+			t_err (*func)(void *context, char *value));
+t_err	minirt_args_map_foreach(
+			t_minirt_args *self,
+			const char *name,
+			void *context,
+			t_err (*func)(void *context, char *key, char *value));
 
 #endif

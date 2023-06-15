@@ -201,15 +201,18 @@ for MINIRT_PRECISION in 0 1 2; do
   printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp \$<\n"
   printf "\tmv \$@.tmp \$@\n"
 
+  print_lib args
   print_lib bmp
   print_lib common
   print_lib core
   print_lib json
+  print_lib pack
   print_lib plugin_rtinrt
   print_lib plugin_portal
   print_lib scene
-  print_exe minirt_validate "common json plugin_portal plugin_rtinrt scene"
-  print_exe minirt "bmp common core json plugin_portal plugin_rtinrt scene"
+  print_exe minirt_validate "args common json plugin_portal plugin_rtinrt scene"
+  print_exe minirt "args bmp common core json plugin_portal plugin_rtinrt scene"
+  print_exe pack "args common pack"
 
   find ../src/exe -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do

@@ -10,23 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ARRAY_BUILDER_H
-# define ARRAY_BUILDER_H
+#include "minirt/common/array_builder.h"
 
-# include "minirt/common/array_builder_types.h"
+#include <stdlib.h>
 
-t_minirt_array_builder	*minirt_array_builder_new(
-							size_t item_size);
-void					minirt_array_builder_free(
-							t_minirt_array_builder *self);
-t_err					minirt_array_builder_append(
-							t_minirt_array_builder *self,
-							size_t length,
-							const void *buf);
-void					minirt_array_builder_remove_last(
-							t_minirt_array_builder *self,
-							size_t length);
-void					*minirt_array_builder_build(
-							t_minirt_array_builder *self);
+t_minirt_array_builder	*minirt_array_builder_new(size_t item_size)
+{
+	t_minirt_array_builder *const	result
+		= malloc(sizeof(t_minirt_array_builder));
 
-#endif
+	if (!result)
+		return (NULL);
+	result->item_size = item_size;
+	result->capacity = 0;
+	result->length = 0;
+	result->array = NULL;
+	return (result);
+}

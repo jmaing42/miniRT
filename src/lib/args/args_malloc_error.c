@@ -10,23 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ARRAY_BUILDER_H
-# define ARRAY_BUILDER_H
+#include "minirt/args.h"
 
-# include "minirt/common/array_builder_types.h"
+#include "args_internal.h"
 
-t_minirt_array_builder	*minirt_array_builder_new(
-							size_t item_size);
-void					minirt_array_builder_free(
-							t_minirt_array_builder *self);
-t_err					minirt_array_builder_append(
-							t_minirt_array_builder *self,
-							size_t length,
-							const void *buf);
-void					minirt_array_builder_remove_last(
-							t_minirt_array_builder *self,
-							size_t length);
-void					*minirt_array_builder_build(
-							t_minirt_array_builder *self);
-
-#endif
+t_err	minirt_args_malloc_error(
+	t_minirt_args_state *state,
+	t_minirt_args_result *out
+)
+{
+	minirt_args_state_free(state);
+	out->error.type = MINIRT_ARGS_ERROR_MALLOC_FAILURE;
+	return (true);
+}
