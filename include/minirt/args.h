@@ -13,8 +13,8 @@
 #ifndef ARGS_H
 # define ARGS_H
 
-# include <stdbool.h>
 # include <stddef.h>
+# include <stdbool.h>
 
 # include "minirt/base_types.h"
 
