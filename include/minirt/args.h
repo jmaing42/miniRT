@@ -24,16 +24,22 @@ typedef struct s_minirt_args_map_entry
 	char	*value;
 }	t_minirt_args_map_entry;
 
+typedef struct s_minirt_args_map
+{
+	t_minirt_args_map_entry	*entries;
+	size_t					entry_count;
+}	t_minirt_args_map;
+
 typedef union u_minirt_args_value {
-	char					*string;
-	t_minirt_args_map_entry	*map;
-	char					**set;
-	bool					boolean;
+	char				*string;
+	t_minirt_args_map	*map;
+	char				**set;
+	bool				boolean;
 }	t_minirt_args_value;
 
 typedef struct s_minirt_args_parameter {
 	char				*key;
-	t_minirt_args_value	*value;
+	t_minirt_args_value	value;
 }	t_minirt_args_parameter;
 
 typedef struct s_minirt_args
@@ -42,72 +48,20 @@ typedef struct s_minirt_args
 	t_minirt_args_parameter	*parameters;
 }	t_minirt_args;
 
-typedef enum e_minirt_args_error_type
+typedef enum e_minirt_args_options_duplicate_parameter_string
 {
-	MINIRT_ARGS_ERROR_MALLOC_FAILURE,
-	MINIRT_ARGS_ERROR_UNKNOWN_PARAMETER,
-	MINIRT_ARGS_ERROR_MISSING_ENTRY,
-	MINIRT_ARGS_ERROR_MISSING_VALUE,
-	MINIRT_ARGS_ERROR_DUPLICATE_KEY,
-	MINIRT_ARGS_ERROR_DUPLICATE_VALUE,
-	MINIRT_ARGS_ERROR_DUPLICATE_PARAMETER,
-}	t_minirt_args_error_type;
+	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_STRING_ERROR,
+	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_STRING_IGNORE_IF_SAME,
+	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_STRING_USE_FIRST,
+	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_STRING_USE_LAST,
+}	t_minirt_args_options_duplicate_parameter_string;
 
-typedef struct s_minirt_args_error_unknown_parameter
+typedef struct s_minirt_args_options_string
 {
-	char	*parameter_name;
-}	t_minirt_args_error_unknown_parameter;
-
-typedef struct s_minirt_args_error_missing_entry
-{
-	char	*parameter_name;
-}	t_minirt_args_error_missing_entry;
-
-typedef struct s_minirt_args_error_missing_value
-{
-	char	*parameter_name;
-}	t_minirt_args_error_missing_value;
-
-typedef struct s_minirt_args_error_duplicate_key
-{
-	char	*parameter_name;
-	char	*key;
-	char	**values;
-}	t_minirt_args_error_duplicate_key;
-
-typedef struct s_minirt_args_error_duplicate_value
-{
-	char	*parameter_name;
-	char	*value;
-}	t_minirt_args_error_duplicate_value;
-
-typedef struct s_minirt_args_error_duplicate_parameter
-{
-	char	*parameter_name;
-	char	**values;
-}	t_minirt_args_error_duplicate_parameter;
-
-typedef union u_minirt_args_error_value
-{
-	t_minirt_args_error_unknown_parameter	unknown_parameter;
-	t_minirt_args_error_missing_entry		missing_entry;
-	t_minirt_args_error_missing_value		missing_value;
-	t_minirt_args_error_duplicate_key		duplicate_key;
-	t_minirt_args_error_duplicate_value		duplicate_value;
-	t_minirt_args_error_duplicate_parameter	duplicate_parameter;
-}	t_minirt_args_error_value;
-
-typedef struct s_minirt_args_error
-{
-	t_minirt_args_error_type	type;
-	t_minirt_args_error_value	value;
-}	t_minirt_args_error;
-
-typedef union s_minirt_args_result
-{
-	t_minirt_args		ok;
-	t_minirt_args_error	error;
-}	t_minirt_args_result;
+	const char											*name;
+	char												short_name;
+	t_minirt_args_options_duplicate_parameter_string	on_duplicate;
+}	t_minirt_args_options_string;
 
 typedef enum e_minirt_args_options_duplicate_key
 {
@@ -122,7 +76,7 @@ typedef struct s_minirt_args_options_map
 	const char							*name;
 	char								short_name;
 	t_minirt_args_options_duplicate_key	on_duplicate;
-	bool								allow_empty;
+	bool								allow_null;
 }	t_minirt_args_options_map;
 
 typedef enum e_minirt_args_options_duplicate_value
@@ -138,22 +92,20 @@ typedef struct s_minirt_args_options_set
 	t_minirt_args_options_duplicate_value	on_duplicate;
 }	t_minirt_args_options_set;
 
-typedef enum e_minirt_args_options_duplicate_parameter
+typedef enum e_minirt_args_options_duplicate_parameter_boolean
 {
-	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_ERROR,
-	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_IGNORE_IF_SAME,
-	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_USE_FIRST,
-	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_USE_LAST,
-}	t_minirt_args_options_duplicate_parameter;
+	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_BOOLEAN_ERROR,
+	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_BOOLEAN_IGNORE,
+}	t_minirt_args_options_duplicate_parameter_boolean;
 
-typedef struct s_minirt_args_options_scalar
+typedef struct s_minirt_args_options_boolean
 {
-	const char									*name;
-	char										short_name;
-	t_minirt_args_options_duplicate_parameter	on_duplicate;
-	bool										accept_number;
-	bool										accept_keyword;
-}	t_minirt_args_options_scalar;
+	const char											*name;
+	char												short_name;
+	t_minirt_args_options_duplicate_parameter_boolean	on_duplicate;
+	bool												accept_number;
+	bool												accept_keyword;
+}	t_minirt_args_options_boolean;
 
 typedef enum e_minirt_args_options_unknown_parameter
 {
@@ -164,12 +116,96 @@ typedef enum e_minirt_args_options_unknown_parameter
 
 typedef struct s_minirt_args_options
 {
-	const t_minirt_args_options_scalar		**string_parameters;
-	const t_minirt_args_options_map			**map_parameters;
-	const t_minirt_args_options_set			**set_parameters;
-	const t_minirt_args_options_scalar		**boolean_parameters;
+	const t_minirt_args_options_string		*string_parameters;
+	size_t									string_parameter_count;
+	const t_minirt_args_options_map			*map_parameters;
+	size_t									map_parameter_count;
+	const t_minirt_args_options_set			*set_parameters;
+	size_t									set_parameter_count;
+	const t_minirt_args_options_string		*boolean_parameters;
+	size_t									boolean_parameter_count;
 	t_minirt_args_options_unknown_parameter	unknown_parameter;
 }	t_minirt_args_options;
+
+typedef enum e_minirt_args_error_type
+{
+	MINIRT_ARGS_ERROR_MALLOC_FAILURE,
+	MINIRT_ARGS_ERROR_UNKNOWN_PARAMETER,
+	MINIRT_ARGS_ERROR_MISSING_ENTRY,
+	MINIRT_ARGS_ERROR_MISSING_VALUE_MAP,
+	MINIRT_ARGS_ERROR_MISSING_VALUE_SET,
+	MINIRT_ARGS_ERROR_DUPLICATE_PARAMETER_STRING,
+	MINIRT_ARGS_ERROR_DUPLICATE_KEY,
+	MINIRT_ARGS_ERROR_DUPLICATE_VALUE,
+	MINIRT_ARGS_ERROR_DUPLICATE_PARAMETER_BOOLEAN,
+}	t_minirt_args_error_type;
+
+typedef struct s_minirt_args_error_unknown_parameter
+{
+	char	*parameter_name;
+}	t_minirt_args_error_unknown_parameter;
+
+typedef struct s_minirt_args_error_missing_entry
+{
+	t_minirt_args_options_map	*option;
+}	t_minirt_args_error_missing_entry;
+
+typedef struct s_minirt_args_error_missing_value_map
+{
+	t_minirt_args_options_map	*option;
+	char						*key;
+}	t_minirt_args_error_missing_value_map;
+
+typedef struct s_minirt_args_error_missing_value_set
+{
+	t_minirt_args_options_set	*option;
+}	t_minirt_args_error_missing_value_set;
+
+typedef struct s_minirt_args_error_duplicate_parameter_string
+{
+	t_minirt_args_options_string	*option;
+}	t_minirt_args_error_duplicate_parameter_string;
+
+typedef struct s_minirt_args_error_duplicate_key
+{
+	t_minirt_args_options_map	*option;
+	char						*key;
+}	t_minirt_args_error_duplicate_key;
+
+typedef struct s_minirt_args_error_duplicate_value
+{
+	t_minirt_args_options_set	*option;
+	char						*value;
+}	t_minirt_args_error_duplicate_value;
+
+typedef struct s_minirt_args_error_duplicate_parameter_boolean
+{
+	t_minirt_args_options_boolean	*option;
+}	t_minirt_args_error_duplicate_parameter_boolean;
+
+typedef union u_minirt_args_error_value
+{
+	t_minirt_args_error_unknown_parameter			unknown_parameter;
+	t_minirt_args_error_missing_entry				missing_entry;
+	t_minirt_args_error_missing_value_map			missing_value_map;
+	t_minirt_args_error_missing_value_set			missing_value_set;
+	t_minirt_args_error_duplicate_parameter_string	duplicate_parameter_string;
+	t_minirt_args_error_duplicate_key				duplicate_key;
+	t_minirt_args_error_duplicate_value				duplicate_value;
+	t_minirt_args_error_duplicate_parameter_boolean	duplicate_parameter_boolean;
+}	t_minirt_args_error_value;
+
+typedef struct s_minirt_args_error
+{
+	t_minirt_args_error_type	type;
+	t_minirt_args_error_value	value;
+}	t_minirt_args_error;
+
+typedef union s_minirt_args_result
+{
+	t_minirt_args		ok;
+	t_minirt_args_error	error;
+}	t_minirt_args_result;
 
 t_err	minirt_args(
 			unsigned int argc,

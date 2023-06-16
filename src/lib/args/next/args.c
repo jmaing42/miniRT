@@ -10,25 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/args.h"
-
 #include "args_internal.h"
 
-t_err	minirt_args(
-	unsigned int argc,
-	char **argv,
-	t_minirt_args_options options,
-	t_minirt_args_result *out
+#include "minirt/common/libc.h"
+#include "minirt/common/array_builder.h"
+
+t_err	minirt_args_next_args(
+	t_minirt_args_state *mut_state,
+	t_minirt_args_options *options,
+	char *arg
 )
 {
-	t_minirt_args_state	state;
-	unsigned int		i;
+	char	*value;
 
-	if (minirt_args_state_init(&state))
-		return (minirt_args_malloc_error(&state, out));
-	i = -1;
-	while (++i < argc && state.state_type != MINIRT_ARGS_STATE_ERROR)
-		if (minirt_args_next(&state, &options, argv[i]))
-			return (minirt_args_malloc_error(&state, out));
-	return (minirt_args_finalize(&state, out));
+	(void)options;
+	return (
+		minirt_strdup(arg, &value)
+		|| minirt_array_builder_append(mut_state->args, 1, &value)
+	);
 }

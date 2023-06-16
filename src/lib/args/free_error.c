@@ -12,14 +12,14 @@
 
 #include "minirt/args.h"
 
+#include <stdlib.h>
+
 #include "args_internal.h"
 
-t_err	minirt_args_malloc_error(
-	t_minirt_args_state *state,
-	t_minirt_args_result *out
-)
+void	minirt_args_free_error(t_minirt_args_error *error)
 {
-	minirt_args_state_free(state);
-	out->error.type = MINIRT_ARGS_ERROR_MALLOC_FAILURE;
-	return (true);
+	if (error->type == MINIRT_ARGS_ERROR_UNKNOWN_PARAMETER)
+		free(error->value.unknown_parameter.parameter_name);
+	else if (error->type == MINIRT_ARGS_ERROR_MISSING_VALUE_MAP)
+		free(error->value.missing_value_map.key);
 }

@@ -10,25 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/args.h"
-
 #include "args_internal.h"
 
-t_err	minirt_args(
-	unsigned int argc,
-	char **argv,
-	t_minirt_args_options options,
-	t_minirt_args_result *out
-)
-{
-	t_minirt_args_state	state;
-	unsigned int		i;
+#include <stdlib.h>
 
-	if (minirt_args_state_init(&state))
-		return (minirt_args_malloc_error(&state, out));
-	i = -1;
-	while (++i < argc && state.state_type != MINIRT_ARGS_STATE_ERROR)
-		if (minirt_args_next(&state, &options, argv[i]))
-			return (minirt_args_malloc_error(&state, out));
-	return (minirt_args_finalize(&state, out));
+#include "minirt/common/array_builder.h"
+
+void	minirt_args_state_deinit(t_minirt_args_state *self)
+{
+	free(self->state_value);
+	minirt_array_builder_free(self->params_string);
+	minirt_array_builder_free(self->params_map);
+	minirt_array_builder_free(self->params_set);
+	minirt_array_builder_free(self->params_boolean);
+	minirt_array_builder_free(self->args);
+	minirt_args_free_error(&self->error);
 }

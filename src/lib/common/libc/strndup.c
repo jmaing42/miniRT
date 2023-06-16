@@ -10,25 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/args.h"
+#include "minirt/common/libc.h"
 
-#include "args_internal.h"
+#include <stdlib.h>
 
-t_err	minirt_args(
-	unsigned int argc,
-	char **argv,
-	t_minirt_args_options options,
-	t_minirt_args_result *out
-)
+t_err	minirt_strndup(const char *src, size_t length, char **out)
 {
-	t_minirt_args_state	state;
-	unsigned int		i;
+	char	*result;
+	size_t	i;
 
-	if (minirt_args_state_init(&state))
-		return (minirt_args_malloc_error(&state, out));
+	result = malloc(length + 1);
+	if (!result)
+		return (true);
 	i = -1;
-	while (++i < argc && state.state_type != MINIRT_ARGS_STATE_ERROR)
-		if (minirt_args_next(&state, &options, argv[i]))
-			return (minirt_args_malloc_error(&state, out));
-	return (minirt_args_finalize(&state, out));
+	while (++i < length)
+		result[i] = src[i];
+	result[length] = '\0';
+	*out = result;
+	return (false);
 }
