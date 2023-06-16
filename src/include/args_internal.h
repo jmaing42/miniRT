@@ -27,15 +27,25 @@ typedef enum e_minirt_args_state_type
 	MINIRT_ARGS_STATE_ARGS,
 }	t_minirt_args_state_type;
 
+typedef struct s_minirt_args_parameter_map_builder {
+	char					*parameter_name;
+	t_minirt_array_builder	*builder;
+}	t_minirt_args_parameter_map_builder;
+
+typedef struct s_minirt_args_parameter_set_builder {
+	char					*parameter_name;
+	t_minirt_array_builder	*builder;
+}	t_minirt_args_parameter_set_builder;
+
 typedef struct s_minirt_args_state
 {
 	t_minirt_args_state_type	state_type;
 	char						*state_value;
+	t_minirt_array_builder		*args;
 	t_minirt_array_builder		*params_string;
 	t_minirt_array_builder		*params_map;
 	t_minirt_array_builder		*params_set;
 	t_minirt_array_builder		*params_boolean;
-	t_minirt_array_builder		*args;
 	t_minirt_args_error			error;
 }	t_minirt_args_state;
 

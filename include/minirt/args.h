@@ -24,28 +24,32 @@ typedef struct s_minirt_args_map_entry
 	char	*value;
 }	t_minirt_args_map_entry;
 
-typedef struct s_minirt_args_map
-{
+typedef struct s_minirt_args_parameter_string {
+	char	*key;
+	char	*value;
+}	t_minirt_args_parameter_string;
+
+typedef struct s_minirt_args_parameter_map {
+	char					*key;
 	t_minirt_args_map_entry	*entries;
 	size_t					entry_count;
-}	t_minirt_args_map;
+}	t_minirt_args_parameter_map;
 
-typedef union u_minirt_args_value {
-	char				*string;
-	t_minirt_args_map	*map;
-	char				**set;
-	bool				boolean;
-}	t_minirt_args_value;
-
-typedef struct s_minirt_args_parameter {
-	char				*key;
-	t_minirt_args_value	value;
-}	t_minirt_args_parameter;
+typedef struct s_minirt_args_parameter_set {
+	char	*key;
+	char	**values;
+}	t_minirt_args_parameter_set;
 
 typedef struct s_minirt_args
 {
-	char					**args;
-	t_minirt_args_parameter	*parameters;
+	char							**args;
+	t_minirt_args_parameter_string	*string;
+	size_t							string_count;
+	t_minirt_args_parameter_map		*map;
+	size_t							map_count;
+	t_minirt_args_parameter_set		*set;
+	size_t							set_count;
+	char							**boolean;
 }	t_minirt_args;
 
 typedef enum e_minirt_args_options_duplicate_parameter_string

@@ -14,30 +14,39 @@
 
 #include "minirt/common/array_builder.h"
 
+static t_err	init_others(t_minirt_args_state *self)
+{
+	self->args = minirt_array_builder_new(sizeof(char *));
+	if (!self->args)
+		return (true);
+	self->params_string = minirt_array_builder_new(
+			sizeof(t_minirt_args_parameter_string));
+	if (!self->params_string)
+		return (true);
+	self->params_map = minirt_array_builder_new(
+			sizeof(t_minirt_args_parameter_map_builder));
+	if (!self->params_map)
+		return (true);
+	self->params_set = minirt_array_builder_new(
+			sizeof(t_minirt_args_parameter_set_builder));
+	if (!self->params_set)
+		return (true);
+	self->params_boolean
+		= minirt_array_builder_new(sizeof(char *));
+	if (!self->params_boolean)
+		return (true);
+	return (false);
+}
+
 t_err	minirt_args_state_init(t_minirt_args_state *self)
 {
 	self->state_type = MINIRT_ARGS_STATE_ANYTHING;
 	self->state_value = NULL;
+	self->args = NULL;
+	self->params_string = NULL;
 	self->params_map = NULL;
 	self->params_set = NULL;
 	self->params_boolean = NULL;
-	self->args = NULL;
 	self->error.type = MINIRT_ARGS_ERROR_MALLOC_FAILURE;
-	self->params_string = minirt_array_builder_new(sizeof(t_minirt_args_value));
-	if (!self->params_string)
-		return (true);
-	self->params_map = minirt_array_builder_new(sizeof(t_minirt_args_value));
-	if (!self->params_map)
-		return (true);
-	self->params_set = minirt_array_builder_new(sizeof(t_minirt_args_value));
-	if (!self->params_set)
-		return (true);
-	self->params_boolean
-		= minirt_array_builder_new(sizeof(t_minirt_args_value));
-	if (!self->params_boolean)
-		return (true);
-	self->args = minirt_array_builder_new(sizeof(t_minirt_args_value));
-	if (!self->args)
-		return (true);
-	return (false);
+	return (init_others(self));
 }

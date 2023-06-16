@@ -53,6 +53,7 @@ t_err	minirt_args_next_entry(
 	if (!has_eq && !option->allow_null)
 	{
 		mut_state->state_type = MINIRT_ARGS_STATE_ERROR;
+		free(mut_state->state_value);
 		mut_state->error.type = MINIRT_ARGS_ERROR_MISSING_VALUE_MAP;
 		mut_state->error.value.missing_value_map.option = option;
 		return (false);
