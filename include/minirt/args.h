@@ -18,40 +18,6 @@
 
 # include "minirt/base_types.h"
 
-typedef struct s_minirt_args_map_entry
-{
-	char	*key;
-	char	*value;
-}	t_minirt_args_map_entry;
-
-typedef struct s_minirt_args_parameter_string {
-	char	*key;
-	char	*value;
-}	t_minirt_args_parameter_string;
-
-typedef struct s_minirt_args_parameter_map {
-	char					*key;
-	t_minirt_args_map_entry	*entries;
-	size_t					entry_count;
-}	t_minirt_args_parameter_map;
-
-typedef struct s_minirt_args_parameter_set {
-	char	*key;
-	char	**values;
-}	t_minirt_args_parameter_set;
-
-typedef struct s_minirt_args
-{
-	char							**args;
-	t_minirt_args_parameter_string	*string;
-	size_t							string_count;
-	t_minirt_args_parameter_map		*map;
-	size_t							map_count;
-	t_minirt_args_parameter_set		*set;
-	size_t							set_count;
-	char							**boolean;
-}	t_minirt_args;
-
 typedef enum e_minirt_args_options_duplicate_parameter_string
 {
 	MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_STRING_ERROR,
@@ -130,6 +96,47 @@ typedef struct s_minirt_args_options
 	size_t									boolean_parameter_count;
 	t_minirt_args_options_unknown_parameter	unknown_parameter;
 }	t_minirt_args_options;
+
+typedef struct s_minirt_args_parameter_string {
+	t_minirt_args_options_string	*option;
+	char							*value;
+}	t_minirt_args_parameter_string;
+
+typedef struct s_minirt_args_map_entry
+{
+	char	*key;
+	char	*value;
+}	t_minirt_args_map_entry;
+
+typedef struct s_minirt_args_parameter_map {
+	t_minirt_args_options_map	*option;
+	t_minirt_args_map_entry		*entries;
+	size_t						entry_count;
+}	t_minirt_args_parameter_map;
+
+typedef struct s_minirt_args_parameter_set {
+	t_minirt_args_options_set	*option;
+	char						**values;
+	size_t						value_count;
+}	t_minirt_args_parameter_set;
+
+typedef struct s_minirt_args_parameter_boolean {
+	t_minirt_args_options_boolean	*option;
+	bool							value;
+}	t_minirt_args_parameter_boolean;
+
+typedef struct s_minirt_args
+{
+	char							**args;
+	t_minirt_args_parameter_string	*string;
+	size_t							string_count;
+	t_minirt_args_parameter_map		*map;
+	size_t							map_count;
+	t_minirt_args_parameter_set		*set;
+	size_t							set_count;
+	t_minirt_args_parameter_boolean	*boolean;
+	size_t							boolean_count;
+}	t_minirt_args;
 
 typedef enum e_minirt_args_error_type
 {

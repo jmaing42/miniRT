@@ -18,7 +18,6 @@
 
 void	minirt_args_state_deinit(t_minirt_args_state *self)
 {
-	free(self->state_value);
 	minirt_array_builder_free(self->params_string);
 	minirt_array_builder_free(self->params_map);
 	minirt_array_builder_free(self->params_set);

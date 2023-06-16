@@ -18,7 +18,7 @@
 t_err	minirt_args_next_args(
 	t_minirt_args_state *mut_state,
 	t_minirt_args_options *options,
-	char *arg
+	const char *arg
 )
 {
 	char	*value;

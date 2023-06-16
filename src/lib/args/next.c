@@ -15,7 +15,7 @@
 t_err	minirt_args_next(
 	t_minirt_args_state *mut_state,
 	t_minirt_args_options *options,
-	char *arg
+	const char *arg
 )
 {
 	if (mut_state->state_type == MINIRT_ARGS_STATE_ANYTHING)

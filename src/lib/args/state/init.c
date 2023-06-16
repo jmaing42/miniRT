@@ -41,7 +41,6 @@ static t_err	init_others(t_minirt_args_state *self)
 t_err	minirt_args_state_init(t_minirt_args_state *self)
 {
 	self->state_type = MINIRT_ARGS_STATE_ANYTHING;
-	self->state_value = NULL;
 	self->args = NULL;
 	self->params_string = NULL;
 	self->params_map = NULL;

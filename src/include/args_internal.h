@@ -28,19 +28,27 @@ typedef enum e_minirt_args_state_type
 }	t_minirt_args_state_type;
 
 typedef struct s_minirt_args_parameter_map_builder {
-	char					*parameter_name;
-	t_minirt_array_builder	*builder;
+	t_minirt_args_options_map	*option;
+	t_minirt_array_builder		*builder;
 }	t_minirt_args_parameter_map_builder;
 
 typedef struct s_minirt_args_parameter_set_builder {
-	char					*parameter_name;
-	t_minirt_array_builder	*builder;
+	t_minirt_args_options_set	*option;
+	t_minirt_array_builder		*builder;
 }	t_minirt_args_parameter_set_builder;
+
+typedef union u_minirt_args_state_value
+{
+	t_minirt_args_options_string	*string;
+	t_minirt_args_options_map		*map;
+	t_minirt_args_options_set		*set;
+	t_minirt_args_options_boolean	*boolean;
+}	t_minirt_args_state_value;
 
 typedef struct s_minirt_args_state
 {
 	t_minirt_args_state_type	state_type;
-	char						*state_value;
+	t_minirt_args_state_value	state_value;
 	t_minirt_array_builder		*args;
 	t_minirt_array_builder		*params_string;
 	t_minirt_array_builder		*params_map;
@@ -61,27 +69,27 @@ t_err	minirt_args_malloc_error(
 t_err	minirt_args_next(
 			t_minirt_args_state *mut_state,
 			t_minirt_args_options *options,
-			char *arg);
+			const char *arg);
 t_err	minirt_args_next_anything(
 			t_minirt_args_state *mut_state,
 			t_minirt_args_options *options,
-			char *arg);
+			const char *arg);
 t_err	minirt_args_next_string(
 			t_minirt_args_state *mut_state,
 			t_minirt_args_options *options,
-			char *arg);
+			const char *arg);
 t_err	minirt_args_next_entry(
 			t_minirt_args_state *mut_state,
 			t_minirt_args_options *options,
-			char *arg);
+			const char *arg);
 t_err	minirt_args_next_value(
 			t_minirt_args_state *mut_state,
 			t_minirt_args_options *options,
-			char *arg);
+			const char *arg);
 t_err	minirt_args_next_args(
 			t_minirt_args_state *mut_state,
 			t_minirt_args_options *options,
-			char *arg);
+			const char *arg);
 
 t_err	minirt_args_finalize(
 			t_minirt_args_state *mut_state,
@@ -91,26 +99,12 @@ t_err	minirt_args_error(
 			t_minirt_args_state *mut_state,
 			t_minirt_args_result *out);
 
-bool	minirt_args_option_string(
-			t_minirt_args_options *options,
-			const char *name,
-			t_minirt_args_options_string **out);
-bool	minirt_args_option_map(
-			t_minirt_args_options *options,
-			const char *name,
-			t_minirt_args_options_map **out);
-bool	minirt_args_option_set(
-			t_minirt_args_options *options,
-			const char *name,
-			t_minirt_args_options_set **out);
-bool	minirt_args_option_boolean(
-			t_minirt_args_options *options,
-			const char *name,
-			t_minirt_args_options_boolean **out);
-
 t_err	minirt_args_add_map(
 			t_minirt_args_state *mut_state,
-			t_minirt_args_options_map *option,
+			char *key,
+			char *value);
+t_err	minirt_args_add_map_error_duplicate_key(
+			t_minirt_args_state *mut_state,
 			char *key,
 			char *value);
 
