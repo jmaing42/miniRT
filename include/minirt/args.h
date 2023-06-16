@@ -240,7 +240,8 @@ char	*minirt_args_map_get(
 			const char *key);
 bool	minirt_args_get_boolean(
 			t_minirt_args *self,
-			const char *name);
+			const char *name,
+			bool *out);
 t_err	minirt_args_set_foreach(
 			t_minirt_args *self,
 			const char *name,

@@ -12,12 +12,24 @@
 
 #include "args_internal.h"
 
-t_err	minirt_args_next_args(
+#include <stdlib.h>
+
+#include "minirt/common/libc.h"
+#include "minirt/common/array_builder.h"
+
+t_err	minirt_args_add_arg(
 	t_minirt_args_state *mut_state,
-	t_minirt_args_options *options,
 	const char *arg
 )
 {
-	(void)options;
-	return (minirt_args_add_arg(mut_state, arg));
+	char	*str;
+
+	if (minirt_strdup(arg, &str))
+		return (true);
+	if (minirt_array_builder_append(mut_state->args, 1, &str))
+	{
+		free(str);
+		return (true);
+	}
+	return (false);
 }
