@@ -13,7 +13,7 @@
 #ifndef BMP_INTERNAL_H
 # define BMP_INTERNAL_H
 
-# include "minirt/bmp/bmp_types.h"
+# include "minirt/bmp.h"
 
 typedef void	(*t_minirt_bmp_new_fill)(
 					void *context,

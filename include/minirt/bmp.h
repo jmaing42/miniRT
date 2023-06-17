@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fake_file_name (file name is useless too)          :+:      :+:    :+:   */
+/*   bmp.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42header-remover <whatever@example.com>    +#+  +:+       +#+        */
+/*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:00 by file history     ###   ########.fr       */
+/*   Updated: 2023/06/17 19:49:41 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,23 @@
 # define BMP_H
 
 # include <stddef.h>
+# include <stdint.h>
 
 # include "minirt/base_types.h"
-# include "./bmp_types.h"
+
+typedef struct s_minirt_bmp_pixel
+{
+	uint8_t	r;
+	uint8_t	g;
+	uint8_t	b;
+}	t_minirt_bmp_pixel;
+
+typedef struct s_minirt_bmp
+{
+	size_t				width;
+	size_t				height;
+	t_minirt_bmp_pixel	extra[];
+}	t_minirt_bmp;
 
 /**
  * @brief deserialize buffer into BMP

@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fake_file_name (file name is useless too)          :+:      :+:    :+:   */
+/*   deserialize.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42header-remover <whatever@example.com>    +#+  +:+       +#+        */
+/*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:00 by file history     ###   ########.fr       */
+/*   Updated: 2023/06/17 19:57:25 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minirt/bmp/bmp.h"
+#include "minirt/bmp.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -31,7 +31,7 @@ typedef struct s_context
 	const uint8_t	*str;
 }	t_context;
 
-static uint16_t	le_u16(uint16_t u16)
+static uint16_t	u16_to_le(uint16_t u16)
 {
 	const uint16_t		test = 42;
 	const char *const	source = (const char *)&u16;
@@ -45,7 +45,7 @@ static uint16_t	le_u16(uint16_t u16)
 	return (result);
 }
 
-static uint32_t	le_u32(uint32_t u32)
+static uint32_t	u32_to_le(uint32_t u32)
 {
 	const uint32_t		test = 42;
 	const char *const	source = (const char *)&u32;
@@ -102,14 +102,14 @@ t_err	minirt_bmp_deserialize(
 	const char *const	str = buffer;
 
 	*out = NULL;
-	if (length <= 54 || str[0] != 'B' || str[1] != 'M' || le_u16(
-			*((uint16_t *)&str[28])) != 24 || le_u32(*(
+	if (length <= 54 || str[0] != 'B' || str[1] != 'M' || u16_to_le(
+			*((uint16_t *)&str[28])) != 24 || u32_to_le(*(
 				(uint32_t *)&str[30])) != 0)
 		return (false);
 	l.offset = *((uint32_t *)&str[10]);
-	l.width = abs_ex((int32_t)le_u32(*((uint32_t *)&str[18])),
+	l.width = abs_ex((int32_t)u32_to_le(*((uint32_t *)&str[18])),
 			&l.reverse_width);
-	l.height = abs_ex((int32_t)le_u32(*((uint32_t *)&str[22])),
+	l.height = abs_ex((int32_t)u32_to_le(*((uint32_t *)&str[22])),
 			&l.reverse_height);
 	l.row_padding = (4 - (l.width * 3) % 4) % 4;
 	l.row_size = l.width * 3 + l.row_padding;
