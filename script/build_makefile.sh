@@ -198,7 +198,7 @@ for MINIRT_PRECISION in 0 1 2; do
 
   printf 'libminirt%s.so: %s\n' ".$MINIRT_PRECISION" "$(find_sources lib | sed "s/\$/.$MINIRT_PRECISION.-fPIC.o/" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
-  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp \$<\n"
+  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp \$^\n"
   printf "\tmv \$@.tmp \$@\n"
 
   print_lib args
