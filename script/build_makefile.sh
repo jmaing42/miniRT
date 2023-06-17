@@ -24,11 +24,11 @@ echo 'CPPFLAGS = -I./include -I./src/include'
 
 printf '.PHONY: launch.json\n'
 printf 'launch.json:\n'
-printf "\t(printf '{\\\\n  \"version\": \"0.2.0\",\\\\n  \"configurations\": [\\\\n' && echo \$^ | xargs -n 1 echo | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
+printf "\t(printf '{\\\\n  \"version\": \"0.2.0\",\\\\n  \"configurations\": [\\\\n' && find . -name \"*.launch.json*.part\" | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
 
 printf '.PHONY: tasks.json\n'
 printf 'tasks.json:\n'
-printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && echo \$^ | xargs -n 1 echo | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
+printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && find . -name \"*.tasks.json*.part\" | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
 
 
 # ==============================================================================
@@ -119,7 +119,7 @@ emit_a() {
 
   printf 'libminirt_%s%s.a: %s\n' "$LIB_NAME" "$SUFFIX" "$(list_lib_objs "$LIB_NAME" "$SUFFIX" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
-  printf '\tar cr $@.tmp $^\n'
+  printf '\tar cr $@.tmp %s\n' "$(list_lib_objs "$LIB_NAME" "$SUFFIX" | xargs)"
   printf '\tmv $@.tmp $@\n'
 }
 
@@ -198,7 +198,7 @@ for MINIRT_PRECISION in 0 1 2; do
 
   printf 'libminirt%s.so: %s\n' ".$MINIRT_PRECISION" "$(find_sources lib | sed "s/\$/.$MINIRT_PRECISION.-fPIC.o/" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
-  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp \$^\n"
+  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp %s\n" "$(find_sources lib | sed "s/\$/.$MINIRT_PRECISION.-fPIC.o/" | xargs)"
   printf "\tmv \$@.tmp \$@\n"
 
   print_lib args
