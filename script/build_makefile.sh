@@ -137,7 +137,7 @@ emit_exe() {
 
   printf '%s%s.exe: %s\n' "$EXE_NAME" "$SUFFIX" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | xargs) $(libs_to_filenames "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
-  printf "\t(cd .. && \$(CC) \$(LDFLAGS) -L build %s %s -o build/\$@.tmp %s)\n" "$(libs_to_ldlibs "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)" "$EXTRA_FLAGS" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | sed s#^#build/# | xargs)"
+  printf "\t(cd .. && \$(CC) %s \$(LDFLAGS) -L build %s %s -o build/\$@.tmp)\n" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | sed s#^#build/# | xargs)" "$(libs_to_ldlibs "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)" "$EXTRA_FLAGS"
   printf '\tmv $@.tmp $@\n'
 
   if [ "$EMIT_VSCODE_SETTINGS" = "1" ]; then

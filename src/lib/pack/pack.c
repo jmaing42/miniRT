@@ -68,11 +68,13 @@ t_err	minirt_pack(
 	t_minirt_pack **out
 )
 {
-	t_minirt_pack *const	result
-		= malloc(sizeof(t_minirt_pack) + size(files, file_count));
+	const size_t			malloc_size
+		= sizeof(t_minirt_pack) + size(files, file_count);
+	t_minirt_pack *const	result = malloc(malloc_size);
 
 	if (!result)
 		return (true);
+	result->size = malloc_size;
 	fill(files, file_count, result->array);
 	*out = result;
 	return (false);

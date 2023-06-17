@@ -27,6 +27,7 @@ typedef struct s_minirt_pack_node
 
 typedef struct s_minirt_pack
 {
+	size_t			size;
 	size_t			node_count;
 	unsigned char	array[];
 }	t_minirt_pack;
@@ -45,9 +46,9 @@ bool	minirt_pack_get(
 
 typedef struct s_minirt_pack_in
 {
-	char	*name;
-	void	*content;
-	size_t	content_length;
+	const char	*name;
+	void		*content;
+	size_t		content_length;
 }	t_minirt_pack_in;
 
 t_err	minirt_pack(

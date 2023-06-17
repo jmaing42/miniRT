@@ -20,6 +20,7 @@ t_err	minirt_args_malloc_error(
 )
 {
 	minirt_args_state_deinit(state);
-	out->error.type = MINIRT_ARGS_ERROR_MALLOC_FAILURE;
+	out->type = MINIRT_ARGS_RESULT_ERROR;
+	out->value.error.type = MINIRT_ARGS_ERROR_MALLOC_FAILURE;
 	return (true);
 }

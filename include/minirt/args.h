@@ -137,6 +137,7 @@ typedef struct s_minirt_args_parameter_boolean {
 typedef struct s_minirt_args
 {
 	char							**args;
+	size_t							arg_count;
 	t_minirt_args_parameter_string	*string;
 	size_t							string_count;
 	t_minirt_args_parameter_map		*map;
@@ -228,10 +229,22 @@ typedef struct s_minirt_args_error
 	t_minirt_args_error_value	value;
 }	t_minirt_args_error;
 
-typedef union s_minirt_args_result
+typedef enum e_minirt_args_result_type
+{
+	MINIRT_ARGS_RESULT_OK,
+	MINIRT_ARGS_RESULT_ERROR,
+}	t_minirt_args_result_type;
+
+typedef union u_minirt_args_result_value
 {
 	t_minirt_args		ok;
 	t_minirt_args_error	error;
+}	t_minirt_args_result_value;
+
+typedef struct s_minirt_args_result
+{
+	t_minirt_args_result_type	type;
+	t_minirt_args_result_value	value;
 }	t_minirt_args_result;
 
 /**
@@ -260,7 +273,8 @@ void	minirt_args_free(
 void	minirt_args_free_error(
 			t_minirt_args_error *error);
 char	*minirt_args_get_string(
-			t_minirt_args *self);
+			t_minirt_args *self,
+			const char *name);
 bool	minirt_args_set_has(
 			t_minirt_args *self,
 			const char *name,
