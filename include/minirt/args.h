@@ -84,28 +84,37 @@ typedef enum e_minirt_args_options_unknown_parameter
 	MINIRT_ARGS_OPTIONS_UNKNOWN_PARAMETER_AS_ARGS,
 }	t_minirt_args_options_unknown_parameter;
 
+typedef enum e_minirt_args_options_malformed_parameter
+{
+	MINIRT_ARGS_OPTIONS_MALFORMED_PARAMETER_ERROR,
+	MINIRT_ARGS_OPTIONS_MALFORMED_PARAMETER_IGNORE,
+	MINIRT_ARGS_OPTIONS_MALFORMED_PARAMETER_AS_ARGS,
+}	t_minirt_args_options_malformed_parameter;
+
 typedef struct s_minirt_args_options
 {
-	const t_minirt_args_options_string		*string_parameters;
-	size_t									string_parameter_count;
-	const t_minirt_args_options_map			*map_parameters;
-	size_t									map_parameter_count;
-	const t_minirt_args_options_set			*set_parameters;
-	size_t									set_parameter_count;
-	const t_minirt_args_options_string		*boolean_parameters;
-	size_t									boolean_parameter_count;
-	t_minirt_args_options_unknown_parameter	unknown_parameter;
+	const t_minirt_args_options_string			*string_parameters;
+	size_t										string_parameter_count;
+	const t_minirt_args_options_map				*map_parameters;
+	size_t										map_parameter_count;
+	const t_minirt_args_options_set				*set_parameters;
+	size_t										set_parameter_count;
+	const t_minirt_args_options_string			*boolean_parameters;
+	size_t										boolean_parameter_count;
+	t_minirt_args_options_unknown_parameter		unknown_parameter;
+	t_minirt_args_options_malformed_parameter	malformed_parameter;
+	bool										has_subcommand;
 }	t_minirt_args_options;
 
 typedef struct s_minirt_args_parameter_string {
 	t_minirt_args_options_string	*option;
-	char							*value;
+	const char						*value;
 }	t_minirt_args_parameter_string;
 
 typedef struct s_minirt_args_map_entry
 {
-	char	*key;
-	char	*value;
+	char		*key;
+	const char	*value;
 }	t_minirt_args_map_entry;
 
 typedef struct s_minirt_args_parameter_map {
@@ -116,7 +125,7 @@ typedef struct s_minirt_args_parameter_map {
 
 typedef struct s_minirt_args_parameter_set {
 	t_minirt_args_options_set	*option;
-	char						**values;
+	const char					**values;
 	size_t						value_count;
 }	t_minirt_args_parameter_set;
 
@@ -142,6 +151,7 @@ typedef enum e_minirt_args_error_type
 {
 	MINIRT_ARGS_ERROR_MALLOC_FAILURE,
 	MINIRT_ARGS_ERROR_UNKNOWN_PARAMETER,
+	MINIRT_ARGS_ERROR_MALFORMED_PARAMETER,
 	MINIRT_ARGS_ERROR_MISSING_ENTRY,
 	MINIRT_ARGS_ERROR_MISSING_VALUE_MAP,
 	MINIRT_ARGS_ERROR_MISSING_VALUE_SET,
@@ -153,8 +163,13 @@ typedef enum e_minirt_args_error_type
 
 typedef struct s_minirt_args_error_unknown_parameter
 {
-	char	*parameter_name;
+	const char	*arg;
 }	t_minirt_args_error_unknown_parameter;
+
+typedef struct s_minirt_args_error_malformed_parameter
+{
+	const char	*arg;
+}	t_minirt_args_error_malformed_parameter;
 
 typedef struct s_minirt_args_error_missing_entry
 {
@@ -186,7 +201,7 @@ typedef struct s_minirt_args_error_duplicate_key
 typedef struct s_minirt_args_error_duplicate_value
 {
 	t_minirt_args_options_set	*option;
-	char						*value;
+	const char					*value;
 }	t_minirt_args_error_duplicate_value;
 
 typedef struct s_minirt_args_error_duplicate_parameter_boolean
@@ -197,6 +212,7 @@ typedef struct s_minirt_args_error_duplicate_parameter_boolean
 typedef union u_minirt_args_error_value
 {
 	t_minirt_args_error_unknown_parameter			unknown_parameter;
+	t_minirt_args_error_malformed_parameter			malformed_parameter;
 	t_minirt_args_error_missing_entry				missing_entry;
 	t_minirt_args_error_missing_value_map			missing_value_map;
 	t_minirt_args_error_missing_value_set			missing_value_set;
@@ -218,6 +234,21 @@ typedef union s_minirt_args_result
 	t_minirt_args_error	error;
 }	t_minirt_args_result;
 
+/**
+ * @brief parse args
+ *
+ *  parameter has 4 types: string, map, set, boolean
+ *  string: "--name" "VALUE" or "--name=VALUE" or "-n" "VALUE" or "-nVALUE"
+ *  map: "--name" "KEY=VALUE" or "-n" "KEY=VALUE" or "-nKEY=VALUE"
+ *  set: "--name" "VALUE" or "-n" "VALUE" or "-nVALUE"
+ *  boolean: "--name" or "-n" or "--name=0"(1/0/true/false) or "-nm"("-n" "-m")
+ *
+ * @param argc first parameter from main
+ * @param argv second parameter from main
+ * @param options
+ * @param out union ok or error, depends on return value
+ * @return t_err true on error, false on success
+ */
 t_err	minirt_args(
 			unsigned int argc,
 			char **argv,

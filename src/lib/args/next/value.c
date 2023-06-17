@@ -63,14 +63,11 @@ static bool	has(
 static t_err	append(
 	t_minirt_args_state *mut_state,
 	t_minirt_array_builder *builder,
-	char *value
+	const char *value
 )
 {
 	if (minirt_array_builder_append(builder, 1, &value))
-	{
-		free(value);
 		return (true);
-	}
 	mut_state->state_type = MINIRT_ARGS_STATE_ANYTHING;
 	return (false);
 }
@@ -86,18 +83,15 @@ t_err	minirt_args_next_value(
 		= get_or_create_entry_builder(mut_state, o);
 	const bool									duplicate
 		= has(entry_builder->builder, arg);
-	char										*value;
 
 	(void)options;
-	if (minirt_strdup(arg, &value))
-		return (true);
 	if (duplicate
 		&& o->on_duplicate == MINIRT_ARGS_OPTIONS_DUPLICATE_VALUE_ERROR)
 	{
 		mut_state->state_type = MINIRT_ARGS_STATE_ERROR;
 		mut_state->error.type = MINIRT_ARGS_ERROR_DUPLICATE_VALUE;
 		mut_state->error.value.duplicate_value.option = o;
-		mut_state->error.value.duplicate_value.value = value;
+		mut_state->error.value.duplicate_value.value = arg;
 	}
-	return (append(mut_state, entry_builder->builder, value));
+	return (append(mut_state, entry_builder->builder, arg));
 }

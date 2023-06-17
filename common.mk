@@ -2,6 +2,12 @@ TARGET = \
 	minirt.0.exe \
 	minirt.1.exe \
 	minirt.2.exe \
+	minirt_validate.0.exe \
+	minirt_validate.1.exe \
+	minirt_validate.2.exe \
+	pack.0.exe \
+	pack.1.exe \
+	pack.2.exe \
 	libminirt.0.so \
 	libminirt.1.so \
 	libminirt.2.so \
@@ -28,9 +34,6 @@ EXTRA_TARGET = \
 	libminirt_scene.0.a \
 	libminirt_scene.1.a \
 	libminirt_scene.2.a \
-	minirt_validate.0.exe \
-	minirt_validate.1.exe \
-	minirt_validate.2.exe \
 
 DEBUG_TARGET = \
 	minirt.0.debug.exe \
@@ -45,6 +48,12 @@ DEBUG_TARGET = \
 	minirt_validate.0.debug.address.exe \
 	minirt_validate.1.debug.address.exe \
 	minirt_validate.2.debug.address.exe \
+	pack.0.debug.exe \
+	pack.1.debug.exe \
+	pack.2.debug.exe \
+	pack.0.debug.address.exe \
+	pack.1.debug.address.exe \
+	pack.2.debug.address.exe \
 
 EVERYTHING = $(TARGET) $(EXTRA_TARGET) $(DEBUG_TARGET)
 

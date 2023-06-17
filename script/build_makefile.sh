@@ -24,11 +24,11 @@ echo 'CPPFLAGS = -I./include -I./src/include'
 
 printf '.PHONY: launch.json\n'
 printf 'launch.json:\n'
-printf "\t(printf '{\\\\n  \"version\": \"0.2.0\",\\\\n  \"configurations\": [\\\\n' && echo \$^ | xargs -n 1 echo | sort | xargs cat && echo '  ],\\\\n}\\\\n') > \$@\n"
+printf "\t(printf '{\\\\n  \"version\": \"0.2.0\",\\\\n  \"configurations\": [\\\\n' && echo \$^ | xargs -n 1 echo | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
 
 printf '.PHONY: tasks.json\n'
 printf 'tasks.json:\n'
-printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && echo \$^ | xargs -n 1 echo | sort | xargs cat && echo '  ],\\\\n}\\\\n') > \$@\n"
+printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && echo \$^ | xargs -n 1 echo | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
 
 
 # ==============================================================================

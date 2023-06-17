@@ -63,15 +63,16 @@ static t_err	add_entry(
 	t_minirt_args_state *mut_state,
 	t_minirt_args_parameter_map_builder *entry_builder,
 	char *key,
-	char *value
+	const char *value
 )
 {
 	t_minirt_args_map_entry	new_entry;
 
+	new_entry.key = key;
+	new_entry.value = value;
 	if (minirt_array_builder_append(entry_builder->builder, 1, &new_entry))
 	{
 		free(key);
-		free(value);
 		return (true);
 	}
 	else
@@ -84,19 +85,12 @@ static t_err	add_entry(
 static t_err	replace_entry(
 	t_minirt_args_state *mut_state,
 	t_minirt_args_map_entry *entry,
-	char *value,
+	const char *value,
 	bool need_replace
 )
 {
 	if (need_replace)
-	{
-		free(entry->value);
 		entry->value = value;
-	}
-	else
-	{
-		free(value);
-	}
 	mut_state->state_type = MINIRT_ARGS_STATE_ANYTHING;
 	return (false);
 }
@@ -104,7 +98,7 @@ static t_err	replace_entry(
 t_err	minirt_args_add_map(
 	t_minirt_args_state *mut_state,
 	char *key,
-	char *value
+	const char *value
 )
 {
 	t_minirt_args_options_map *const			o = mut_state->state_value.map;
@@ -115,17 +109,17 @@ t_err	minirt_args_add_map(
 	if (!entry_builder)
 	{
 		free(key);
-		free(value);
 		return (true);
 	}
 	entry = get_entry(entry_builder->builder, key);
 	if ((entry && o->on_duplicate == MINIRT_ARGS_OPTIONS_DUPLICATE_KEY_ERROR)
 		|| (entry && !minirt_str_eq(value, entry->value) && o
 			->on_duplicate == MINIRT_ARGS_OPTIONS_DUPLICATE_KEY_IGNORE_IF_SAME))
-		return (minirt_args_add_map_error_duplicate_key(mut_state, key, value));
+		return (minirt_args_add_map_error_duplicate_key(mut_state, key));
 	if (!entry)
 		return (add_entry(mut_state, entry_builder, key, value));
-	return (replace_entry(
+	return (
+		replace_entry(
 			mut_state,
 			entry,
 			value,

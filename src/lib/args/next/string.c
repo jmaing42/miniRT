@@ -36,14 +36,10 @@ static t_err	append(t_minirt_args_state *mut_state, const char *value)
 {
 	t_minirt_args_parameter_string		new_entry;
 
-	if (minirt_strdup(value, &new_entry.value))
-		return (true);
 	new_entry.option = mut_state->state_value.string;
+	new_entry.value = value;
 	if (minirt_array_builder_append(mut_state->params_string, 1, &new_entry))
-	{
-		free(new_entry.value);
 		return (true);
-	}
 	mut_state->state_type = MINIRT_ARGS_STATE_ANYTHING;
 	return (false);
 }
@@ -55,15 +51,8 @@ static t_err	replace(
 	bool need_replace
 )
 {
-	char	*new_value;
-
 	if (need_replace)
-	{
-		if (minirt_strdup(value, &new_value))
-			return (true);
-		free(entry->value);
-		entry->value = new_value;
-	}
+		entry->value = value;
 	mut_state->state_type = MINIRT_ARGS_STATE_ANYTHING;
 	return (false);
 }

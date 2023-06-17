@@ -16,11 +16,9 @@
 
 t_err	minirt_args_add_map_error_duplicate_key(
 	t_minirt_args_state *mut_state,
-	char *key,
-	char *value
+	char *key
 )
 {
-	free(value);
 	mut_state->state_type = MINIRT_ARGS_STATE_ERROR;
 	mut_state->error.type = MINIRT_ARGS_ERROR_DUPLICATE_KEY;
 	mut_state->error.value.duplicate_key.option = mut_state->state_value.map;

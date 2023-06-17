@@ -18,8 +18,6 @@
 
 void	minirt_args_free_error(t_minirt_args_error *error)
 {
-	if (error->type == MINIRT_ARGS_ERROR_UNKNOWN_PARAMETER)
-		free(error->value.unknown_parameter.parameter_name);
-	else if (error->type == MINIRT_ARGS_ERROR_MISSING_VALUE_MAP)
+	if (error->type == MINIRT_ARGS_ERROR_MISSING_VALUE_MAP)
 		free(error->value.missing_value_map.key);
 }
