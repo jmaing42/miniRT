@@ -12,7 +12,7 @@
 
 #include "minirt/core/minirt_float.h"
 
-t_minirt_float	minirt_sqrt(t_minirt_float f)
+t_minirt_float	minirt_square(t_minirt_float f)
 {
 	return (f * f);
 }

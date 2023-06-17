@@ -12,7 +12,7 @@
 
 #include "minirt/core/math.h"
 
-t_minirt_color	minirt_color_add_hdr(
+t_minirt_color	minirt_color_multiply(
 	t_minirt_color a,
 	t_minirt_color b
 )
