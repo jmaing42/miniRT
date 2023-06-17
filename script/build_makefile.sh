@@ -37,7 +37,7 @@ printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && f
 
 echo ".PHONY: norm"
 
-print_norm() {
+emit_norm() {
   printf "norm: %s.norm\n" "$1"
   printf '%s.norm: %s\n' "$1" "../$2"
   printf '\t(cd .. && norminette %s)\n' "./$2"
@@ -47,12 +47,12 @@ print_norm() {
 
 find ../include -name '*.h' | cut -c 4- | sort | while IFS= read -r FILE
 do
-  print_norm "root/$FILE" "$FILE"
+  emit_norm "root/$FILE" "$FILE"
 done
 
 find ../src -name '*.c' -o -name '*.h' | cut -c 8- | sort | while IFS= read -r FILE
 do
-  print_norm "$FILE" "src/$FILE"
+  emit_norm "$FILE" "src/$FILE"
 done
 
 
