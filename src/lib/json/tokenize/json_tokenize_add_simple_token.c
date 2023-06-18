@@ -14,6 +14,11 @@
 
 #include <stdlib.h>
 
+static void	free_value(t_minirt_json_token token)
+{
+	free(token.number);
+}
+
 t_err	minirt_json_tokenize_add_simple_token(
 	t_minirt_json_token_list *list,
 	t_minirt_json_token_type type
@@ -32,7 +37,7 @@ t_err	minirt_json_tokenize_add_simple_token(
 	}
 	*token = type;
 	node->next = NULL;
-	node->free_value = *((void (**)(t_minirt_json_token))(&free));
+	node->free_value = free_value;
 	node->value.type = token;
 	if (list->head)
 		list->tail->next = node;
