@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 project(miniRT C)
 
 set(CMAKE_C_STANDARD 99)
@@ -12,6 +12,9 @@ endif()
 
 include_directories(include)
 include_directories(src/include)
+
+file(GLOB_RECURSE SRC_LIB "src/lib/*.c")
+add_library(minirt.${MINIRT_PRECISION} ${SRC_LIB})
 
 file(GLOB_RECURSE SRC_LIB_COMMON "src/lib/common/*.c")
 file(GLOB_RECURSE SRC_EXE_PACK "src/exe/pack/*.c")
