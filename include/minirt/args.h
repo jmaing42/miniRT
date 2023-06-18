@@ -262,40 +262,42 @@ typedef struct s_minirt_args_result
  * @param out union ok or error, depends on return value
  * @return t_err true on error, false on success
  */
-t_err	minirt_args(
-			unsigned int argc,
-			char **argv,
-			t_minirt_args_options options,
-			t_minirt_args_result *out);
+t_err		minirt_args(
+				unsigned int argc,
+				char **argv,
+				t_minirt_args_options options,
+				t_minirt_args_result *out);
 
-void	minirt_args_free(
-			t_minirt_args *self);
-void	minirt_args_free_error(
-			t_minirt_args_error *error);
-char	*minirt_args_get_string(
-			t_minirt_args *self,
-			const char *name);
-bool	minirt_args_set_has(
-			t_minirt_args *self,
-			const char *name,
-			const char *value);
-char	*minirt_args_map_get(
-			t_minirt_args *self,
-			const char *name,
-			const char *key);
-bool	minirt_args_get_boolean(
-			t_minirt_args *self,
-			const char *name,
-			bool *out);
-t_err	minirt_args_set_foreach(
-			t_minirt_args *self,
-			const char *name,
-			void *context,
-			t_err (*func)(void *context, char *value));
-t_err	minirt_args_map_foreach(
-			t_minirt_args *self,
-			const char *name,
-			void *context,
-			t_err (*func)(void *context, char *key, char *value));
+void		minirt_args_free(
+				t_minirt_args *self);
+void		minirt_args_free_error(
+				t_minirt_args_error *error);
+void		minirt_args_free_result(
+				t_minirt_args_result *value);
+const char	*minirt_args_get_string(
+				t_minirt_args *self,
+				const char *name);
+bool		minirt_args_set_has(
+				t_minirt_args *self,
+				const char *name,
+				const char *value);
+const char	*minirt_args_map_get(
+				t_minirt_args *self,
+				const char *name,
+				const char *key);
+bool		minirt_args_get_boolean(
+				t_minirt_args *self,
+				const char *name,
+				bool *out);
+t_err		minirt_args_set_foreach(
+				t_minirt_args *self,
+				const char *name,
+				void *context,
+				t_err (*func)(void *context, const char *value));
+t_err		minirt_args_map_foreach(
+				t_minirt_args *self,
+				const char *name,
+				void *context,
+				t_err (*func)(void *context, char *key, const char *value));
 
 #endif
