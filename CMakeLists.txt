@@ -13,8 +13,10 @@ endif()
 include_directories(include)
 include_directories(src/include)
 
+
 file(GLOB_RECURSE SRC_LIB "src/lib/*.c")
 add_library(minirt.${MINIRT_PRECISION} ${SRC_LIB})
+
 
 file(GLOB_RECURSE SRC_LIB_ARGS "src/lib/args/*.c")
 file(GLOB_RECURSE SRC_LIB_BMP "src/lib/bmp/*.c")
@@ -29,6 +31,7 @@ file(GLOB_RECURSE SRC_LIB_SCENE "src/lib/scene/*.c")
 file(GLOB_RECURSE SRC_EXE_MINIRT "src/exe/minirt/*.c")
 file(GLOB_RECURSE SRC_EXE_MINIRT_VALIDATE "src/exe/minirt_validate/*.c")
 file(GLOB_RECURSE SRC_EXE_PACK "src/exe/pack/*.c")
+
 
 foreach(MINIRT_PRECISION 0 1 2)
 
