@@ -1,9 +1,11 @@
--include targets.mk
-
 TARGET = \
 	out/exe/minirt.0.exe \
 	out/exe/minirt.1.exe \
 	out/exe/minirt.2.exe \
+
+EVERYTHING = $(TARGET)
+
+-include targets.mk
 
 all: $(TARGET)
 .PHONY: all
