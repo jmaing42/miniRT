@@ -23,7 +23,7 @@ clean:
 
 .PHONY: fclean
 fclean: clean
-	rm -rf out .vscode/launch.json .vscode/tasks.json
+	rm -rf out .vscode/launch.json .vscode/tasks.json targets.mk
 
 .PHONY: re
 re:
