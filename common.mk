@@ -11,6 +11,12 @@ TARGET = \
 	out/so/libminirt.0.so \
 	out/so/libminirt.1.so \
 	out/so/libminirt.2.so \
+	out/so/libminirt_plugin_portal.0.so \
+	out/so/libminirt_plugin_portal.1.so \
+	out/so/libminirt_plugin_portal.2.so \
+	out/so/libminirt_plugin_rtinrt.0.so \
+	out/so/libminirt_plugin_rtinrt.1.so \
+	out/so/libminirt_plugin_rtinrt.2.so \
 
 EXTRA_TARGET = \
 	out/a/libminirt_bmp.0.a \
@@ -60,6 +66,18 @@ DEBUG_TARGET = \
 	out/so/libminirt.0.debug.address.so \
 	out/so/libminirt.1.debug.address.so \
 	out/so/libminirt.2.debug.address.so \
+	out/so/libminirt_plugin_portal.0.debug.so \
+	out/so/libminirt_plugin_portal.1.debug.so \
+	out/so/libminirt_plugin_portal.2.debug.so \
+	out/so/libminirt_plugin_portal.0.debug.address.so \
+	out/so/libminirt_plugin_portal.1.debug.address.so \
+	out/so/libminirt_plugin_portal.2.debug.address.so \
+	out/so/libminirt_plugin_rtinrt.0.debug.so \
+	out/so/libminirt_plugin_rtinrt.1.debug.so \
+	out/so/libminirt_plugin_rtinrt.2.debug.so \
+	out/so/libminirt_plugin_rtinrt.0.debug.address.so \
+	out/so/libminirt_plugin_rtinrt.1.debug.address.so \
+	out/so/libminirt_plugin_rtinrt.2.debug.address.so \
 
 EVERYTHING = $(TARGET) $(EXTRA_TARGET) $(DEBUG_TARGET)
 
