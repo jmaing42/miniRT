@@ -25,16 +25,15 @@ include_directories(src/include)
 option(MINIRT_PRECISION "precision to use in miniRT (valid values: float, double, long double)" "")
 
 if (NOT MINIRT_PRECISION)
-    set(MINIRT_PRECISION_VALUE 1)
+  set(MINIRT_PRECISION_VALUE 1)
 elseif (MINIRT_PRECISION STREQUAL "float")
-    set(MINIRT_PRECISION_VALUE 0)
+  set(MINIRT_PRECISION_VALUE 0)
 elseif (MINIRT_PRECISION STREQUAL "double")
-    set(MINIRT_PRECISION_VALUE 1)
+  set(MINIRT_PRECISION_VALUE 1)
 elseif (MINIRT_PRECISION STREQUAL "long double")
-    set(MINIRT_PRECISION_VALUE 2)
+  set(MINIRT_PRECISION_VALUE 2)
 else()
-    message(FATAL_ERROR MINIRT_PRECISION)
-    message(FATAL_ERROR "Invalid value for MINIRT_PRECISION. Valid values are: float, double, or long double.")
+  message(FATAL_ERROR "Invalid value for MINIRT_PRECISION. Valid values are: float, double, or long double.")
 endif()
 
 add_definitions(-DMINIRT_PRECISION=${MINIRT_PRECISION_VALUE})
@@ -43,6 +42,10 @@ add_definitions(-DMINIRT_PRECISION=${MINIRT_PRECISION_VALUE})
 
 cat ../data/a.properties | while IFS="=" read -r lib_name lib_path;
 do
+  if [ "$lib_path" = "" ]; then
+    lib_path="$lib_name"
+  fi
+
   printf 'file(GLOB_RECURSE SRC_A_%s "src/lib/%s/*.c")\n' "$lib_name" "$lib_path"
   printf 'add_library(a_minirt_%s.${MINIRT_PRECISION_VALUE} STATIC ${SRC_A_%s})\n' "$lib_name" "$lib_name"
   printf 'set_target_properties(a_minirt_%s.${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME "minirt_%s")\n' "$lib_name" "$lib_name"
@@ -51,13 +54,13 @@ done
 cat ../data/so.properties | while IFS="=" read -r lib_name lib_paths;
 do
   FULL_LIB_NAME="minirt_$lib_name"
-  if [ "FULL_LIB_NAME" = "minirt_" ]; then
+  if [ "$FULL_LIB_NAME" = "minirt_" ]; then
     FULL_LIB_NAME="minirt"
   fi
 
   printf 'file(GLOB_RECURSE SRC_SO_%s %s)\n' "$lib_name" "$(echo "$lib_paths" | xargs -n 1 echo | sed 's#^#"src/lib/#' | sed 's#$#/*.c"#' | xargs)"
   printf 'add_library(so_%s.${MINIRT_PRECISION_VALUE} STATIC ${SRC_SO_%s})\n' "$FULL_LIB_NAME" "$lib_name"
-  printf 'set_target_properties(so_%s.${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME "%s")\n' "$FULL_LIB_NAME" "$FULL_LIB_NAME"
+  printf 'set_target_properties(so_%s.${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME "%s.${MINIRT_PRECISION_VALUE}")\n' "$FULL_LIB_NAME" "$FULL_LIB_NAME"
 done
 
 cat ../data/exe.properties | while IFS="=" read -r exe_name dependencies;
