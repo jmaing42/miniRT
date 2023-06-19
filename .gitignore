@@ -3,3 +3,4 @@
 /build
 /out
 targets.mk
+CMakeLists.txt

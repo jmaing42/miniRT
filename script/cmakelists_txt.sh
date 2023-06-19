@@ -22,19 +22,30 @@ include_directories(include)
 include_directories(src/include)
 
 
-file(GLOB_RECURSE SRC_LIB "src/lib/*.c")
-add_library(minirt.${MINIRT_PRECISION} ${SRC_LIB})
+option(MINIRT_PRECISION "precision to use in miniRT (valid values: float, double, long double)" "")
+
+if (NOT MINIRT_PRECISION)
+    set(MINIRT_PRECISION_VALUE 1)
+elseif (MINIRT_PRECISION STREQUAL "float")
+    set(MINIRT_PRECISION_VALUE 0)
+elseif (MINIRT_PRECISION STREQUAL "double")
+    set(MINIRT_PRECISION_VALUE 1)
+elseif (MINIRT_PRECISION STREQUAL "long double")
+    set(MINIRT_PRECISION_VALUE 2)
+else()
+    message(FATAL_ERROR MINIRT_PRECISION)
+    message(FATAL_ERROR "Invalid value for MINIRT_PRECISION. Valid values are: float, double, or long double.")
+endif()
+
+add_definitions(-DMINIRT_PRECISION=${MINIRT_PRECISION_VALUE})
 
 '
 
 cat ../data/a.properties | while IFS="=" read -r lib_name lib_path;
 do
   printf 'file(GLOB_RECURSE SRC_A_%s "src/lib/%s/*.c")\n' "$lib_name" "$lib_path"
-  printf 'foreach(MINIRT_PRECISION 0 1 2)\n'
-  printf '  add_library(a_minirt_%s.${MINIRT_PRECISION} STATIC ${SRC_A_%s})\n' "$lib_name" "$lib_name"
-  printf '  target_compile_definitions(a_minirt_%s.${MINIRT_PRECISION} PUBLIC MINIRT_PRECISION=${MINIRT_PRECISION})\n' "$lib_name"
-  printf '  set_target_properties(a_minirt_%s.${MINIRT_PRECISION} PROPERTIES OUTPUT_NAME "minirt_%s")\n' "$lib_name" "$lib_name"
-  printf 'endforeach()\n'
+  printf 'add_library(a_minirt_%s.${MINIRT_PRECISION_VALUE} STATIC ${SRC_A_%s})\n' "$lib_name" "$lib_name"
+  printf 'set_target_properties(a_minirt_%s.${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME "minirt_%s")\n' "$lib_name" "$lib_name"
 done
 
 cat ../data/so.properties | while IFS="=" read -r lib_name lib_paths;
@@ -45,19 +56,13 @@ do
   fi
 
   printf 'file(GLOB_RECURSE SRC_SO_%s %s)\n' "$lib_name" "$(echo "$lib_paths" | xargs -n 1 echo | sed 's#^#"src/lib/#' | sed 's#$#/*.c"#' | xargs)"
-  printf 'foreach(MINIRT_PRECISION 0 1 2)\n'
-  printf '  add_library(so_%s.${MINIRT_PRECISION} STATIC ${SRC_SO_%s})\n' "$FULL_LIB_NAME" "$lib_name"
-  printf '  target_compile_definitions(so_%s.${MINIRT_PRECISION} PUBLIC MINIRT_PRECISION=${MINIRT_PRECISION})\n' "$FULL_LIB_NAME"
-  printf '  set_target_properties(so_%s.${MINIRT_PRECISION} PROPERTIES OUTPUT_NAME "%s")\n' "$FULL_LIB_NAME" "$FULL_LIB_NAME"
-  printf 'endforeach()\n'
+  printf 'add_library(so_%s.${MINIRT_PRECISION_VALUE} STATIC ${SRC_SO_%s})\n' "$FULL_LIB_NAME" "$lib_name"
+  printf 'set_target_properties(so_%s.${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME "%s")\n' "$FULL_LIB_NAME" "$FULL_LIB_NAME"
 done
 
 cat ../data/exe.properties | while IFS="=" read -r exe_name dependencies;
 do
   printf 'file(GLOB_RECURSE SRC_EXE_%s "src/exe/%s/*.c")\n' "$exe_name" "$exe_name"
-  printf 'foreach(MINIRT_PRECISION 0 1 2)\n'
-  printf '  add_executable(%s.${MINIRT_PRECISION} ${SRC_EXE_%s})\n' "$exe_name" "$exe_name"
-  printf '  target_compile_definitions(%s.${MINIRT_PRECISION} PRIVATE MINIRT_PRECISION=${MINIRT_PRECISION})\n' "$exe_name"
-  printf '  target_link_libraries(%s.${MINIRT_PRECISION} %s)\n' "$exe_name" "$(echo "$dependencies" | xargs -n 1 echo | sed s/^/a_minirt_/ | sed 's/$/.\${MINIRT_PRECISION}/' | xargs)"
-  printf 'endforeach()\n'
+  printf 'add_executable(%s.${MINIRT_PRECISION_VALUE} ${SRC_EXE_%s})\n' "$exe_name" "$exe_name"
+  printf 'target_link_libraries(%s.${MINIRT_PRECISION_VALUE} %s)\n' "$exe_name" "$(echo "$dependencies" | xargs -n 1 echo | sed s/^/a_minirt_/ | sed 's/$/.\${MINIRT_PRECISION_VALUE}/' | xargs)"
 done
