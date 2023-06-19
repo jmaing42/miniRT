@@ -5,7 +5,8 @@ set -e
 cd "$(dirname "$0")"
 
 generate_makefile() {
-  printf "\033[0;33m[INFO]\033[0m generating Makefile...\n"
+  [ ! -t ] || printf "\033[0;33m[INFO]\033[0m generating Makefile...\n"
+  [ -t ] || printf "[INFO] generating Makefile...\n"
   sh build_makefile.sh > ../build/Makefile
 }
 

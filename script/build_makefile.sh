@@ -132,6 +132,7 @@ emit_so() {
       list_lib_objs "$lib_path" ".-fPIC$3"
     done | xargs)"
   EMIT_SO_SUFFIX="$3"
+  EMIT_SO_EXTRA_FLAGS="$4"
 
   FILENAME="libminirt_$EMIT_SO_LIB_NAME$EMIT_SO_SUFFIX.so"
   if [ "$FILENAME" = "libminirt_$EMIT_SO_SUFFIX.so" ]; then
@@ -141,7 +142,7 @@ emit_so() {
   printf 'out/so/%s: %s\n' "$FILENAME" "$EMIT_SO_LIB_SOURCES"
   printf '\trm -f $@ $@.tmp\n'
   printf "\tmkdir -p \$(@D)\n"
-  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp %s\n" "$EMIT_SO_LIB_SOURCES"
+  printf "\t\$(CC) \$(LDFLAGS) -shared %s -o \$@.tmp %s\n" "$EMIT_SO_EXTRA_FLAGS" "$EMIT_SO_LIB_SOURCES"
   printf '\tmv $@.tmp $@\n'
 }
 
@@ -218,7 +219,7 @@ for MINIRT_PRECISION in 0 1 2; do
 
     emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION"
     emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug"
-    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address"
+    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address" "-fsanitize=address"
   }
 
   print_exe() {
