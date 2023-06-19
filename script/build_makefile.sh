@@ -62,97 +62,120 @@ done
 
 # list of source files
 find_sources() {
-  SRC_PATH="$1"
+  FIND_SOURCES_SRC_PATH="$1"
 
-  (cd ../src && find "$SRC_PATH" -name '*.c')
+  (cd ../src && find "$FIND_SOURCES_SRC_PATH" -name '*.c')
 }
 
 # list of objs for given lib
 list_lib_objs() {
-  LIB_NAME="$1"
-  SUFFIX="$2"
+  LIST_LIB_OBJS_LIB_PATH="$1"
+  LIST_LIB_OBJS_SUFFIX="$2"
 
-  find_sources "lib/$LIB_NAME" | sed "s/\$/$SUFFIX.o/"
+  find_sources "lib/$LIST_LIB_OBJS_LIB_PATH" | sed 's#^#obj/#' | sed "s/\$/$LIST_LIB_OBJS_SUFFIX.o/"
 }
 
 # list of objs for given exe
 list_exe_objs() {
-  EXE_NAME="$1"
-  SUFFIX="$2"
+  LIST_EXE_OBJS_EXE_NAME="$1"
+  LIST_EXE_OBJS_SUFFIX="$2"
 
-  find_sources "exe/$EXE_NAME" | sed "s/\$/$SUFFIX.o/"
+  find_sources "exe/$LIST_EXE_OBJS_EXE_NAME" | sed 's#^#obj/#' | sed "s/\$/$LIST_EXE_OBJS_SUFFIX.o/"
 }
 
 # map space-separated list of lib name to list of lib file name
 libs_to_filenames() {
-  LIB_NAMES="$(echo "$1" | xargs -n 1 echo)"
-  SUFFIX="$2"
+  LIBS_TO_FILENAMES_LIB_NAMES="$(echo "$1" | xargs -n 1 echo)"
+  LIBS_TO_FILENAMES_SUFFIX="$2"
 
-  echo "$LIB_NAMES" | sed 's/^/libminirt_/' | sed "s/\$/$SUFFIX.a/"
+  echo "$LIBS_TO_FILENAMES_LIB_NAMES" | sed 's#^#out/a/libminirt_#' | sed "s/\$/$LIBS_TO_FILENAMES_SUFFIX.a/"
 }
 
 # map space-separated list of lib name to list of LDFLAGS
 libs_to_ldlibs() {
-  LIB_NAMES="$(echo "$1" | xargs -n 1 echo)"
-  SUFFIX="$2"
+  LIBS_TO_LDLIBS_LIB_NAMES="$(echo "$1" | xargs -n 1 echo)"
+  LIBS_TO_LDLIBS_SUFFIX="$2"
 
-  echo "$LIB_NAMES" | sed 's/^/-lminirt_/' | sed "s/\$/$SUFFIX/"
+  echo "$LIBS_TO_LDLIBS_LIB_NAMES" | sed 's/^/-lminirt_/' | sed "s/\$/$LIBS_TO_LDLIBS_SUFFIX/"
 }
 
 # emit obj rule
 emit_o() {
-  SRC_PATH="$1"
-  SUFFIX="$2"
-  EXTRA_FLAGS="$3"
+  EMIT_O_SRC_PATH="$1"
+  EMIT_O_SUFFIX="$2"
+  EMIT_O_EXTRA_FLAGS="$3"
 
-  printf '%s%s.o: ../src/%s\n' "$SRC_PATH" "$SUFFIX" "$SRC_PATH"
-  printf "\tmkdir -p \$(@D)\n"
+  printf 'obj/%s%s.o: ../src/%s\n' "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX" "$EMIT_O_SRC_PATH"
   printf "\trm -f \$@ \$@.tmp\n"
-  printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/%s)\n" "$EXTRA_FLAGS" "$SRC_PATH"
+  printf "\tmkdir -p \$(@D)\n"
+  printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/%s)\n" "$EMIT_O_EXTRA_FLAGS" "$EMIT_O_SRC_PATH"
   printf "\tmv \$@.tmp \$@\n"
 }
 
 # emit lib rule
 emit_a() {
-  LIB_NAME="$1"
-  SUFFIX="$2"
+  EMIT_A_LIB_NAME="$1"
+  EMIT_A_LIB_SOURCE="$2"
+  EMIT_A_SUFFIX="$3"
 
-  printf 'libminirt_%s%s.a: %s\n' "$LIB_NAME" "$SUFFIX" "$(list_lib_objs "$LIB_NAME" "$SUFFIX" | xargs)"
+  printf 'out/a/libminirt_%s%s.a: %s\n' "$EMIT_A_LIB_NAME" "$EMIT_A_SUFFIX" "$(list_lib_objs "$EMIT_A_LIB_SOURCE" "$EMIT_A_SUFFIX" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
-  printf '\tar cr $@.tmp %s\n' "$(list_lib_objs "$LIB_NAME" "$SUFFIX" | xargs)"
+  printf "\tmkdir -p \$(@D)\n"
+  printf '\tar cr $@.tmp %s\n' "$(list_lib_objs "$EMIT_A_LIB_SOURCE" "$EMIT_A_SUFFIX" | xargs)"
+  printf '\tmv $@.tmp $@\n'
+}
+
+emit_so() {
+  EMIT_SO_LIB_NAME="$1"
+  EMIT_SO_LIB_SOURCES="$(echo "$2" | xargs -n 1 echo | while IFS= read -r lib_path;
+    do
+      list_lib_objs "$lib_path" ".-fPIC$3"
+    done | xargs)"
+  EMIT_SO_SUFFIX="$3"
+
+  FILENAME="libminirt_$EMIT_SO_LIB_NAME$EMIT_SO_SUFFIX.so"
+  if [ "$FILENAME" = "libminirt_$EMIT_SO_SUFFIX.so" ]; then
+    FILENAME="libminirt$EMIT_SO_SUFFIX.so"
+  fi
+
+  printf 'out/so/%s: %s\n' "$FILENAME" "$EMIT_SO_LIB_SOURCES"
+  printf '\trm -f $@ $@.tmp\n'
+  printf "\tmkdir -p \$(@D)\n"
+  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp %s\n" "$EMIT_SO_LIB_SOURCES"
   printf '\tmv $@.tmp $@\n'
 }
 
 # emit exe rule
 emit_exe() {
-  EXE_NAME="$1"
-  SUFFIX="$2"
-  DEPENDENCY_LIBS="$3"
-  EXTRA_FLAGS="$4"
-  EMIT_VSCODE_SETTINGS="$5"
-  DEBUG_ARGS="$6"
-  if [ "$DEBUG_ARGS" = "" ]; then
-    DEBUG_ARGS='[]'
+  EMIT_EXE_EXE_NAME="$1"
+  EMIT_EXE_SUFFIX="$2"
+  EMIT_EXE_DEPENDENCY_LIBS="$3"
+  EMIT_EXE_EXTRA_FLAGS="$4"
+  EMIT_EXE_EMIT_VSCODE_SETTINGS="$5"
+  EMIT_EXE_DEBUG_ARGS="$6"
+  if [ "$EMIT_EXE_DEBUG_ARGS" = "" ]; then
+    EMIT_EXE_DEBUG_ARGS='[]'
   fi
 
-  printf '%s%s.exe: %s\n' "$EXE_NAME" "$SUFFIX" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | xargs) $(libs_to_filenames "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)"
+  printf 'out/exe/%s%s.exe: %s\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" "$(list_exe_objs "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" | xargs) $(libs_to_filenames "$EMIT_EXE_DEPENDENCY_LIBS" "$EMIT_EXE_SUFFIX" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
-  printf "\t(cd .. && \$(CC) %s \$(LDFLAGS) -L build %s %s -o build/\$@.tmp)\n" "$(list_exe_objs "$EXE_NAME" "$SUFFIX" | sed s#^#build/# | xargs)" "$(libs_to_ldlibs "$DEPENDENCY_LIBS" "$SUFFIX" | xargs)" "$EXTRA_FLAGS"
+  printf "\tmkdir -p \$(@D)\n"
+  printf "\t(cd .. && \$(CC) %s \$(LDFLAGS) -Lbuild/out/a %s %s -o build/\$@.tmp)\n" "$(list_exe_objs "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" | sed 's#^#build/#' | xargs)" "$(libs_to_ldlibs "$EMIT_EXE_DEPENDENCY_LIBS" "$EMIT_EXE_SUFFIX" | xargs)" "$EMIT_EXE_EXTRA_FLAGS"
   printf '\tmv $@.tmp $@\n'
 
-  if [ "$EMIT_VSCODE_SETTINGS" = "1" ]; then
-    NAME="$EXE_NAME ($(printf '%s' "$SUFFIX" | sed s/^\\.//))"
-    if [ "$NAME" = "$EXE_NAME ()" ]; then
-      NAME="$EXE_NAME"
+  if [ "$EMIT_EXE_EMIT_VSCODE_SETTINGS" = "1" ]; then
+    NAME="$EMIT_EXE_EXE_NAME ($(printf '%s' "$EMIT_EXE_SUFFIX" | sed s/^\\.//))"
+    if [ "$NAME" = "$EMIT_EXE_EXE_NAME ()" ]; then
+      NAME="$EMIT_EXE_EXE_NAME"
     fi
 
-    printf 'launch.json: %s%s.launch.json.debug.part\n' "$EXE_NAME" "$SUFFIX"
-    printf '%s%s.launch.json.debug.part:\n' "$EXE_NAME" "$SUFFIX"
-    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": %s,\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@\n" "$NAME" "$EXE_NAME" "$SUFFIX" "$DEBUG_ARGS" "$NAME"
+    printf 'launch.json: %s%s.launch.json.debug.part\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf '%s%s.launch.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": %s,\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" "$EMIT_EXE_DEBUG_ARGS" "$NAME"
 
-    printf 'tasks.json: %s%s.tasks.json.debug.part\n' "$EXE_NAME" "$SUFFIX"
-    printf '%s%s.tasks.json.debug.part:\n' "$EXE_NAME" "$SUFFIX"
-    printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@\n" "$NAME" "$EXE_NAME" "$SUFFIX"
+    printf 'tasks.json: %s%s.tasks.json.debug.part\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf '%s%s.tasks.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
   fi
 }
 
@@ -175,15 +198,27 @@ for MINIRT_PRECISION in 0 1 2; do
     SRC_PATH="$1"
 
     print_exe_obj "$SRC_PATH"
-    emit_o "$SRC_PATH" ".$MINIRT_PRECISION.-fPIC" "-DMINIRT_PRECISION=$MINIRT_PRECISION -O -fPIC"
+    emit_o "$SRC_PATH" ".-fPIC.$MINIRT_PRECISION" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -O"
+    emit_o "$SRC_PATH" ".-fPIC.$MINIRT_PRECISION.debug" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g"
+    emit_o "$SRC_PATH" ".-fPIC.$MINIRT_PRECISION.debug.address" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
   }
 
-  print_lib() {
+  print_a() {
     LIB_NAME="$1"
+    LIB_SOURCES="$2"
 
-    emit_a "$LIB_NAME" ".$MINIRT_PRECISION"
-    emit_a "$LIB_NAME" ".$MINIRT_PRECISION.debug"
-    emit_a "$LIB_NAME" ".$MINIRT_PRECISION.debug.address"
+    emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION"
+    emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug"
+    emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address"
+  }
+
+  print_so() {
+    LIB_NAME="$1"
+    LIB_SOURCES="$2"
+
+    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION"
+    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug"
+    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address"
   }
 
   print_exe() {
@@ -191,28 +226,29 @@ for MINIRT_PRECISION in 0 1 2; do
     DEPENDENCY_LIBS="$2"
     EXTRA_FLAGS="$3"
 
-    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION" "$DEPENDENCY_LIBS" "-DMINIRT_PRECISION=$MINIRT_PRECISION"
-    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug" "$DEPENDENCY_LIBS" "-DMINIRT_PRECISION=$MINIRT_PRECISION" 1
-    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug.address" "$DEPENDENCY_LIBS" "-DMINIRT_PRECISION=$MINIRT_PRECISION -fsanitize=address" 1
+    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION" "$DEPENDENCY_LIBS"
+    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug" "$DEPENDENCY_LIBS" "" 1
+    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug.address" "$DEPENDENCY_LIBS" "-fsanitize=address" 1
   }
 
-  printf 'libminirt%s.so: %s\n' ".$MINIRT_PRECISION" "$(find_sources lib | sed "s/\$/.$MINIRT_PRECISION.-fPIC.o/" | xargs)"
-  printf '\trm -f $@ $@.tmp\n'
-  printf "\t\$(CC) \$(LDFLAGS) -shared -o \$@.tmp %s\n" "$(find_sources lib | sed "s/\$/.$MINIRT_PRECISION.-fPIC.o/" | xargs)"
-  printf "\tmv \$@.tmp \$@\n"
+  cat ../data/a.properties | while IFS="=" read -r lib_name lib_path;
+  do
+    if [ "$lib_path" = "" ]; then
+      lib_path="$lib_name"
+    fi
 
-  print_lib args
-  print_lib bmp
-  print_lib common
-  print_lib core
-  print_lib json
-  print_lib pack
-  print_lib plugin_portal
-  print_lib plugin_rtinrt
-  print_lib scene
-  print_exe minirt "args bmp common core json plugin_portal plugin_rtinrt scene"
-  print_exe minirt_validate "args common json plugin_portal plugin_rtinrt scene"
-  print_exe pack "args common pack"
+    print_a "$lib_name" "$lib_path"
+  done
+
+  cat ../data/so.properties | while IFS="=" read -r lib_name lib_path;
+  do
+    print_so "$lib_name" "$lib_path"
+  done
+
+  cat ../data/exe.properties | while IFS="=" read -r exe_name dependency_libs;
+  do
+    print_exe "$exe_name" "$dependency_libs"
+  done
 
   find ../src/exe -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do

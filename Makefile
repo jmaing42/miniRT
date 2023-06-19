@@ -8,7 +8,8 @@ include common.mk
 
 $(EVERYTHING): build
 	(cd build && $(MAKE) $@)
-	cp build/$@ .
+	mkdir -p $(@D)
+	cp build/$@ $@
 
 .PHONY: norm
 norm: build

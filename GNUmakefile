@@ -8,7 +8,8 @@ MAKE_J = $(MAKE) -j $(shell sh script/nproc.sh)
 
 $(EVERYTHING): build
 	$(MAKE_J) -C build $@
-	cp build/$@ .
+	mkdir -p $(@D)
+	cp build/$@ $@
 
 .PHONY: norm
 norm: build
