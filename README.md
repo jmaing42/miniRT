@@ -32,6 +32,14 @@ sh metamake.sh
 make MINIRT_PRECISION=1
 ```
 
+If above fails (because your environment has fake gcc/clang), try below
+
+```shell
+echo "CC = cc" > include.mk
+
+USE_DEPS=0 make
+```
+
 ### Windows
 
 Building on Windows requires CMake and a suitable build system.
