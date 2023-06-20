@@ -8,6 +8,8 @@ include common.mk
 
 all: $(TARGET)
 
+-include include.mk
+
 $(EVERYTHING): build
 	(cd build && $(MAKE) $@)
 	mkdir -p $(@D)

@@ -19,6 +19,8 @@ clean_minirt_precision_flag:
 
 all: $(TARGET)
 
+-include include.mk
+
 MAKEFLAGS = -j 1
 
 MAKE_J = $(MAKE) -j $(shell sh script/nproc.sh)

@@ -9,6 +9,11 @@ echo '# THIS FILE IS AUTO GENERATED. DO NOT MODIFY IT MANUALLY #'
 echo '##########################################################'
 echo ''
 
+printf 'CC = %s\n' "$CC"
+printf '\n'
+printf '%s' '-include ../include.mk\n'
+printf '\n'
+
 
 # ==============================================================================
 # basic variables
