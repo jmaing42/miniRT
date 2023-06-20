@@ -16,6 +16,22 @@
 
 #include "minirt/common/libc.h"
 
+static size_t	le(size_t u)
+{
+	const size_t		test = 42;
+	const char *const	source = (const char *)&u;
+	size_t				result;
+	char *const			dest = (char *)&result;
+	size_t				i;
+
+	if (*((char *)&test))
+		return (u);
+	i = -1;
+	while (++i < sizeof(size_t))
+		dest[0] = source[sizeof(size_t) - i - 1];
+	return (result);
+}
+
 static size_t	size(
 	t_minirt_pack_in *files,
 	size_t file_count
@@ -50,14 +66,15 @@ static void	fill(
 			&out[current_offset],
 			files[i].name,
 			tmp);
-		((t_minirt_pack_node *)out)[i].name_offset = current_offset;
+		((t_minirt_pack_node *)out)[i].name_offset = le(current_offset);
 		current_offset += tmp;
 		minirt_memcpy(
 			&out[current_offset],
 			files[i].content,
 			files[i].content_length);
-		((t_minirt_pack_node *)out)[i].content_offset = current_offset;
-		((t_minirt_pack_node *)out)[i].content_length = files[i].content_length;
+		((t_minirt_pack_node *)out)[i].content_offset = le(current_offset);
+		((t_minirt_pack_node *)out)[i].content_length
+			= le(files[i].content_length);
 		current_offset += files[i].content_length;
 	}
 }

@@ -14,6 +14,22 @@
 
 #include "minirt/common/libc.h"
 
+static size_t	le(size_t u)
+{
+	const size_t		test = 42;
+	const char *const	source = (const char *)&u;
+	size_t				result;
+	char *const			dest = (char *)&result;
+	size_t				i;
+
+	if (*((char *)&test))
+		return (u);
+	i = -1;
+	while (++i < sizeof(size_t))
+		dest[0] = source[sizeof(size_t) - i - 1];
+	return (result);
+}
+
 static bool	find(t_minirt_pack *self, const char *name, size_t *out_index)
 {
 	t_minirt_pack_node *const	node = (t_minirt_pack_node *)self->array;
@@ -24,7 +40,7 @@ static bool	find(t_minirt_pack *self, const char *name, size_t *out_index)
 	{
 		if (minirt_str_eq(
 				name,
-				(const char *)&self->array[node[i].name_offset]))
+				(const char *)&self->array[le(node[i].name_offset)]))
 		{
 			*out_index = i;
 			return (true);
@@ -46,9 +62,9 @@ bool	minirt_pack_get(
 	if (result)
 	{
 		*out = &self->array[
-			((t_minirt_pack_node *)&self->array[index])->content_offset];
+			le(((t_minirt_pack_node *)&self->array[index])->content_offset)];
 		*out_length
-			= ((t_minirt_pack_node *)&self->array[index])->content_length;
+			= le(((t_minirt_pack_node *)&self->array[index])->content_length);
 	}
 	return (result);
 }
