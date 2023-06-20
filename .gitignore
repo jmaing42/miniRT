@@ -1,5 +1,8 @@
-/.vscode
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/extensions.json
 /.cache
+/.*.flag
 /build
 /out
 targets.mk

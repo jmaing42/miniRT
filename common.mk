@@ -7,7 +7,7 @@ EVERYTHING = $(TARGET)
 
 -include targets.mk
 
-all: $(TARGET)
+all:
 .PHONY: all
 
 .PHONY: everything
@@ -25,7 +25,7 @@ clean:
 
 .PHONY: fclean
 fclean: clean
-	rm -rf out .vscode/launch.json .vscode/tasks.json targets.mk
+	rm -rf out .vscode/launch.json .vscode/tasks.json targets.mk CMakeLists.txt
 
 .PHONY: re
 re:

@@ -2,6 +2,23 @@ include common.mk
 
 .NOTPARALLEL: $(EVERYTHING) .vscode/launch.json .vscode/tasks.json
 
+MINIRT_PRECISION ?= $(shell [ -f  .MINIRT_PRECISION.flag ] && cat .MINIRT_PRECISION.flag || printf "1")
+
+ifeq ($(filter $(MINIRT_PRECISION),0 1 2),)
+$(error MINIRT_PRECISION must be set to 0, 1, or 2)
+endif
+
+TMP := $(shell printf "%s" "$(MINIRT_PRECISION)" > .MINIRT_PRECISION.flag)
+
+TARGET := $(shell echo $(EVERYTHING) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs)
+
+clean: clean_minirt_precision_flag
+.PHONY: clean_minirt_precision_flag
+clean_minirt_precision_flag:
+	rm -f .MINIRT_PRECISION.flag
+
+all: $(TARGET)
+
 MAKEFLAGS = -j 1
 
 MAKE_J = $(MAKE) -j $(shell sh script/nproc.sh)
