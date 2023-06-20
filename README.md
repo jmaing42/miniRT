@@ -40,12 +40,8 @@ Building on Windows requires CMake and a suitable build system.
 # create CMakeLists.txt
 metacmake
 
-# setup CMake build directory
-mkdir builddir
-cd builddir
 # for example
-cmake .. -G "Visual Studio 17 2022" -DMINIRT_PRECISION=1
-cd ..
+cmake -B builddir -G "Visual Studio 17 2022" -DMINIRT_PRECISION=1
 
 # build
 cmake --build builddir
