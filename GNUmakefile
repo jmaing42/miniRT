@@ -11,7 +11,8 @@ endif
 TMP := $(shell printf "%s" "$(MINIRT_PRECISION)" > .MINIRT_PRECISION.flag)
 
 EVERYTHING := $(if $(filter $(FLAG_IF_TARGETS_INCLUDED), true), $(EVERYTHING), $(TARGET))
-TARGET := $(shell echo $(EVERYTHING) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs)
+EVERYTHING := $(shell echo $(EVERYTHING) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs)
+TARGET := $(shell echo $(TARGET) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs)
 
 clean: clean_minirt_precision_flag
 .PHONY: clean_minirt_precision_flag
@@ -27,7 +28,7 @@ MAKEFLAGS = -j 1
 MAKE_J = $(MAKE) -j $(shell sh script/nproc.sh)
 
 $(EVERYTHING): build
-	$(MAKE_J) -C build $@
+	$(MAKE_J) -C build -f $(MINIRT_PRECISION).mk $@
 	mkdir -p $(@D)
 	cp build/$@ $@
 
@@ -37,7 +38,7 @@ norm: build
 
 .PHONY: build
 build:
-	mkdir -p build && sh script/build_refresh_gnumakefile.sh
+	mkdir -p build && sh script/build_refresh_gnumakefile.sh $(MINIRT_PRECISION)
 
 .vscode/launch.json: build
 	$(MAKE_J) -C build launch.json
