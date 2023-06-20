@@ -57,13 +57,15 @@ printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && f
 
 printf '.PHONY: norm\n'
 printf 'norm/root/%%.norm: ../%%\n'
-printf '\t(cd .. && norminette $<)\n'
+printf '\t(cd .. && norminette ./$*)\n'
 printf "\tmkdir -p \$(@D)\n"
-printf '\ttouch $@'
-printf 'norm/src/%%.norm: ../src/%%\n'
-printf '\t(cd .. && norminette $<)\n'
-printf "\tmkdir -p \$(@D)\n"
-printf '\ttouch $@'
+printf '\ttouch $@\n'
+for DIRECTORY in include lib exe; do
+  printf 'norm/%s/%%.norm: ../src/%s/%%\n' "$DIRECTORY" "$DIRECTORY"
+  printf '\t(cd .. && norminette ./src/%s/$*)\n' "$DIRECTORY"
+  printf "\tmkdir -p \$(@D)\n"
+  printf '\ttouch $@\n'
+done
 
 emit_norm() {
   printf "norm: %s.norm\n" "$1"
