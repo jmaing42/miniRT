@@ -21,7 +21,7 @@ norm: build
 
 .PHONY: build
 build:
-	sh script/make_build.sh
+	mkdir -p build && sh script/build_refresh_gnumakefile.sh
 
 .vscode/launch.json: build
 	(cd build && $(MAKE) launch.json)

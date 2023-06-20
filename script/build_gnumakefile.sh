@@ -23,7 +23,7 @@ echo '# THIS FILE IS AUTO GENERATED. DO NOT MODIFY IT MANUALLY #'
 echo '##########################################################'
 echo ''
 
-printf 'CC = %s\n' "$CC"
+printf 'CC := %s\n' "$CC"
 printf '\n'
 printf '%s' '-include ../include.mk\n'
 printf '\n'
@@ -55,24 +55,28 @@ printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && f
 # norminette
 # ==============================================================================
 
-echo '.PHONY: norm'
+printf '.PHONY: norm\n'
+printf 'norm/root/%%.norm: ../%%\n'
+printf '\t(cd .. && norminette $<)\n'
+printf "\tmkdir -p \$(@D)\n"
+printf '\ttouch $@'
+printf 'norm/src/%%.norm: ../src/%%\n'
+printf '\t(cd .. && norminette $<)\n'
+printf "\tmkdir -p \$(@D)\n"
+printf '\ttouch $@'
 
 emit_norm() {
-  printf 'norm: %s.norm\n' "$1"
-  printf '%s.norm: %s\n' "$1" "../$2"
-  printf '\t(cd .. && norminette %s)\n' "./$2"
-  printf "\tmkdir -p \$(@D)\n"
-  printf '\ttouch $@\n'
+  printf "norm: %s.norm\n" "$1"
 }
 
 find ../include -name '*.h' | cut -c 4- | sort | while IFS= read -r FILE
 do
-  emit_norm "norm/root/$FILE" "$FILE"
+  emit_norm "norm/root/$FILE"
 done
 
 find ../src -name '*.c' -o -name '*.h' | cut -c 8- | sort | while IFS= read -r FILE
 do
-  emit_norm "$FILE" "norm/src/$FILE"
+  emit_norm "norm/$FILE"
 done
 
 
@@ -121,21 +125,20 @@ libs_to_ldlibs() {
 
 # emit obj rule
 emit_o() {
-  EMIT_O_SRC_PATH="$1"
-  EMIT_O_SUFFIX="$2"
-  EMIT_O_EXTRA_FLAGS="$3"
+  EMIT_O_SUFFIX="$1"
+  EMIT_O_EXTRA_FLAGS="$2"
 
-  printf 'obj/%s%s.o: ../src/%s\n' "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX" "$EMIT_O_SRC_PATH"
+  printf 'obj/%%%s.o: ../src/%%\n' "$EMIT_O_SUFFIX"
   printf "\trm -f \$@ \$@.tmp\n"
   printf "\tmkdir -p \$(@D)\n"
-  printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/%s)\n" "$EMIT_O_EXTRA_FLAGS" "$EMIT_O_SRC_PATH"
+  printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/\$*)\n" "$EMIT_O_EXTRA_FLAGS"
   if [ "$USE_DEPS" = "1" ]; then
-    printf '\tmkdir -p %s\n' "$(dirname "deps/$EMIT_O_SRC_PATH")"
-    printf "\t\$(CC) \$(CPPFLAGS_INTERNAL) -MM -MT \$@ -MF deps/%s%s.d ../src/%s\n" "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX" "$EMIT_O_SRC_PATH"
+    printf "\tmkdir -p \$\$(dirname deps/\$*)\n"
+    printf "\t\$(CC) \$(CPPFLAGS_INTERNAL) -MM -MT \$@ -MF deps/\$*%s.d $<\n" "$EMIT_O_SUFFIX"
   fi
   printf "\tmv \$@.tmp \$@\n"
   if [ "$USE_DEPS" = "1" ]; then
-    printf '%s deps/%s%s.d\n' '-include' "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX"
+    printf "%s deps/\$*%s.d\n" '-include' "$EMIT_O_SUFFIX"
   fi
 }
 
@@ -148,7 +151,7 @@ emit_a() {
   printf 'out/a/libminirt_%s%s.a: %s\n' "$EMIT_A_LIB_NAME" "$EMIT_A_SUFFIX" "$(list_lib_objs "$EMIT_A_LIB_SOURCE" "$EMIT_A_SUFFIX" | xargs)"
   printf '\trm -f $@ $@.tmp\n'
   printf "\tmkdir -p \$(@D)\n"
-  printf '\tar cr $@.tmp %s\n' "$(list_lib_objs "$EMIT_A_LIB_SOURCE" "$EMIT_A_SUFFIX" | xargs)"
+  printf '\tar cr $@.tmp $^\n'
   printf '\tmv $@.tmp $@\n'
 }
 
@@ -169,7 +172,7 @@ emit_so() {
   printf 'out/so/%s: %s\n' "$FILENAME" "$EMIT_SO_LIB_SOURCES"
   printf '\trm -f $@ $@.tmp\n'
   printf "\tmkdir -p \$(@D)\n"
-  printf "\t\$(CC) \$(LDFLAGS) -shared %s -o \$@.tmp %s\n" "$EMIT_SO_EXTRA_FLAGS" "$EMIT_SO_LIB_SOURCES"
+  printf "\t\$(CC) \$(LDFLAGS) -shared %s -o \$@.tmp \$^\n" "$EMIT_SO_EXTRA_FLAGS"
   printf '\tmv $@.tmp $@\n'
 }
 
@@ -220,22 +223,13 @@ emit_exe() {
 
 for MINIRT_PRECISION in 0 1 2; do
 
-  print_exe_obj() {
-    SRC_PATH="$1"
+  emit_o ".$MINIRT_PRECISION" "-DMINIRT_PRECISION=$MINIRT_PRECISION -O"
+  emit_o ".$MINIRT_PRECISION.debug" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g"
+  emit_o ".$MINIRT_PRECISION.debug.address" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
 
-    emit_o "$SRC_PATH" ".$MINIRT_PRECISION" "-DMINIRT_PRECISION=$MINIRT_PRECISION -O"
-    emit_o "$SRC_PATH" ".$MINIRT_PRECISION.debug" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g"
-    emit_o "$SRC_PATH" ".$MINIRT_PRECISION.debug.address" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
-  }
-
-  print_lib_obj() {
-    SRC_PATH="$1"
-
-    print_exe_obj "$SRC_PATH"
-    emit_o "$SRC_PATH" ".-fPIC.$MINIRT_PRECISION" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -O"
-    emit_o "$SRC_PATH" ".-fPIC.$MINIRT_PRECISION.debug" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g"
-    emit_o "$SRC_PATH" ".-fPIC.$MINIRT_PRECISION.debug.address" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
-  }
+  emit_o ".-fPIC.$MINIRT_PRECISION" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -O"
+  emit_o ".-fPIC.$MINIRT_PRECISION.debug" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g"
+  emit_o ".-fPIC.$MINIRT_PRECISION.debug.address" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
 
   print_a() {
     LIB_NAME="$1"
@@ -282,15 +276,5 @@ for MINIRT_PRECISION in 0 1 2; do
   do
     print_exe "$exe_name" "$dependency_libs"
   done < ../data/exe.properties
-
-  find ../src/exe -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
-  do
-    print_exe_obj "$FILE"
-  done
-
-  find ../src/lib -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
-  do
-    print_lib_obj "$FILE"
-  done
 
 done
