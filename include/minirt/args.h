@@ -99,7 +99,7 @@ typedef struct s_minirt_args_options
 	size_t										map_parameter_count;
 	const t_minirt_args_options_set				*set_parameters;
 	size_t										set_parameter_count;
-	const t_minirt_args_options_string			*boolean_parameters;
+	const t_minirt_args_options_boolean			*boolean_parameters;
 	size_t										boolean_parameter_count;
 	t_minirt_args_options_unknown_parameter		unknown_parameter;
 	t_minirt_args_options_malformed_parameter	malformed_parameter;
@@ -107,8 +107,8 @@ typedef struct s_minirt_args_options
 }	t_minirt_args_options;
 
 typedef struct s_minirt_args_parameter_string {
-	t_minirt_args_options_string	*option;
-	const char						*value;
+	const t_minirt_args_options_string	*option;
+	const char							*value;
 }	t_minirt_args_parameter_string;
 
 typedef struct s_minirt_args_map_entry
@@ -118,20 +118,20 @@ typedef struct s_minirt_args_map_entry
 }	t_minirt_args_map_entry;
 
 typedef struct s_minirt_args_parameter_map {
-	t_minirt_args_options_map	*option;
-	t_minirt_args_map_entry		*entries;
-	size_t						entry_count;
+	const t_minirt_args_options_map	*option;
+	t_minirt_args_map_entry			*entries;
+	size_t							entry_count;
 }	t_minirt_args_parameter_map;
 
 typedef struct s_minirt_args_parameter_set {
-	t_minirt_args_options_set	*option;
-	const char					**values;
-	size_t						value_count;
+	const t_minirt_args_options_set	*option;
+	const char						**values;
+	size_t							value_count;
 }	t_minirt_args_parameter_set;
 
 typedef struct s_minirt_args_parameter_boolean {
-	t_minirt_args_options_boolean	*option;
-	bool							value;
+	const t_minirt_args_options_boolean	*option;
+	bool								value;
 }	t_minirt_args_parameter_boolean;
 
 typedef struct s_minirt_args
@@ -174,13 +174,13 @@ typedef struct s_minirt_args_error_malformed_parameter
 
 typedef struct s_minirt_args_error_missing_entry
 {
-	t_minirt_args_options_map	*option;
+	const t_minirt_args_options_map	*option;
 }	t_minirt_args_error_missing_entry;
 
 typedef struct s_minirt_args_error_missing_value_map
 {
-	t_minirt_args_options_map	*option;
-	char						*key;
+	const t_minirt_args_options_map	*option;
+	char							*key;
 }	t_minirt_args_error_missing_value_map;
 
 typedef struct s_minirt_args_error_missing_value_set
@@ -190,24 +190,24 @@ typedef struct s_minirt_args_error_missing_value_set
 
 typedef struct s_minirt_args_error_duplicate_parameter_string
 {
-	t_minirt_args_options_string	*option;
+	const t_minirt_args_options_string	*option;
 }	t_minirt_args_error_duplicate_parameter_string;
 
 typedef struct s_minirt_args_error_duplicate_key
 {
-	t_minirt_args_options_map	*option;
-	char						*key;
+	const t_minirt_args_options_map	*option;
+	char							*key;
 }	t_minirt_args_error_duplicate_key;
 
 typedef struct s_minirt_args_error_duplicate_value
 {
-	t_minirt_args_options_set	*option;
-	const char					*value;
+	const t_minirt_args_options_set	*option;
+	const char						*value;
 }	t_minirt_args_error_duplicate_value;
 
 typedef struct s_minirt_args_error_duplicate_parameter_boolean
 {
-	t_minirt_args_options_boolean	*option;
+	const t_minirt_args_options_boolean	*option;
 }	t_minirt_args_error_duplicate_parameter_boolean;
 
 typedef union u_minirt_args_error_value

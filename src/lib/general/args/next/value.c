@@ -19,7 +19,7 @@
 
 static t_minirt_args_parameter_set_builder	*get_or_create_entry_builder(
 	t_minirt_args_state *mut_state,
-	t_minirt_args_options_set *option
+	const t_minirt_args_options_set *option
 )
 {
 	size_t								i;
@@ -78,7 +78,7 @@ t_err	minirt_args_next_value(
 	const char *arg
 )
 {
-	t_minirt_args_options_set *const			o = mut_state->state_value.set;
+	const t_minirt_args_options_set *const		o = mut_state->state_value.set;
 	t_minirt_args_parameter_set_builder *const	entry_builder
 		= get_or_create_entry_builder(mut_state, o);
 	const bool									duplicate

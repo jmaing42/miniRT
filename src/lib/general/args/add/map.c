@@ -19,7 +19,7 @@
 
 static t_minirt_args_parameter_map_builder	*get_or_create_entry_builder(
 	t_minirt_args_state *mut_state,
-	t_minirt_args_options_map *option
+	const t_minirt_args_options_map *option
 )
 {
 	size_t								i;
@@ -101,7 +101,7 @@ t_err	minirt_args_add_map(
 	const char *value
 )
 {
-	t_minirt_args_options_map *const			o = mut_state->state_value.map;
+	const t_minirt_args_options_map *const		o = mut_state->state_value.map;
 	t_minirt_args_parameter_map_builder *const	entry_builder
 		= get_or_create_entry_builder(mut_state, o);
 	t_minirt_args_map_entry						*entry;

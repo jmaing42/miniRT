@@ -12,13 +12,20 @@
 
 #include "args_internal.h"
 
-t_err	minirt_args_next_string(
+t_err	minirt_args_next_anything_malformed(
 	t_minirt_args_state *mut_state,
 	t_minirt_args_options *options,
 	const char *arg
 )
 {
-	(void)options;
-	mut_state->state_type = MINIRT_ARGS_STATE_ANYTHING;
-	return (minirt_args_add_string(mut_state, arg));
+	if (options->malformed_parameter
+		== MINIRT_ARGS_OPTIONS_MALFORMED_PARAMETER_IGNORE)
+		return (false);
+	if (options->malformed_parameter
+		== MINIRT_ARGS_OPTIONS_MALFORMED_PARAMETER_AS_ARGS)
+		return (minirt_args_add_arg(mut_state, arg));
+	mut_state->state_type = MINIRT_ARGS_STATE_ERROR;
+	mut_state->error.type = MINIRT_ARGS_ERROR_MALFORMED_PARAMETER;
+	mut_state->error.value.malformed_parameter.arg = arg;
+	return (false);
 }
