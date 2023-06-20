@@ -258,31 +258,30 @@ for MINIRT_PRECISION in 0 1 2; do
   print_exe() {
     EXE_NAME="$1"
     DEPENDENCY_LIBS="$2"
-    EXTRA_FLAGS="$3"
 
     emit_exe "$EXE_NAME" ".$MINIRT_PRECISION" "$DEPENDENCY_LIBS"
     emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug" "$DEPENDENCY_LIBS" "" 1
     emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug.address" "$DEPENDENCY_LIBS" "-fsanitize=address" 1
   }
 
-  cat ../data/a.properties | while IFS="=" read -r lib_name lib_path;
+  while IFS="=" read -r lib_name lib_path;
   do
     if [ "$lib_path" = "" ]; then
       lib_path="$lib_name"
     fi
 
     print_a "$lib_name" "$lib_path"
-  done
+  done < ../data/a.properties
 
-  cat ../data/so.properties | while IFS="=" read -r lib_name lib_path;
+  while IFS="=" read -r lib_name lib_path;
   do
     print_so "$lib_name" "$lib_path"
-  done
+  done < ../data/so.properties
 
-  cat ../data/exe.properties | while IFS="=" read -r exe_name dependency_libs;
+  while IFS="=" read -r exe_name dependency_libs;
   do
     print_exe "$exe_name" "$dependency_libs"
-  done
+  done < ../data/exe.properties
 
   find ../src/exe -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
   do
