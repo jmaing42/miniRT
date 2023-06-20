@@ -24,11 +24,11 @@ echo 'CPPFLAGS = -I./include -I./src/include'
 
 printf '.PHONY: launch.json\n'
 printf 'launch.json:\n'
-printf "\t(printf '{\\\\n  \"version\": \"0.2.0\",\\\\n  \"configurations\": [\\\\n' && find . -name \"*.launch.json*.part\" | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
+printf "\t(printf '{\\\\n  \"version\": \"0.2.0\",\\\\n  \"configurations\": [\\\\n' && find json -name \"*.launch.json*.part\" | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
 
 printf '.PHONY: tasks.json\n'
 printf 'tasks.json:\n'
-printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && find . -name \"*.tasks.json*.part\" | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
+printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && find json -name \"*.tasks.json*.part\" | sort | xargs cat && printf '  ],\\\\n}\\\\n') > \$@\n"
 
 
 # ==============================================================================
@@ -170,13 +170,19 @@ emit_exe() {
       NAME="$EMIT_EXE_EXE_NAME"
     fi
 
-    printf 'launch.json: %s%s.launch.json.debug.part\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
-    printf '%s%s.launch.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
-    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": %s,\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" "$EMIT_EXE_DEBUG_ARGS" "$NAME"
+    printf 'launch.json: json/%s%s.launch.json.debug.part\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf 'json/%s%s.launch.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf '\trm -f $@ $@.tmp\n'
+    printf "\tmkdir -p \$(@D)\n"
+    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": %s,\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@.tmp\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" "$EMIT_EXE_DEBUG_ARGS" "$NAME"
+    printf '\tmv $@.tmp $@\n'
 
-    printf 'tasks.json: %s%s.tasks.json.debug.part\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
-    printf '%s%s.tasks.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
-    printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf 'tasks.json: json/%s%s.tasks.json.debug.part\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf 'json/%s%s.tasks.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf '\trm -f $@ $@.tmp\n'
+    printf "\tmkdir -p \$(@D)\n"
+    printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@.tmp\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf '\tmv $@.tmp $@\n'
   fi
 }
 
