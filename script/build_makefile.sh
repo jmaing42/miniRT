@@ -128,11 +128,11 @@ emit_o() {
   printf 'obj/%s%s.o: ../src/%s\n' "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX" "$EMIT_O_SRC_PATH"
   printf "\trm -f \$@ \$@.tmp\n"
   printf "\tmkdir -p \$(@D)\n"
+  printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/%s)\n" "$EMIT_O_EXTRA_FLAGS" "$EMIT_O_SRC_PATH"
   if [ "$USE_DEPS" = "1" ]; then
     printf '\tmkdir -p %s\n' "$(dirname "deps/$EMIT_O_SRC_PATH")"
-    printf "\t\$(CC) \$(CPPFLAGS_INTERNAL) -MM -MT \$@ -MF deps/%s%s.d $<\n" "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX"
+    printf "\t\$(CC) \$(CPPFLAGS_INTERNAL) -MM -MT \$@ -MF deps/%s%s.d ../src/%s\n" "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX" "$EMIT_O_SRC_PATH"
   fi
-  printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/%s)\n" "$EMIT_O_EXTRA_FLAGS" "$EMIT_O_SRC_PATH"
   printf "\tmv \$@.tmp \$@\n"
   if [ "$USE_DEPS" = "1" ]; then
     printf '%s deps/%s%s.d\n' '-include' "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX"

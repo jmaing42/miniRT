@@ -10,7 +10,7 @@ endif
 
 TMP := $(shell printf "%s" "$(MINIRT_PRECISION)" > .MINIRT_PRECISION.flag)
 
-EVERYTHING := $(if $(filter $(FLAG_IF_TARGETS_INCLUDED), true), , $(EVERYTHING), $(TARGET))
+EVERYTHING := $(if $(filter $(FLAG_IF_TARGETS_INCLUDED), true), $(EVERYTHING), $(TARGET))
 TARGET := $(shell echo $(EVERYTHING) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs)
 
 clean: clean_minirt_precision_flag
