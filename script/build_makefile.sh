@@ -4,6 +4,20 @@ set -e
 
 cd "$(dirname "$0")"
 
+CC=$( (command -v clang > /dev/null && echo clang) || (command -v gcc > /dev/null && echo gcc) || (command -v cc > /dev/null && echo cc) )
+if [ "$USE_DEPS" = "" ]; then
+  if [ "$CC" = "cc" ]; then
+    USE_DEPS="0"
+  else
+    USE_DEPS="1"
+  fi
+fi
+if [ "$USE_DEPS" != "0" ] && [ "$USE_DEPS" != "1" ]; then
+  [ -t 2 ] && printf "\033[0;31m[ERROR]\033[0m" 1>&2 || printf "[ERROR]" 1>&2
+  printf ' Invalud USE_DEPS: %s (valid values are: 0, 1, (empty))' "$USE_DEPS" 1>&2
+  exit 1
+fi
+
 echo '##########################################################'
 echo '# THIS FILE IS AUTO GENERATED. DO NOT MODIFY IT MANUALLY #'
 echo '##########################################################'
@@ -21,6 +35,7 @@ printf '\n'
 
 echo 'CFLAGS = -Wall -Wextra -Werror'
 echo 'CPPFLAGS = -I./include -I./src/include'
+echo 'CPPFLAGS_INTERNAL = -I../include -I../src/include'
 
 
 # ==============================================================================
@@ -113,8 +128,15 @@ emit_o() {
   printf 'obj/%s%s.o: ../src/%s\n' "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX" "$EMIT_O_SRC_PATH"
   printf "\trm -f \$@ \$@.tmp\n"
   printf "\tmkdir -p \$(@D)\n"
+  if [ "$USE_DEPS" = "1" ]; then
+    printf '\tmkdir -p %s\n' "$(dirname "deps/$EMIT_O_SRC_PATH")"
+    printf "\t\$(CC) \$(CPPFLAGS_INTERNAL) -MM -MT \$@ -MF deps/%s%s.d $<\n" "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX"
+  fi
   printf "\t(cd .. && \$(CC) \$(CPPFLAGS) \$(CFLAGS) %s -c -o build/\$@.tmp ./src/%s)\n" "$EMIT_O_EXTRA_FLAGS" "$EMIT_O_SRC_PATH"
   printf "\tmv \$@.tmp \$@\n"
+  if [ "$USE_DEPS" = "1" ]; then
+    printf '%s deps/%s%s.d\n' '-include' "$EMIT_O_SRC_PATH" "$EMIT_O_SUFFIX"
+  fi
 }
 
 # emit lib rule
