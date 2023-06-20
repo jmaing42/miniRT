@@ -9,7 +9,7 @@ MINIRT_PRECISION=$1
 generate_gnumakefile() {
   [ ! -t 1 ] || printf "\033[0;33m[INFO]\033[0m generating Makefile..."
   [ -t 1 ] || printf "[INFO] generating Makefile..."
-  sh build_gnumakefile.sh > "../build/$MINIRT_PRECISION.mk"
+  MINIRT_PRECISION="$MINIRT_PRECISION" sh build_gnumakefile.sh > "../build/$MINIRT_PRECISION.mk"
   printf " done!\n"
 }
 

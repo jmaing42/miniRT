@@ -33,9 +33,10 @@ printf '\n'
 # basic variables
 # ==============================================================================
 
-echo 'CFLAGS = -Wall -Wextra -Werror'
-echo 'CPPFLAGS = -I./include -I./src/include'
-echo 'CPPFLAGS_INTERNAL = -I../include -I../src/include'
+echo "Q := \$(if \$(filter 1,\$(V) \$(VERBOSE)),,@)"
+echo 'CFLAGS := -Wall -Wextra -Werror'
+echo 'CPPFLAGS := -I./include -I./src/include'
+echo 'CPPFLAGS_INTERNAL := -I../include -I../src/include'
 
 
 # ==============================================================================
@@ -67,18 +68,14 @@ for DIRECTORY in include lib exe; do
   printf '\ttouch $@\n'
 done
 
-emit_norm() {
-  printf "norm: %s.norm\n" "$1"
-}
-
 find ../include -name '*.h' | cut -c 4- | sort | while IFS= read -r FILE
 do
-  emit_norm "norm/root/$FILE"
+  printf "norm: %s.norm\n" "norm/root/$FILE"
 done
 
 find ../src -name '*.c' -o -name '*.h' | cut -c 8- | sort | while IFS= read -r FILE
 do
-  emit_norm "norm/$FILE"
+  printf "norm: %s.norm\n" "norm/$FILE"
 done
 
 
@@ -139,9 +136,7 @@ emit_o() {
     printf "\t\$(CC) \$(CPPFLAGS_INTERNAL) -MM -MT \$@ -MF deps/\$*%s.d $<\n" "$EMIT_O_SUFFIX"
   fi
   printf "\tmv \$@.tmp \$@\n"
-  if [ "$USE_DEPS" = "1" ]; then
-    printf "%s deps/\$*%s.d\n" '-include' "$EMIT_O_SUFFIX"
-  fi
+  printf "\t[ '\$Q' != '' ] || ([ -t 1 ] && printf \"\\\\033[0;34m[VERBOSE]\\\\033[0m\" || printf '[VERBOSE]' ; printf ' built \$*.o (%s)\\\\n')\n" "$EMIT_O_SUFFIX"
 }
 
 # emit lib rule
@@ -223,60 +218,59 @@ emit_exe() {
 # per-precision
 # ==============================================================================
 
-for MINIRT_PRECISION in 0 1 2; do
+emit_o ".$MINIRT_PRECISION" "-DMINIRT_PRECISION=$MINIRT_PRECISION -O"
+emit_o ".$MINIRT_PRECISION.debug" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g"
+emit_o ".$MINIRT_PRECISION.debug.address" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
 
-  emit_o ".$MINIRT_PRECISION" "-DMINIRT_PRECISION=$MINIRT_PRECISION -O"
-  emit_o ".$MINIRT_PRECISION.debug" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g"
-  emit_o ".$MINIRT_PRECISION.debug.address" "-DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
+emit_o ".-fPIC.$MINIRT_PRECISION" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -O"
+emit_o ".-fPIC.$MINIRT_PRECISION.debug" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g"
+emit_o ".-fPIC.$MINIRT_PRECISION.debug.address" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
 
-  emit_o ".-fPIC.$MINIRT_PRECISION" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -O"
-  emit_o ".-fPIC.$MINIRT_PRECISION.debug" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g"
-  emit_o ".-fPIC.$MINIRT_PRECISION.debug.address" "-fPIC -DMINIRT_PRECISION=$MINIRT_PRECISION -g -fsanitize=address"
+print_a() {
+  LIB_NAME="$1"
+  LIB_SOURCES="$2"
 
-  print_a() {
-    LIB_NAME="$1"
-    LIB_SOURCES="$2"
+  emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION"
+  emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug"
+  emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address"
+}
 
-    emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION"
-    emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug"
-    emit_a "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address"
-  }
+print_so() {
+  LIB_NAME="$1"
+  LIB_SOURCES="$2"
 
-  print_so() {
-    LIB_NAME="$1"
-    LIB_SOURCES="$2"
+  emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION"
+  emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug"
+  emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address" "-fsanitize=address"
+}
 
-    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION"
-    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug"
-    emit_so "$LIB_NAME" "$LIB_SOURCES" ".$MINIRT_PRECISION.debug.address" "-fsanitize=address"
-  }
+print_exe() {
+  EXE_NAME="$1"
+  DEPENDENCY_LIBS="$2"
 
-  print_exe() {
-    EXE_NAME="$1"
-    DEPENDENCY_LIBS="$2"
+  emit_exe "$EXE_NAME" ".$MINIRT_PRECISION" "$DEPENDENCY_LIBS"
+  emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug" "$DEPENDENCY_LIBS" "" 1
+  emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug.address" "$DEPENDENCY_LIBS" "-fsanitize=address" 1
+}
 
-    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION" "$DEPENDENCY_LIBS"
-    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug" "$DEPENDENCY_LIBS" "" 1
-    emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug.address" "$DEPENDENCY_LIBS" "-fsanitize=address" 1
-  }
+while IFS="=" read -r lib_name lib_path;
+do
+  if [ "$lib_path" = "" ]; then
+    lib_path="$lib_name"
+  fi
 
-  while IFS="=" read -r lib_name lib_path;
-  do
-    if [ "$lib_path" = "" ]; then
-      lib_path="$lib_name"
-    fi
+  print_a "$lib_name" "$lib_path"
+done < ../data/a.properties
 
-    print_a "$lib_name" "$lib_path"
-  done < ../data/a.properties
+while IFS="=" read -r lib_name lib_path;
+do
+  print_so "$lib_name" "$lib_path"
+done < ../data/so.properties
 
-  while IFS="=" read -r lib_name lib_path;
-  do
-    print_so "$lib_name" "$lib_path"
-  done < ../data/so.properties
+while IFS="=" read -r exe_name dependency_libs;
+do
+  print_exe "$exe_name" "$dependency_libs"
+done < ../data/exe.properties
 
-  while IFS="=" read -r exe_name dependency_libs;
-  do
-    print_exe "$exe_name" "$dependency_libs"
-  done < ../data/exe.properties
-
-done
+printf '\n'
+printf "%s \$(shell [ ! -d deps ] || find deps -name \"*.d\")\n" '-include'

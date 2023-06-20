@@ -72,7 +72,7 @@ done
 
 find ../src -name '*.c' -o -name '*.h' | cut -c 8- | sort | while IFS= read -r FILE
 do
-  emit_norm "$FILE" "norm/src/$FILE"
+  emit_norm "norm/$FILE" "src/$FILE"
 done
 
 

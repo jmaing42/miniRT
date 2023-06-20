@@ -34,15 +34,15 @@ $(EVERYTHING): build
 
 .PHONY: norm
 norm: build
-	$(MAKE_J) -C build -k norm
+	$(MAKE_J) -C build -f $(MINIRT_PRECISION).mk -k norm
 
 .PHONY: build
 build:
 	mkdir -p build && sh script/build_refresh_gnumakefile.sh $(MINIRT_PRECISION)
 
 .vscode/launch.json: build
-	$(MAKE_J) -C build launch.json
+	$(MAKE_J) -C build -f $(MINIRT_PRECISION).mk launch.json
 	cp build/launch.json .vscode/launch.json
 .vscode/tasks.json: build
-	$(MAKE_J) -C build tasks.json
+	$(MAKE_J) -C build -f $(MINIRT_PRECISION).mk tasks.json
 	cp build/tasks.json .vscode/tasks.json
