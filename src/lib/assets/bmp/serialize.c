@@ -40,19 +40,19 @@ static void	fill_header(t_minirt_bmp *self, char *result)
 	result[0] = 'B';
 	result[1] = 'M';
 	*((uint32_t *)(result + 2)) = u32_to_le(54 + whole_size);
-	*((uint32_t *)(result + 6)) = 0;
-	*((uint32_t *)(result + 10)) = 54;
-	*((uint32_t *)(result + 14)) = 40;
-	*((uint32_t *)(result + 18)) = self->width;
-	*((uint32_t *)(result + 22)) = self->height;
-	*((uint16_t *)(result + 26)) = 1;
-	*((uint16_t *)(result + 28)) = 24;
-	*((uint32_t *)(result + 30)) = 0;
-	*((uint32_t *)(result + 34)) = whole_size;
-	*((uint32_t *)(result + 38)) = 0;
-	*((uint32_t *)(result + 42)) = 0;
-	*((uint32_t *)(result + 46)) = 256;
-	*((uint32_t *)(result + 50)) = 0;
+	*((uint32_t *)(result + 6)) = u32_to_le(0);
+	*((uint32_t *)(result + 10)) = u32_to_le(54);
+	*((uint32_t *)(result + 14)) = u32_to_le(40);
+	*((uint32_t *)(result + 18)) = u32_to_le(self->width);
+	*((uint32_t *)(result + 22)) = u32_to_le(self->height);
+	*((uint16_t *)(result + 26)) = u32_to_le(1);
+	*((uint16_t *)(result + 28)) = u32_to_le(24);
+	*((uint32_t *)(result + 30)) = u32_to_le(0);
+	*((uint32_t *)(result + 34)) = u32_to_le(whole_size);
+	*((uint32_t *)(result + 38)) = u32_to_le(0);
+	*((uint32_t *)(result + 42)) = u32_to_le(0);
+	*((uint32_t *)(result + 46)) = u32_to_le(256);
+	*((uint32_t *)(result + 50)) = u32_to_le(0);
 }
 
 static void	fill_body(t_minirt_bmp *self, char *result)
