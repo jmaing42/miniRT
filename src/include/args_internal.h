@@ -119,6 +119,9 @@ t_err				minirt_args_add_map(
 t_err				minirt_args_add_map_error_duplicate_key(
 						t_minirt_args_state *mut_state,
 						char *key);
+t_err				minirt_args_add_set(
+						t_minirt_args_state *mut_state,
+						const char *value);
 t_err				minirt_args_add_arg(
 						t_minirt_args_state *mut_state,
 						const char *arg);
@@ -155,8 +158,7 @@ t_err				minirt_args_next_anything_long_no_v_string(
 						t_minirt_args_state *mut_state,
 						const char *arg);
 t_err				minirt_args_next_anything_long_no_v_map(
-						t_minirt_args_state *mut_state,
-						const char *arg);
+						t_minirt_args_state *mut_state);
 t_err				minirt_args_next_anything_long_no_v_set(
 						t_minirt_args_state *mut_state,
 						const char *arg);

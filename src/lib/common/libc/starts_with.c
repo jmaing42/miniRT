@@ -10,21 +10,20 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBC_H
-# define LIBC_H
+#include "minirt/common/libc.h"
 
-# include <stddef.h>
-# include <stdbool.h>
+bool	minirt_starts_with(const char *self, const char *starts, size_t *out)
+{
+	size_t	i;
 
-# include "minirt/base_types.h"
-
-void	minirt_memcpy(void *dest, const void *source, size_t size);
-
-size_t	minirt_strlen(const char *str);
-bool	minirt_str_eq(const char *a, const char *b);
-bool	minirt_starts_with(const char *self, const char *starts, size_t *out);
-t_err	minirt_strdup(const char *src, char **out);
-t_err	minirt_strndup(const char *src, size_t length, char **out);
-bool	minirt_strchr(const char *str, char c, size_t *out);
-
-#endif
+	i = 0;
+	while (self[i] && starts[i] && self[i] == starts[i])
+		i++;
+	if (starts[i])
+	{
+		if (out)
+			*out = i;
+		return (true);
+	}
+	return (false);
+}

@@ -24,7 +24,7 @@ t_err	minirt_args_next_anything_long_no_v_string(
 	const size_t								option_length
 		= minirt_strlen(option->name);
 
-	if (minirt_str_eq(&arg[2], option->name))
+	if (!arg[2 + option_length])
 	{
 		mut_state->state_type = MINIRT_ARGS_STATE_STRING;
 		return (false);

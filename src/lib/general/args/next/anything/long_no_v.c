@@ -21,11 +21,14 @@ static bool	is_string(
 )
 {
 	size_t	i;
+	size_t	option_length;
 
 	i = -1;
 	while (++i < options->string_parameter_count)
 	{
-		if (minirt_str_eq(options->string_parameters[i].name, arg))
+		if (minirt_starts_with(
+				&arg[2], options->string_parameters[i].name, &option_length)
+			&& (!arg[2 + option_length] || arg[2 + option_length] == '='))
 		{
 			*out = &options->string_parameters[i];
 			return (true);
@@ -61,11 +64,14 @@ static bool	is_set(
 )
 {
 	size_t	i;
+	size_t	option_length;
 
 	i = -1;
 	while (++i < options->set_parameter_count)
 	{
-		if (minirt_str_eq(options->set_parameters[i].name, arg))
+		if (minirt_starts_with(
+				&arg[2], options->set_parameters[i].name, &option_length)
+			&& (!arg[2 + option_length] || arg[2 + option_length] == '='))
 		{
 			*out = &options->set_parameters[i];
 			return (true);
@@ -81,11 +87,14 @@ static bool	is_boolean(
 )
 {
 	size_t	i;
+	size_t	option_length;
 
 	i = -1;
 	while (++i < options->boolean_parameter_count)
 	{
-		if (minirt_str_eq(options->boolean_parameters[i].name, arg))
+		if (minirt_starts_with(
+				&arg[2], options->boolean_parameters[i].name, &option_length)
+			&& (!arg[2 + option_length] || arg[2 + option_length] == '='))
 		{
 			*out = &options->boolean_parameters[i];
 			return (true);
@@ -108,7 +117,7 @@ t_err	minirt_args_next_anything_long_no_v(
 	if (str)
 		return (minirt_args_next_anything_long_no_v_string(mut_state, arg));
 	if (map)
-		return (minirt_args_next_anything_long_no_v_map(mut_state, arg));
+		return (minirt_args_next_anything_long_no_v_map(mut_state));
 	if (set)
 		return (minirt_args_next_anything_long_no_v_set(mut_state, arg));
 	if (b)

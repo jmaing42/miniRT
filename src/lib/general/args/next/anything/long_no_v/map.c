@@ -10,21 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBC_H
-# define LIBC_H
+#include "args_internal.h"
 
-# include <stddef.h>
-# include <stdbool.h>
+#include "minirt/common/libc.h"
 
-# include "minirt/base_types.h"
-
-void	minirt_memcpy(void *dest, const void *source, size_t size);
-
-size_t	minirt_strlen(const char *str);
-bool	minirt_str_eq(const char *a, const char *b);
-bool	minirt_starts_with(const char *self, const char *starts, size_t *out);
-t_err	minirt_strdup(const char *src, char **out);
-t_err	minirt_strndup(const char *src, size_t length, char **out);
-bool	minirt_strchr(const char *str, char c, size_t *out);
-
-#endif
+t_err	minirt_args_next_anything_long_no_v_map(
+	t_minirt_args_state *mut_state
+)
+{
+	mut_state->state_type = MINIRT_ARGS_STATE_ENTRY;
+	return (false);
+}

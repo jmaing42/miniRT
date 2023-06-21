@@ -10,21 +10,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBC_H
-# define LIBC_H
+#include "args_internal.h"
 
-# include <stddef.h>
-# include <stdbool.h>
+#include "minirt/common/libc.h"
 
-# include "minirt/base_types.h"
+t_err	minirt_args_next_anything_long_no_v_set(
+	t_minirt_args_state *mut_state,
+	const char *arg
+)
+{
+	const t_minirt_args_options_set *const	option
+		= mut_state->state_value.set;
+	const size_t							option_length
+		= minirt_strlen(option->name);
 
-void	minirt_memcpy(void *dest, const void *source, size_t size);
-
-size_t	minirt_strlen(const char *str);
-bool	minirt_str_eq(const char *a, const char *b);
-bool	minirt_starts_with(const char *self, const char *starts, size_t *out);
-t_err	minirt_strdup(const char *src, char **out);
-t_err	minirt_strndup(const char *src, size_t length, char **out);
-bool	minirt_strchr(const char *str, char c, size_t *out);
-
-#endif
+	if (!arg[2 + option_length])
+	{
+		mut_state->state_type = MINIRT_ARGS_STATE_VALUE;
+		return (false);
+	}
+	return (minirt_args_add_set(mut_state, &arg[3 + option_length]));
+}
