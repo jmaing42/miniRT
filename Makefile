@@ -7,6 +7,7 @@
 include common.mk
 
 all: $(TARGET)
+everything: $(EVERYTHING)
 
 -include include.mk
 
