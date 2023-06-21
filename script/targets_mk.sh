@@ -14,6 +14,7 @@ echo 'FLAG_IF_TARGETS_INCLUDED = true ||'
 VARIANTS=".0 .1 .2 .0.debug .1.debug .2.debug .0.debug.address .1.debug.address .2.debug.address"
 
 emit_exe_target() {
+  printf '\t%s.exe \\\n' "$1"
   for VARIANT in $VARIANTS; do
     printf '\tout/exe/%s%s.exe \\\n' "$1" "$VARIANT"
   done
@@ -32,6 +33,7 @@ emit_lib_target() {
 
 
 printf 'EVERYTHING = \\\n'
+printf "\t\$(TARGET) \\\\\\n"
 
 while IFS="=" read -r exe_name _unused;
 do

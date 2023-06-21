@@ -190,6 +190,8 @@ emit_exe() {
   printf "\tmkdir -p \$(@D)\n"
   printf "\t(cd .. && \$(CC) %s \$(LDFLAGS) -Lbuild/out/a %s %s -o build/\$@.tmp)\n" "$(list_exe_objs "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" | sed 's#^#build/#' | xargs)" "$(libs_to_ldlibs "$EMIT_EXE_DEPENDENCY_LIBS" "$EMIT_EXE_SUFFIX" | xargs)" "$EMIT_EXE_EXTRA_FLAGS"
   printf '\tmv $@.tmp $@\n'
+  printf '%s: out/exe/%s%s.exe\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+  printf '\tln -s %s%s.exe $@\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
 
   if [ "$EMIT_EXE_EMIT_VSCODE_SETTINGS" = "1" ]; then
     NAME="$EMIT_EXE_EXE_NAME ($(printf '%s' "$EMIT_EXE_SUFFIX" | sed s/^\\.//))"
@@ -211,6 +213,15 @@ emit_exe() {
     printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@.tmp\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
     printf '\tmv $@.tmp $@\n'
   fi
+}
+
+# emut exe link rule
+emit_link() {
+  EMIT_LINK_EXE_NAME=$1
+  EMIT_LINK_DEFAULT_SUFFIX=$2
+
+  printf '%s: out/exe/%s%s.exe\n' "$EMIT_LINK_EXE_NAME" "$EMIT_LINK_EXE_NAME" "$EMIT_LINK_DEFAULT_SUFFIX"
+  printf '\tln -s $< $@\n'
 }
 
 
@@ -294,3 +305,8 @@ for MINIRT_PRECISION in 0 1 2; do
   done
 
 done
+
+while IFS="=" read -r exe_name dependency_libs;
+do
+  emit_link "$exe_name" ".1"
+done < ../data/exe.properties

@@ -1,7 +1,7 @@
 TARGET = \
-	out/exe/minirt.0.exe \
-	out/exe/minirt.1.exe \
-	out/exe/minirt.2.exe \
+	minirt \
+	minirt_validate \
+	pack \
 
 EVERYTHING = $(TARGET)
 
@@ -11,7 +11,7 @@ all:
 .PHONY: all
 
 .PHONY: everything
-everything: error_if_targets_not_included $(EVERYTHING) .vscode/launch.json .vscode/tasks.json
+everything: error_if_targets_not_included .vscode/launch.json .vscode/tasks.json
 
 .PHONY: error_if_targets_not_included
 error_if_targets_not_included:

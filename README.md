@@ -49,7 +49,7 @@ Building on Windows requires CMake and a suitable build system.
 metacmake
 
 # for example
-cmake -B builddir -G "Visual Studio 17 2022" -DMINIRT_PRECISION=1
+cmake -B builddir -G "Visual Studio 17 2022" -DMINIRT_PRECISION="double"
 
 # build
 cmake --build builddir

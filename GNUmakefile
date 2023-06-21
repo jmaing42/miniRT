@@ -5,21 +5,22 @@ include common.mk
 MINIRT_PRECISION ?= $(shell [ -f  .MINIRT_PRECISION.flag ] && cat .MINIRT_PRECISION.flag || printf "1")
 
 ifeq ($(filter $(MINIRT_PRECISION),0 1 2),)
-$(error MINIRT_PRECISION must be set to 0, 1, or 2)
+	$(error MINIRT_PRECISION must be set to 0, 1, or 2)
 endif
 
 TMP := $(shell printf "%s" "$(MINIRT_PRECISION)" > .MINIRT_PRECISION.flag)
-
-EVERYTHING := $(if $(filter $(FLAG_IF_TARGETS_INCLUDED), true), $(EVERYTHING), $(TARGET))
-EVERYTHING := $(shell echo $(EVERYTHING) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs)
-TARGET := $(shell echo $(TARGET) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs)
 
 clean: clean_minirt_precision_flag
 .PHONY: clean_minirt_precision_flag
 clean_minirt_precision_flag:
 	rm -f .MINIRT_PRECISION.flag
 
+EVERYTHING := $(if $(filter $(FLAG_IF_TARGETS_INCLUDED), true), $(EVERYTHING), $(TARGET))
+EVERYTHING := $(shell echo $(EVERYTHING) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs) $(shell echo $(EVERYTHING) | xargs -n 1 echo | grep -v \\. | xargs)
+TARGET := $(shell echo $(TARGET) | xargs -n 1 echo | grep \\.$(MINIRT_PRECISION) | xargs) $(shell echo $(TARGET) | xargs -n 1 echo | grep -v \\. | xargs)
+
 all: $(TARGET)
+everything: $(EVERYTHING)
 
 -include include.mk
 
@@ -39,6 +40,11 @@ norm: build
 .PHONY: build
 build:
 	mkdir -p build && sh script/build_refresh_gnumakefile.sh $(MINIRT_PRECISION)
+
+.PHONY: clean_targets
+clean: clean_targets
+clean_targets:
+	rm -f $(TARGET)
 
 .vscode/launch.json: build
 	$(MAKE_J) -C build -f $(MINIRT_PRECISION).mk launch.json

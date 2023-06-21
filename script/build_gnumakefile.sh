@@ -213,6 +213,15 @@ emit_exe() {
   fi
 }
 
+# emut exe link rule
+emit_link() {
+  EMIT_LINK_EXE_NAME=$1
+  EMIT_LINK_DEFAULT_SUFFIX=$2
+
+  printf '%s: out/exe/%s%s.exe\n' "$EMIT_LINK_EXE_NAME" "$EMIT_LINK_EXE_NAME" "$EMIT_LINK_DEFAULT_SUFFIX"
+  printf '\tln -s $< $@\n'
+}
+
 
 # ==============================================================================
 # per-precision
@@ -251,6 +260,7 @@ print_exe() {
   emit_exe "$EXE_NAME" ".$MINIRT_PRECISION" "$DEPENDENCY_LIBS"
   emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug" "$DEPENDENCY_LIBS" "" 1
   emit_exe "$EXE_NAME" ".$MINIRT_PRECISION.debug.address" "$DEPENDENCY_LIBS" "-fsanitize=address" 1
+  emit_link "$EXE_NAME" ".$MINIRT_PRECISION"
 }
 
 while IFS="=" read -r lib_name lib_path;
