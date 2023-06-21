@@ -5,7 +5,7 @@ include common.mk
 MINIRT_PRECISION ?= $(shell [ -f  .MINIRT_PRECISION.flag ] && cat .MINIRT_PRECISION.flag || printf "1")
 
 ifeq ($(filter $(MINIRT_PRECISION),0 1 2),)
-$(error MINIRT_PRECISION must be set to 0, 1, or 2)
+	$(error MINIRT_PRECISION must be set to 0, 1, or 2)
 endif
 
 TMP := $(shell printf "%s" "$(MINIRT_PRECISION)" > .MINIRT_PRECISION.flag)
