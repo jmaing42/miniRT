@@ -1,7 +1,7 @@
 TARGET = \
-	out/exe/minirt.0.exe \
-	out/exe/minirt.1.exe \
-	out/exe/minirt.2.exe \
+	minirt \
+	minirt_validate \
+	pack \
 
 EVERYTHING = $(TARGET)
 

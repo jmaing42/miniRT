@@ -24,6 +24,11 @@ norm: build
 build:
 	mkdir -p build && sh script/build_refresh_makefile.sh
 
+.PHONY: clean_targets
+clean: clean_targets
+clean_targets:
+	rm -f $(TARGET)
+
 .vscode/launch.json: build
 	(cd build && $(MAKE) launch.json)
 	cp build/launch.json .vscode/launch.json
