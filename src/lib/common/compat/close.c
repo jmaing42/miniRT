@@ -10,42 +10,24 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "json_internal.h"
+#include "minirt/common/compat/unistd.h"
 
-#include <stdlib.h>
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
-typedef t_minirt_json_tokenizer_state			t_s;
-typedef t_minirt_json_tokenizer_state_string	t_x;
+# include <io.h>
 
-static unsigned char	from_hex(char c)
+int	wrap_open(int fd)
 {
-	if ('0' <= c && c <= '9')
-		return (c - '0');
-	if ('a' <= c && c <= 'f')
-		return (c - 'a' + 10);
-	if ('A' <= c && c <= 'F')
-		return (c - 'A' + 10);
-	return ((unsigned char)-1);
+	return (_close(fd));
 }
 
-t_err	minirt_json_tokenize_string_x0(
-	char c,
-	t_minirt_json_token_list *list,
-	void *data,
-	t_minirt_json_tokenizer_state *out_next_state
-)
-{
-	const unsigned char	value = from_hex(c);
+#else
 
-	(void)list;
-	if (value == (unsigned char)-1)
-	{
-		minirt_json_stringbuilder_free(((t_x *)data)->stringbuilder);
-		free(data);
-		*out_next_state = (t_s){MINIRT_JSON_TOKENIZER_STATE_ERROR, NULL};
-		return (false);
-	}
-	*out_next_state = (t_s){MINIRT_JSON_TOKENIZER_STATE_STRING_X1, data};
-	((t_x *)data)->x = value;
-	return (false);
+# include <unistd.h>
+
+int	wrap_open(int fd)
+{
+	return (close(fd));
 }
+
+#endif

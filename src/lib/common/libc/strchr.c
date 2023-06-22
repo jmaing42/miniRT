@@ -16,7 +16,7 @@ bool	minirt_strchr(const char *str, char c, size_t *out)
 {
 	size_t	i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (str[++i])
 	{
 		if (str[i] == c)

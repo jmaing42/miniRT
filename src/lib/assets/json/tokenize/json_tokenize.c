@@ -51,7 +51,7 @@ t_err	minirt_json_tokenize(
 	current_state.state = MINIRT_JSON_TOKENIZER_STATE_DEFAULT;
 	current_state.data = NULL;
 	*out = (t_minirt_json_token_list){NULL, NULL};
-	i = -1;
+	i = (size_t)-1;
 	while (current_state.state != MINIRT_JSON_TOKENIZER_STATE_ERROR
 		&& (i++ == (size_t)-1 || str[i - 1]))
 	{

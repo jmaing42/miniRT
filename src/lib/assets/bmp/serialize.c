@@ -31,6 +31,20 @@ static uint32_t	u32_to_le(uint32_t u32)
 	return (result);
 }
 
+static uint16_t	u16_to_le(uint16_t u16)
+{
+	const uint16_t		test = 42;
+	const char *const	source = (const char *)&u16;
+	uint16_t			result;
+	char *const			dest = (char *)&result;
+
+	if (*((char *)&test))
+		return (u16);
+	dest[0] = source[1];
+	dest[1] = source[0];
+	return (result);
+}
+
 static void	fill_header(t_minirt_bmp *self, char *result)
 {
 	const size_t	row_padding = (4 - (self->width * 3) % 4) % 4;
@@ -39,16 +53,16 @@ static void	fill_header(t_minirt_bmp *self, char *result)
 
 	result[0] = 'B';
 	result[1] = 'M';
-	*((uint32_t *)(result + 2)) = u32_to_le(54 + whole_size);
+	*((uint32_t *)(result + 2)) = u32_to_le(54 + (uint32_t)whole_size);
 	*((uint32_t *)(result + 6)) = u32_to_le(0);
 	*((uint32_t *)(result + 10)) = u32_to_le(54);
 	*((uint32_t *)(result + 14)) = u32_to_le(40);
-	*((uint32_t *)(result + 18)) = u32_to_le(self->width);
-	*((uint32_t *)(result + 22)) = u32_to_le(self->height);
-	*((uint16_t *)(result + 26)) = u32_to_le(1);
-	*((uint16_t *)(result + 28)) = u32_to_le(24);
+	*((uint32_t *)(result + 18)) = u32_to_le((uint32_t)self->width);
+	*((uint32_t *)(result + 22)) = u32_to_le((uint32_t)self->height);
+	*((uint16_t *)(result + 26)) = u16_to_le(1);
+	*((uint16_t *)(result + 28)) = u16_to_le(24);
 	*((uint32_t *)(result + 30)) = u32_to_le(0);
-	*((uint32_t *)(result + 34)) = u32_to_le(whole_size);
+	*((uint32_t *)(result + 34)) = u32_to_le((uint32_t)whole_size);
 	*((uint32_t *)(result + 38)) = u32_to_le(0);
 	*((uint32_t *)(result + 42)) = u32_to_le(0);
 	*((uint32_t *)(result + 46)) = u32_to_le(256);
@@ -67,14 +81,14 @@ static void	fill_body(t_minirt_bmp *self, char *result)
 	y = self->height;
 	while (y--)
 	{
-		x = -1;
+		x = (size_t)-1;
 		while (++x < self->width)
 		{
 			result[offset++] = self->extra[self->width * y + x].b * 255;
 			result[offset++] = self->extra[self->width * y + x].g * 255;
 			result[offset++] = self->extra[self->width * y + x].r * 255;
 		}
-		i = -1;
+		i = (size_t)-1;
 		while (++i < row_padding)
 			result[offset++] = 0;
 	}

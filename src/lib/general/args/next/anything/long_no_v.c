@@ -23,7 +23,7 @@ static bool	is_string(
 	size_t	i;
 	size_t	option_length;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < options->string_parameter_count)
 	{
 		if (minirt_starts_with(
@@ -45,7 +45,7 @@ static bool	is_map(
 {
 	size_t	i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < options->map_parameter_count)
 	{
 		if (minirt_str_eq(options->map_parameters[i].name, arg))
@@ -66,7 +66,7 @@ static bool	is_set(
 	size_t	i;
 	size_t	option_length;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < options->set_parameter_count)
 	{
 		if (minirt_starts_with(
@@ -89,7 +89,7 @@ static bool	is_boolean(
 	size_t	i;
 	size_t	option_length;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < options->boolean_parameter_count)
 	{
 		if (minirt_starts_with(

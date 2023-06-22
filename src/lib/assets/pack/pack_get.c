@@ -24,7 +24,7 @@ static size_t	le(size_t u)
 
 	if (*((char *)&test))
 		return (u);
-	i = -1;
+	i = (size_t)-1;
 	while (++i < sizeof(size_t))
 		dest[0] = source[sizeof(size_t) - i - 1];
 	return (result);
@@ -35,7 +35,7 @@ static bool	find(t_minirt_pack *self, const char *name, size_t *out_index)
 	t_minirt_pack_node *const	node = (t_minirt_pack_node *)self->array;
 	size_t						i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < self->node_count)
 	{
 		if (minirt_str_eq(

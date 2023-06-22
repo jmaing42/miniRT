@@ -26,7 +26,7 @@ t_err	minirt_args(
 
 	if (minirt_args_state_init(&state))
 		return (minirt_args_malloc_error(&state, out));
-	i = -1;
+	i = (size_t)-1;
 	while (++i < argc && state.state_type != MINIRT_ARGS_STATE_ERROR)
 		if (minirt_args_next(&state, &options, argv[i]))
 			return (minirt_args_malloc_error(&state, out));

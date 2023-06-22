@@ -29,10 +29,10 @@ t_minirt_bmp	*new(
 
 	result->width = width;
 	result->height = height;
-	y = -1;
+	y = (size_t)-1;
 	while (++y < result->height)
 	{
-		x = -1;
+		x = (size_t)-1;
 		while (++x < result->width)
 			fill(context, x, y, &result->extra[y * result->width + x]);
 	}

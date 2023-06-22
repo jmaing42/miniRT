@@ -15,7 +15,7 @@ if (CMAKE_C_COMPILER_ID MATCHES \"Clang\" OR CMAKE_COMPILER_IS_GNUCC)
   add_compile_options(-Wall -Wextra -Werror -pedantic)
 endif()
 if (MSVC)
-  add_compile_options(/W4 /WX)
+  add_compile_options(/W4 /WX /wd4200)
 endif()
 
 include_directories(include)

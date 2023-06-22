@@ -16,7 +16,7 @@
 
 #include "minirt/common/libc.h"
 
-static size_t	max(size_t a, size_t b)
+static size_t	size_t_max(size_t a, size_t b)
 {
 	if (a < b)
 		return (b);
@@ -26,7 +26,7 @@ static size_t	max(size_t a, size_t b)
 
 static t_err	resize(t_minirt_array_builder *self, size_t minimum)
 {
-	const size_t	new_capacity = max(minimum, self->capacity * 2);
+	const size_t	new_capacity = size_t_max(minimum, self->capacity * 2);
 	void *const		new_array = malloc(self->item_size * new_capacity);
 
 	if (!new_array)

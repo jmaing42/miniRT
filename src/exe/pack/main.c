@@ -13,9 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <unistd.h>
-#include <fcntl.h>
-
+#include "minirt/common/compat/unistd.h"
+#include "minirt/common/compat/fcntl.h"
 #include "minirt/common/array_builder_types.h"
 #include "minirt/common/libc.h"
 #include "minirt/common/array_builder.h"
@@ -55,19 +54,20 @@ static int	error(bool malloc_error)
 {
 	if (malloc_error)
 	{
-		write(STDERR_FILENO, "Error: failed to allocate memory\n", 33);
+		minirt_write(STDERR_FILENO, "Error: failed to allocate memory\n", 33);
 		return (EXIT_FAILURE);
 	}
-	write(STDOUT_FILENO,
+	minirt_write(STDOUT_FILENO,
 		"Usage: pack [-o filename | --outfile filename] ...files\n", 56);
 	return (EXIT_FAILURE);
 }
 
 static int	failed_to_read_file(const char *filename)
 {
-	write(STDERR_FILENO, "Error: failed to read file: ", 28);
-	write(STDERR_FILENO, filename, minirt_strlen(filename));
-	write(STDERR_FILENO, "\n", 1);
+	minirt_write(STDERR_FILENO, "Error: failed to read file: ", 28);
+	minirt_write(
+		STDERR_FILENO, filename, (unsigned int)minirt_strlen(filename));
+	minirt_write(STDERR_FILENO, "\n", 1);
 	return (EXIT_FAILURE);
 }
 
@@ -82,19 +82,19 @@ static t_err	read_file_contents(
 	int								fd;
 	ssize_t							read_size;
 
-	fd = open(path, O_RDONLY);
+	fd = minirt_open(path, O_RDONLY);
 	if (!builder || fd < 0)
 		return (true);
 	read_size = -1;
 	while (read_size)
 	{
-		read_size = read(fd, buffer, BUFFER_SIZE);
+		read_size = minirt_read(fd, buffer, BUFFER_SIZE);
 		if (read_size < 0)
 			return (true);
 		if (minirt_array_builder_append(builder, read_size, buffer))
 			return (true);
 	}
-	close(fd);
+	minirt_close(fd);
 	*out = minirt_array_builder_build(builder);
 	*out_length = builder->length;
 	if (!*out)
@@ -109,17 +109,18 @@ static int	write_file(const char *filename, t_minirt_pack *pack)
 
 	fd = STDOUT_FILENO;
 	if (filename)
-		fd = open(filename, O_WRONLY);
+		fd = minirt_open(filename, O_WRONLY);
 	if (fd < 0)
 	{
-		write(STDERR_FILENO, "Error: failed to open output file: ", 35);
-		write(STDERR_FILENO, filename, minirt_strlen(filename));
-		write(STDERR_FILENO, "\n", 1);
+		minirt_write(STDERR_FILENO, "Error: failed to open output file: ", 35);
+		minirt_write(
+			STDERR_FILENO, filename, (unsigned int)minirt_strlen(filename));
+		minirt_write(STDERR_FILENO, "\n", 1);
 		return (EXIT_FAILURE);
 	}
-	if (write(fd, pack, pack->size) != (ssize_t)pack->size)
+	if (minirt_write(fd, pack, (unsigned int)pack->size) != (ssize_t)pack->size)
 	{
-		write(STDERR_FILENO, "Error: failed to write\n", 23);
+		minirt_write(STDERR_FILENO, "Error: failed to write\n", 23);
 		return (EXIT_FAILURE);
 	}
 	return (EXIT_SUCCESS);
@@ -139,7 +140,7 @@ int	main(int argc, char **argv)
 	input = malloc(sizeof(t_minirt_pack_in) * a.value.ok.arg_count);
 	if (!input)
 		return (error(true));
-	i = -1;
+	i = (size_t)-1;
 	while (++i < params->arg_count)
 	{
 		input[i].name = params->args[i];

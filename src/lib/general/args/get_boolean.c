@@ -22,7 +22,7 @@ bool	minirt_args_get_boolean(
 {
 	size_t	i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < self->string_count)
 	{
 		if (minirt_str_eq(self->string[i].option->name, name))

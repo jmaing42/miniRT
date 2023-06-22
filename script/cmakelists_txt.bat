@@ -13,7 +13,7 @@ echo if (CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_IS_GNUCC^)
 echo   add_compile_options(-Wall -Wextra -Werror -pedantic^)
 echo endif(^)
 echo if (MSVC^)
-echo   add_compile_options(/W4 /WX^)
+echo   add_compile_options(/W4 /WX /wd4200^)
 echo endif(^)
 echo.
 echo include_directories(include)

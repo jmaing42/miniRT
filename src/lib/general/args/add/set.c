@@ -25,7 +25,7 @@ static t_minirt_args_parameter_set_builder	*get_or_create_entry_builder(
 	size_t								i;
 	t_minirt_args_parameter_set_builder	new_node;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < mut_state->params_set->length)
 		if (((t_minirt_args_parameter_set_builder *)
 				mut_state->params_set->array)[i].option == option)
@@ -53,7 +53,7 @@ static bool	has(
 	char **const	entries = builder->array;
 	size_t			i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < builder->length)
 		if (minirt_str_eq(entries[i], name))
 			return (true);

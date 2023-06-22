@@ -24,12 +24,12 @@ t_err	minirt_args_set_foreach(
 	size_t	i;
 	size_t	j;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < self->set_count)
 	{
 		if (minirt_str_eq(self->set[i].option->name, name))
 		{
-			j = -1;
+			j = (size_t)-1;
 			while (++j < self->set[i].value_count)
 			{
 				if (func(context, self->set[i].values[j]))

@@ -26,7 +26,7 @@ static size_t	le(size_t u)
 
 	if (*((char *)&test))
 		return (u);
-	i = -1;
+	i = (size_t)-1;
 	while (++i < sizeof(size_t))
 		dest[0] = source[sizeof(size_t) - i - 1];
 	return (result);
@@ -41,7 +41,7 @@ static size_t	size(
 	size_t	i;
 
 	result = 0;
-	i = -1;
+	i = (size_t)-1;
 	while (++i < file_count)
 		result += minirt_strlen(files[i].name) + 1 + files[i].content_length;
 	return (result);
@@ -58,7 +58,7 @@ static void	fill(
 	size_t			i;
 
 	current_offset = sizeof(t_minirt_pack_node) * file_count;
-	i = -1;
+	i = (size_t)-1;
 	while (++i < file_count)
 	{
 		tmp = minirt_strlen(files[i].name) + 1;

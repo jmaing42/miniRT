@@ -22,7 +22,7 @@ t_err	minirt_strndup(const char *src, size_t length, char **out)
 	result = malloc(length + 1);
 	if (!result)
 		return (true);
-	i = -1;
+	i = (size_t)-1;
 	while (++i < length)
 		result[i] = src[i];
 	result[length] = '\0';

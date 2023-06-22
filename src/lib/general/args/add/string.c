@@ -25,7 +25,7 @@ static t_minirt_args_parameter_string	*find(
 	t_minirt_args_parameter_string *const	array = state->params_string->array;
 	size_t									i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < state->params_string->length)
 		if (array[i].option == option)
 			return (&array[i]);

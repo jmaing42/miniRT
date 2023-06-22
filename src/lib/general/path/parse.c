@@ -21,7 +21,7 @@ static void	free_builder(t_minirt_array_builder *builder)
 {
 	size_t	i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < builder->length)
 		free(((t_minirt_path_segment *)builder->array)[i].str);
 	minirt_array_builder_free(builder);

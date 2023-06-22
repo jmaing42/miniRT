@@ -10,42 +10,42 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "json_internal.h"
+#ifndef UNISTD_H
+# define UNISTD_H
 
-#include <stdlib.h>
+#  include <limits.h>
+#  include <stdint.h>
 
-typedef t_minirt_json_tokenizer_state			t_s;
-typedef t_minirt_json_tokenizer_state_string	t_x;
+// ssize_t
 
-static unsigned char	from_hex(char c)
-{
-	if ('0' <= c && c <= '9')
-		return (c - '0');
-	if ('a' <= c && c <= 'f')
-		return (c - 'a' + 10);
-	if ('A' <= c && c <= 'F')
-		return (c - 'A' + 10);
-	return ((unsigned char)-1);
-}
+# if SIZE_MAX == UINT16_MAX
 
-t_err	minirt_json_tokenize_string_x0(
-	char c,
-	t_minirt_json_token_list *list,
-	void *data,
-	t_minirt_json_tokenizer_state *out_next_state
-)
-{
-	const unsigned char	value = from_hex(c);
+typedef int16_t	ssize_t;
 
-	(void)list;
-	if (value == (unsigned char)-1)
-	{
-		minirt_json_stringbuilder_free(((t_x *)data)->stringbuilder);
-		free(data);
-		*out_next_state = (t_s){MINIRT_JSON_TOKENIZER_STATE_ERROR, NULL};
-		return (false);
-	}
-	*out_next_state = (t_s){MINIRT_JSON_TOKENIZER_STATE_STRING_X1, data};
-	((t_x *)data)->x = value;
-	return (false);
-}
+# elif SIZE_MAX == UINT32_MAX
+
+typedef int32_t	ssize_t;
+
+# elif defined(UINT64_MAX) && SIZE_MAX == UINT64_MAX
+
+typedef int64_t	ssize_t;
+
+# else
+#  error "Failed to define ssize_t"
+# endif
+
+# if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+
+// other constants
+
+#  define STDIN_FILENO 0
+#  define STDOUT_FILENO 1
+#  define STDERR_FILENO 2
+
+# endif
+
+ssize_t	minirt_read(int fd, void *buf, unsigned int count);
+ssize_t	minirt_write(int fd, const void *buf, unsigned int count);
+int		minirt_close(int fd);
+
+#endif

@@ -10,42 +10,25 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "json_internal.h"
+#ifndef FCNTL_H
+# define FCNTL_H
 
-#include <stdlib.h>
+# include <fcntl.h>
 
-typedef t_minirt_json_tokenizer_state			t_s;
-typedef t_minirt_json_tokenizer_state_string	t_x;
+# if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
-static unsigned char	from_hex(char c)
-{
-	if ('0' <= c && c <= '9')
-		return (c - '0');
-	if ('a' <= c && c <= 'f')
-		return (c - 'a' + 10);
-	if ('A' <= c && c <= 'F')
-		return (c - 'A' + 10);
-	return ((unsigned char)-1);
-}
+#  include <io.h>
 
-t_err	minirt_json_tokenize_string_x0(
-	char c,
-	t_minirt_json_token_list *list,
-	void *data,
-	t_minirt_json_tokenizer_state *out_next_state
-)
-{
-	const unsigned char	value = from_hex(c);
+#  define O_RDONLY _O_RDONLY
+#  define O_WRONLY _O_WRONLY
+#  define O_RDWR _O_RDWR
 
-	(void)list;
-	if (value == (unsigned char)-1)
-	{
-		minirt_json_stringbuilder_free(((t_x *)data)->stringbuilder);
-		free(data);
-		*out_next_state = (t_s){MINIRT_JSON_TOKENIZER_STATE_ERROR, NULL};
-		return (false);
-	}
-	*out_next_state = (t_s){MINIRT_JSON_TOKENIZER_STATE_STRING_X1, data};
-	((t_x *)data)->x = value;
-	return (false);
-}
+#  define O_EXCL _O_EXCL
+#  define O_CREAT _O_CREAT
+#  define O_APPEND _O_APPEND
+
+# endif
+
+int	minirt_open(const char *pathname, int flags, ...);
+
+#endif

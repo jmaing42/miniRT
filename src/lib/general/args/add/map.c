@@ -25,7 +25,7 @@ static t_minirt_args_parameter_map_builder	*get_or_create_entry_builder(
 	size_t								i;
 	t_minirt_args_parameter_map_builder	new_node;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < mut_state->params_map->length)
 		if (((t_minirt_args_parameter_map_builder *)
 				mut_state->params_map->array)[i].option == option)
@@ -52,7 +52,7 @@ static t_minirt_args_map_entry	*get_entry(
 	t_minirt_args_map_entry *const	entries = builder->array;
 	size_t							i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < builder->length)
 		if (minirt_str_eq(entries[i].key, key))
 			return (&entries[i]);
