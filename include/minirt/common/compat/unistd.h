@@ -34,15 +34,11 @@ typedef int64_t	t_ssize_t;
 #  error "Failed to define ssize_t"
 # endif
 
-# if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-
 // other constants
 
-#  define STDIN_FILENO 0
-#  define STDOUT_FILENO 1
-#  define STDERR_FILENO 2
-
-# endif
+# define STDIN_FILENO 0
+# define STDOUT_FILENO 1
+# define STDERR_FILENO 2
 
 t_ssize_t	minirt_read(int fd, void *buf, unsigned int count);
 t_ssize_t	minirt_write(int fd, const void *buf, unsigned int count);

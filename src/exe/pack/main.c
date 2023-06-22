@@ -80,7 +80,7 @@ static t_err	read_file_contents(
 	unsigned char					buffer[BUFFER_SIZE];
 	t_minirt_array_builder *const	builder = minirt_array_builder_new(1);
 	int								fd;
-	ssize_t							read_size;
+	t_ssize_t						read_size;
 
 	fd = minirt_open(path, O_RDONLY);
 	if (!builder || fd < 0)
@@ -118,7 +118,8 @@ static int	write_file(const char *filename, t_minirt_pack *pack)
 		minirt_write(STDERR_FILENO, "\n", 1);
 		return (EXIT_FAILURE);
 	}
-	if (minirt_write(fd, pack, (unsigned int)pack->size) != (ssize_t)pack->size)
+	if (minirt_write(
+			fd, pack, (unsigned int)pack->size) != (t_ssize_t)pack->size)
 	{
 		minirt_write(STDERR_FILENO, "Error: failed to write\n", 23);
 		return (EXIT_FAILURE);
