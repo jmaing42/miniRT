@@ -29,7 +29,7 @@ t_err	minirt_args_map_foreach(
 	{
 		if (minirt_str_eq(self->map[i].option->name, name))
 		{
-			j = (size_t)-1;
+			j = (size_t)(-1);
 			while (++j < self->map[i].entry_count)
 			{
 				if (func(context, self->map[i].entries[j].key,

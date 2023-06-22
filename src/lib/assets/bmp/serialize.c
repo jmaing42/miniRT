@@ -81,14 +81,14 @@ static void	fill_body(t_minirt_bmp *self, char *result)
 	y = self->height;
 	while (y--)
 	{
-		x = (size_t)-1;
+		x = (size_t)(-1);
 		while (++x < self->width)
 		{
 			result[offset++] = self->extra[self->width * y + x].b * 255;
 			result[offset++] = self->extra[self->width * y + x].g * 255;
 			result[offset++] = self->extra[self->width * y + x].r * 255;
 		}
-		i = (size_t)-1;
+		i = (size_t)(-1);
 		while (++i < row_padding)
 			result[offset++] = 0;
 	}

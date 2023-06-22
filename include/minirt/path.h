@@ -13,9 +13,9 @@
 #ifndef PATH_H
 # define PATH_H
 
-#include "minirt/base_types.h"
+# include "minirt/base_types.h"
 
-#include <stddef.h>
+# include <stddef.h>
 
 typedef enum e_minirt_path_segment_type
 {

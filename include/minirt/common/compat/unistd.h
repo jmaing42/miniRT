@@ -13,22 +13,22 @@
 #ifndef UNISTD_H
 # define UNISTD_H
 
-#  include <limits.h>
-#  include <stdint.h>
+# include <limits.h>
+# include <stdint.h>
 
 // ssize_t
 
 # if SIZE_MAX == UINT16_MAX
 
-typedef int16_t	ssize_t;
+typedef int16_t	t_ssize_t;
 
 # elif SIZE_MAX == UINT32_MAX
 
-typedef int32_t	ssize_t;
+typedef int32_t	t_ssize_t;
 
 # elif defined(UINT64_MAX) && SIZE_MAX == UINT64_MAX
 
-typedef int64_t	ssize_t;
+typedef int64_t	t_ssize_t;
 
 # else
 #  error "Failed to define ssize_t"
@@ -44,8 +44,8 @@ typedef int64_t	ssize_t;
 
 # endif
 
-ssize_t	minirt_read(int fd, void *buf, unsigned int count);
-ssize_t	minirt_write(int fd, const void *buf, unsigned int count);
-int		minirt_close(int fd);
+t_ssize_t	minirt_read(int fd, void *buf, unsigned int count);
+t_ssize_t	minirt_write(int fd, const void *buf, unsigned int count);
+int			minirt_close(int fd);
 
 #endif

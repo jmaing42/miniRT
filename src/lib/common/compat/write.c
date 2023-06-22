@@ -16,16 +16,22 @@
 
 # include <io.h>
 
-ssize_t	minirt_write(int fd, const void *buf, unsigned int count)
+#else
+
+# include <unistd.h>
+
+#endif
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+
+t_ssize_t	minirt_write(int fd, const void *buf, unsigned int count)
 {
 	return (_write(fd, buf, count));
 }
 
 #else
 
-# include <unistd.h>
-
-ssize_t	minirt_write(int fd, const void *buf, unsigned int count)
+t_ssize_t	minirt_write(int fd, const void *buf, unsigned int count)
 {
 	return (write(fd, buf, count));
 }

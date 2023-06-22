@@ -28,7 +28,7 @@ bool	minirt_args_set_has(
 	{
 		if (minirt_str_eq(self->set[i].option->name, name))
 		{
-			j = (size_t)-1;
+			j = (size_t)(-1);
 			while (++j < self->set[i].value_count)
 				if (minirt_str_eq(self->set[i].values[j], value))
 					return (true);

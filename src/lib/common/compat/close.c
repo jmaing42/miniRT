@@ -16,14 +16,20 @@
 
 # include <io.h>
 
+#else
+
+# include <unistd.h>
+
+#endif
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+
 int	wrap_open(int fd)
 {
 	return (_close(fd));
 }
 
 #else
-
-# include <unistd.h>
 
 int	wrap_open(int fd)
 {

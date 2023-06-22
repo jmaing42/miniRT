@@ -29,7 +29,7 @@ t_err	minirt_args_set_foreach(
 	{
 		if (minirt_str_eq(self->set[i].option->name, name))
 		{
-			j = (size_t)-1;
+			j = (size_t)(-1);
 			while (++j < self->set[i].value_count)
 			{
 				if (func(context, self->set[i].values[j]))

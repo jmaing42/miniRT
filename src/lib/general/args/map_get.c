@@ -28,7 +28,7 @@ const char	*minirt_args_map_get(
 	{
 		if (minirt_str_eq(self->map[i].option->name, name))
 		{
-			j = (size_t)-1;
+			j = (size_t)(-1);
 			while (++j < self->map[i].entry_count)
 				if (minirt_str_eq(self->map[i].entries[j].key, key))
 					return (self->map[i].entries[j].value);

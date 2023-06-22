@@ -14,6 +14,16 @@
 
 #include <stdarg.h>
 
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+
+# include <io.h>
+
+#else
+
+# include <fcntl.h>
+
+#endif
+
 #ifdef O_TMPFILE
 
 static const int	g_flags = O_CREAT | O_TMPFILE;
@@ -25,8 +35,6 @@ static const int	g_flags = O_CREAT;
 #endif
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-
-# include <io.h>
 
 int	wrap_open(const char *path, int flags, ...)
 {
@@ -50,8 +58,6 @@ int	wrap_open(const char *path, int flags, ...)
 }
 
 #else
-
-# include <fcntl.h>
 
 int	wrap_open(const char *path, int flags, ...)
 {

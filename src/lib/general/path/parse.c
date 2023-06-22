@@ -17,7 +17,7 @@
 #include "minirt/common/libc.h"
 #include "minirt/common/array_builder.h"
 
-static void	free_builder(t_minirt_array_builder *builder)
+static t_err	free_builder(t_minirt_array_builder *builder)
 {
 	size_t	i;
 
@@ -25,6 +25,7 @@ static void	free_builder(t_minirt_array_builder *builder)
 	while (++i < builder->length)
 		free(((t_minirt_path_segment *)builder->array)[i].str);
 	minirt_array_builder_free(builder);
+	return (true);
 }
 
 static t_err	add_child_node(t_minirt_array_builder *builder, char *segment)
@@ -94,10 +95,7 @@ t_err	minirt_path_parse(
 			return (true);
 	result = malloc(sizeof(t_minirt_path));
 	if (!result)
-	{
-		free_builder(builder);
-		return (true);
-	}
+		return (free_builder(builder));
 	result->length = builder->length;
 	result->segments = minirt_array_builder_build(builder);
 	free_builder(builder);
