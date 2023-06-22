@@ -24,14 +24,14 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
-int	wrap_open(int fd)
+int	minirt_close(int fd)
 {
 	return (_close(fd));
 }
 
 #else
 
-int	wrap_open(int fd)
+int	minirt_close(int fd)
 {
 	return (close(fd));
 }

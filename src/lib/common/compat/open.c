@@ -36,7 +36,7 @@ static const int	g_flags = O_CREAT;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
-int	wrap_open(const char *path, int flags, ...)
+int	minirt_open(const char *path, int flags, ...)
 {
 	va_list	ap;
 	int		additional_flags;
@@ -59,7 +59,7 @@ int	wrap_open(const char *path, int flags, ...)
 
 #else
 
-int	wrap_open(const char *path, int flags, ...)
+int	minirt_open(const char *path, int flags, ...)
 {
 	va_list	ap;
 	int		additional_flags;

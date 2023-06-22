@@ -26,7 +26,7 @@ static unsigned char	from_hex(char c)
 		return (c - 'a' + 10);
 	if ('A' <= c && c <= 'F')
 		return (c - 'A' + 10);
-	return ((size_t)-1);
+	return ((unsigned char)-1);
 }
 
 t_err	minirt_json_tokenize_string_x1(

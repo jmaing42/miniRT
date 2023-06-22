@@ -219,6 +219,7 @@ emit_link() {
   EMIT_LINK_DEFAULT_SUFFIX=$2
 
   printf '%s: out/exe/%s%s.exe\n' "$EMIT_LINK_EXE_NAME" "$EMIT_LINK_EXE_NAME" "$EMIT_LINK_DEFAULT_SUFFIX"
+  printf '\trm -f $@\n'
   printf '\tln -s $< $@\n'
 }
 

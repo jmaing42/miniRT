@@ -191,6 +191,7 @@ emit_exe() {
   printf "\t(cd .. && \$(CC) %s \$(LDFLAGS) -Lbuild/out/a %s %s -o build/\$@.tmp)\n" "$(list_exe_objs "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" | sed 's#^#build/#' | xargs)" "$(libs_to_ldlibs "$EMIT_EXE_DEPENDENCY_LIBS" "$EMIT_EXE_SUFFIX" | xargs)" "$EMIT_EXE_EXTRA_FLAGS"
   printf '\tmv $@.tmp $@\n'
   printf '%s: out/exe/%s%s.exe\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+  printf '\trm -f $@\n'
   printf '\tln -s %s%s.exe $@\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
 
   if [ "$EMIT_EXE_EMIT_VSCODE_SETTINGS" = "1" ]; then
