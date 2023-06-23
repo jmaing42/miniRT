@@ -109,7 +109,7 @@ static int	write_file(const char *filename, t_minirt_pack *pack)
 
 	fd = STDOUT_FILENO;
 	if (filename)
-		fd = minirt_open(filename, O_WRONLY);
+		fd = minirt_open(filename, O_WRONLY | O_CREAT | O_EXCL, 0644);
 	if (fd < 0)
 	{
 		minirt_write(STDERR_FILENO, "Error: failed to open output file: ", 35);
@@ -137,6 +137,8 @@ int	main(int argc, char **argv)
 
 	if (minirt_args(argc, argv, g_options, &a))
 		return (error(a.value.error.type == MINIRT_ARGS_ERROR_MALLOC_FAILURE));
+	if (!a.value.ok.arg_count)
+		return (error(false));
 	params = &a.value.ok;
 	input = malloc(sizeof(t_minirt_pack_in) * a.value.ok.arg_count);
 	if (!input)

@@ -75,7 +75,7 @@ t_err	minirt_args_add_string(
 		mut_state->error.value.duplicate_parameter_string.option = option;
 		return (false);
 	}
-	if (entry)
+	if (!entry)
 		return (append(mut_state, value));
 	return (replace(
 			entry,

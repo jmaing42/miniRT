@@ -22,7 +22,7 @@ t_err	minirt_args_next_anything(
 {
 	t_minirt_args_type	type;
 
-	if (minirt_str_eq(arg, "=="))
+	if (minirt_str_eq(arg, "--"))
 	{
 		mut_state->state_type = MINIRT_ARGS_STATE_ARGS;
 		return (false);

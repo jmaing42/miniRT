@@ -22,5 +22,5 @@ t_err	minirt_args_add_arg(
 	const char *arg
 )
 {
-	return (minirt_array_builder_append(mut_state->args, 1, arg));
+	return (minirt_array_builder_append(mut_state->args, 1, &arg));
 }

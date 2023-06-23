@@ -103,13 +103,13 @@ t_err	minirt_args_next_anything_short(
 	const bool	set = is_set(options, arg, &mut_state->state_value.set);
 	const bool	b = is_boolean(options, arg, &mut_state->state_value.boolean);
 
-	if (str && !arg[1])
+	if (str && !arg[2])
 		return (minirt_args_next_anything_no_v_string(mut_state));
-	if (map && !arg[1])
+	if (map && !arg[2])
 		return (minirt_args_next_anything_no_v_map(mut_state));
-	if (set && !arg[1])
+	if (set && !arg[2])
 		return (minirt_args_next_anything_no_v_set(mut_state));
-	if (b && !arg[1])
+	if (b && !arg[2])
 		return (minirt_args_next_anything_no_v_boolean(mut_state));
 	if (str)
 		return (minirt_args_next_anything_short_string(mut_state, arg));

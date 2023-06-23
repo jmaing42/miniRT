@@ -43,7 +43,12 @@ static size_t	size(
 	result = 0;
 	i = (size_t)-1;
 	while (++i < file_count)
-		result += minirt_strlen(files[i].name) + 1 + files[i].content_length;
+	{
+		result += sizeof(t_minirt_pack_node);
+		result += minirt_strlen(files[i].name);
+		result += 1;
+		result += files[i].content_length;
+	}
 	return (result);
 }
 

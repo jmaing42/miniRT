@@ -204,14 +204,14 @@ emit_exe() {
     printf 'json/%s%s.launch.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
     printf '\trm -f $@ $@.tmp\n'
     printf "\tmkdir -p \$(@D)\n"
-    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": %s,\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@.tmp\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" "$EMIT_EXE_DEBUG_ARGS" "$NAME"
+    printf "\tprintf '    {\\\\n      \"type\": \"lldb\",\\\\n      \"request\": \"launch\",\\\\n      \"name\": \"Debug %s\",\\\\n      \"program\": \"\$\${workspaceFolder}/build/out/exe/%s%s.exe\",\\\\n      \"cwd\": \"\$\${workspaceFolder}\",\\\\n      \"args\": %s,\\\\n      \"preLaunchTask\": \"Build %s\",\\\\n    },\\\\n' > \$@.tmp\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX" "$EMIT_EXE_DEBUG_ARGS" "$NAME"
     printf '\tmv $@.tmp $@\n'
 
     printf 'tasks.json: json/%s%s.tasks.json.debug.part\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
     printf 'json/%s%s.tasks.json.debug.part:\n' "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
     printf '\trm -f $@ $@.tmp\n'
     printf "\tmkdir -p \$(@D)\n"
-    printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make %s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@.tmp\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
+    printf "\tprintf '    {\\\\n      \"label\": \"Build %s\",\\\\n      \"type\": \"shell\",\\\\n      \"command\": \"make out/exe/%s%s.exe\",\\\\n      \"options\": {\\\\n        \"cwd\": \"\$\${workspaceFolder}\",\\\\n      },\\\\n      \"problemMatcher\": [\"\$\$gcc\"]\\\\n    },\\\\n' > \$@.tmp\n" "$NAME" "$EMIT_EXE_EXE_NAME" "$EMIT_EXE_SUFFIX"
     printf '\tmv $@.tmp $@\n'
   fi
 }
