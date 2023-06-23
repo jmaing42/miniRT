@@ -39,7 +39,6 @@ static t_err	add(
 		= already_has(mut_state, option);
 	const t_minirt_args_parameter_boolean	node = {option, true};
 
-
 	if (already && (option->on_duplicate
 			== MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_BOOLEAN_ERROR))
 	{
