@@ -122,5 +122,7 @@ t_err	minirt_args_next_anything_long_no_v(
 		return (minirt_args_next_anything_long_no_v_set(mut_state));
 	if (b)
 		return (minirt_args_next_anything_long_no_v_boolean(mut_state));
-	return (minirt_args_next_anything_long_no_v_unknown(mut_state, arg));
+	return (
+		minirt_args_next_anything_long_no_v_unknown(mut_state, options, arg)
+	);
 }

@@ -12,8 +12,6 @@
 
 #include "args_internal.h"
 
-#include "minirt/common/libc.h"
-
 t_err	minirt_args_next_anything_long_no_v_boolean(
 	t_minirt_args_state *mut_state
 )
