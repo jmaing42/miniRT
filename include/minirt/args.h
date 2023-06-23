@@ -254,7 +254,7 @@ typedef struct s_minirt_args_result
  *  string: "--name" "VALUE" or "--name=VALUE" or "-n" "VALUE" or "-nVALUE"
  *  map: "--name" "KEY=VALUE" or "-n" "KEY=VALUE" or "-nKEY=VALUE"
  *  set: "--name" "VALUE" or "-n" "VALUE" or "-nVALUE"
- *  boolean: "--name" or "-n" or "--name=0"(1/0/true/false) or "-nm"("-n" "-m")
+ *  boolean: "--name" or "-n" for single, "-nm" for multiple (same as "-n" "-m")
  *
  * @param argc first parameter from main
  * @param argv second parameter from main

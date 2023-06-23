@@ -14,10 +14,9 @@
 
 #include "minirt/common/libc.h"
 
-t_err	minirt_args_next_anything_long_no_v_set(
+t_err	minirt_args_next_anything_long_no_v_boolean(
 	t_minirt_args_state *mut_state
 )
 {
-	mut_state->state_type = MINIRT_ARGS_STATE_VALUE;
-	return (false);
+	return (minirt_args_add_boolean(mut_state, true));
 }

@@ -15,19 +15,9 @@
 #include "minirt/common/libc.h"
 
 t_err	minirt_args_next_anything_long_no_v_string(
-	t_minirt_args_state *mut_state,
-	const char *arg
+	t_minirt_args_state *mut_state
 )
 {
-	const t_minirt_args_options_string *const	option
-		= mut_state->state_value.string;
-	const size_t								option_length
-		= minirt_strlen(option->name);
-
-	if (!arg[2 + option_length])
-	{
-		mut_state->state_type = MINIRT_ARGS_STATE_STRING;
-		return (false);
-	}
-	return (minirt_args_add_string(mut_state, &arg[3 + option_length]));
+	mut_state->state_type = MINIRT_ARGS_STATE_STRING;
+	return (false);
 }
