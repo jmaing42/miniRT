@@ -17,6 +17,7 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
 # include <io.h>
+# include <sys/stat.h>
 
 #else
 
@@ -36,6 +37,18 @@ static const int	g_flags = O_CREAT;
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
+static int	translate(int flags)
+{
+	int	result;
+
+	result = 0;
+	if (flags & 0444)
+		result |= _S_IREAD;
+	if (flags & 0222)
+		result |= _S_IWRITE;
+	return (result);
+}
+
 int	minirt_open(const char *path, int flags, ...)
 {
 	va_list	ap;
@@ -46,13 +59,13 @@ int	minirt_open(const char *path, int flags, ...)
 	if (flags & g_flags)
 	{
 		va_start(ap, flags);
-		additional_flags = va_arg(ap, int);
+		additional_flags = translate(va_arg(ap, int));
 		va_end(ap);
-		if (_sopen_s(&result, path, flags, 0, additional_flags))
+		if (_sopen_s(&result, path, flags, _SH_DENYWR, additional_flags))
 			return (-1);
 		return (result);
 	}
-	if (_sopen_s(&result, path, flags, 0, 0))
+	if (_sopen_s(&result, path, flags, _SH_DENYWR, 0))
 		return (-1);
 	return (result);
 }

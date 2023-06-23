@@ -23,7 +23,7 @@ static bool	already_has(
 		= mut_state->params_boolean->array;
 	size_t									i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < mut_state->params_boolean->length)
 		if (array[i].option == option)
 			return (true);

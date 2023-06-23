@@ -20,7 +20,7 @@ static bool	already_has(t_minirt_args_state *mut_state)
 		= mut_state->params_boolean->array;
 	size_t									i;
 
-	i = -1;
+	i = (size_t)-1;
 	while (++i < mut_state->params_boolean->length)
 		if (array[i].option == mut_state->state_value.boolean)
 			return (true);
