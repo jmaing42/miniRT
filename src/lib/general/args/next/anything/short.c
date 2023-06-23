@@ -12,8 +12,6 @@
 
 #include "args_internal.h"
 
-#include "minirt/common/libc.h"
-
 static bool	is_string(
 	t_minirt_args_options *options,
 	const char *arg,
@@ -25,7 +23,7 @@ static bool	is_string(
 	i = (size_t)-1;
 	while (++i < options->string_parameter_count)
 	{
-		if (minirt_str_eq(&arg[2], options->string_parameters[i].name))
+		if (arg[1] == options->string_parameters[i].short_name)
 		{
 			*out = &options->string_parameters[i];
 			return (true);
@@ -45,7 +43,7 @@ static bool	is_map(
 	i = (size_t)-1;
 	while (++i < options->map_parameter_count)
 	{
-		if (minirt_str_eq(options->map_parameters[i].name, arg))
+		if (arg[1] == options->map_parameters[i].short_name)
 		{
 			*out = &options->map_parameters[i];
 			return (true);
@@ -65,7 +63,7 @@ static bool	is_set(
 	i = (size_t)-1;
 	while (++i < options->set_parameter_count)
 	{
-		if (minirt_str_eq(&arg[2], options->set_parameters[i].name))
+		if (arg[1] == options->set_parameters[i].short_name)
 		{
 			*out = &options->set_parameters[i];
 			return (true);
@@ -85,7 +83,7 @@ static bool	is_boolean(
 	i = (size_t)-1;
 	while (++i < options->boolean_parameter_count)
 	{
-		if (minirt_str_eq(&arg[2], options->boolean_parameters[i].name))
+		if (arg[1] == options->boolean_parameters[i].short_name)
 		{
 			*out = &options->boolean_parameters[i];
 			return (true);
@@ -94,7 +92,7 @@ static bool	is_boolean(
 	return (false);
 }
 
-t_err	minirt_args_next_anything_long_no_v(
+t_err	minirt_args_next_anything_short(
 	t_minirt_args_state *mut_state,
 	t_minirt_args_options *options,
 	const char *arg
@@ -105,13 +103,22 @@ t_err	minirt_args_next_anything_long_no_v(
 	const bool	set = is_set(options, arg, &mut_state->state_value.set);
 	const bool	b = is_boolean(options, arg, &mut_state->state_value.boolean);
 
-	if (str)
+	if (str && !arg[1])
 		return (minirt_args_next_anything_no_v_string(mut_state));
-	if (map)
+	if (map && !arg[1])
 		return (minirt_args_next_anything_no_v_map(mut_state));
-	if (set)
+	if (set && !arg[1])
 		return (minirt_args_next_anything_no_v_set(mut_state));
-	if (b)
+	if (b && !arg[1])
 		return (minirt_args_next_anything_no_v_boolean(mut_state));
+	if (str)
+		return (minirt_args_next_anything_short_string(mut_state, arg));
+	if (map)
+		return (minirt_args_next_anything_short_map(mut_state, arg));
+	if (set)
+		return (minirt_args_next_anything_short_set(mut_state, arg));
+	if (b)
+		return (
+			minirt_args_next_anything_short_boolean(mut_state, options, arg));
 	return (minirt_args_next_anything_unknown(mut_state, options, arg));
 }

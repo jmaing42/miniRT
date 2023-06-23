@@ -37,8 +37,6 @@ t_err	minirt_args_next_anything(
 	else if (type
 		== MINIRT_ARGS_TYPE_LONG_STRING_WITH_VALUE_OR_LONG_BOOLEAN_WITH_VALUE)
 		return (minirt_args_next_anything_long(mut_state, options, arg));
-	else if (type == MINIRT_ARGS_TYPE_SHORT_WITHOUT_VALUE)
-		return (minirt_args_next_anything_short_no_v(mut_state, options, arg));
 	else
 		return (minirt_args_next_anything_short(mut_state, options, arg));
 }

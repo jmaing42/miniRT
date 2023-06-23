@@ -136,7 +136,7 @@ typedef struct s_minirt_args_parameter_boolean {
 
 typedef struct s_minirt_args
 {
-	char							**args;
+	const char						**args;
 	size_t							arg_count;
 	t_minirt_args_parameter_string	*string;
 	size_t							string_count;
@@ -153,6 +153,7 @@ typedef enum e_minirt_args_error_type
 	MINIRT_ARGS_ERROR_MALLOC_FAILURE,
 	MINIRT_ARGS_ERROR_UNKNOWN_PARAMETER,
 	MINIRT_ARGS_ERROR_MALFORMED_PARAMETER,
+	MINIRT_ARGS_ERROR_MISSING_VALUE_STRING,
 	MINIRT_ARGS_ERROR_MISSING_ENTRY,
 	MINIRT_ARGS_ERROR_MISSING_VALUE_MAP,
 	MINIRT_ARGS_ERROR_MISSING_VALUE_SET,
@@ -172,6 +173,11 @@ typedef struct s_minirt_args_error_malformed_parameter
 	const char	*arg;
 }	t_minirt_args_error_malformed_parameter;
 
+typedef struct s_minirt_args_error_missing_value_string
+{
+	const t_minirt_args_options_string	*option;
+}	t_minirt_args_error_missing_value_string;
+
 typedef struct s_minirt_args_error_missing_entry
 {
 	const t_minirt_args_options_map	*option;
@@ -185,7 +191,7 @@ typedef struct s_minirt_args_error_missing_value_map
 
 typedef struct s_minirt_args_error_missing_value_set
 {
-	t_minirt_args_options_set	*option;
+	const t_minirt_args_options_set	*option;
 }	t_minirt_args_error_missing_value_set;
 
 typedef struct s_minirt_args_error_duplicate_parameter_string
@@ -214,6 +220,7 @@ typedef union u_minirt_args_error_value
 {
 	t_minirt_args_error_unknown_parameter			unknown_parameter;
 	t_minirt_args_error_malformed_parameter			malformed_parameter;
+	t_minirt_args_error_missing_value_string		missing_value_string;
 	t_minirt_args_error_missing_entry				missing_entry;
 	t_minirt_args_error_missing_value_map			missing_value_map;
 	t_minirt_args_error_missing_value_set			missing_value_set;

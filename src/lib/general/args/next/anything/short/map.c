@@ -12,23 +12,18 @@
 
 #include "args_internal.h"
 
-#include <stdlib.h>
-
 #include "minirt/common/libc.h"
-#include "minirt/common/array_builder.h"
 
-t_err	minirt_args_next_entry(
+t_err	minirt_args_next_anything_short_map(
 	t_minirt_args_state *mut_state,
-	t_minirt_args_options *options,
 	const char *arg
 )
 {
 	size_t		index;
-	const bool	has_eq = minirt_strchr(arg, '=', &index);
+	const bool	has_eq = minirt_strchr(&arg[2], '=', &index);
 	char		*key;
 	const char	*value;
 
-	(void)options;
 	if (!has_eq && !mut_state->state_value.map->allow_null)
 	{
 		mut_state->state_type = MINIRT_ARGS_STATE_ERROR;
@@ -39,8 +34,8 @@ t_err	minirt_args_next_entry(
 	}
 	value = NULL;
 	if (has_eq)
-		value = &arg[index + 1];
-	if (minirt_strndup(arg, index, &key))
+		value = &arg[index + 3];
+	if (minirt_strndup(&arg[2], index, &key))
 		return (true);
 	return (minirt_args_add_map(mut_state, key, value));
 }

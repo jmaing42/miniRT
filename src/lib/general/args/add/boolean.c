@@ -27,35 +27,23 @@ static bool	already_has(t_minirt_args_state *mut_state)
 	return (false);
 }
 
-static t_err	add(t_minirt_args_state *mut_state, bool value)
+t_err	minirt_args_add_boolean(t_minirt_args_state *mut_state)
 {
 	const t_minirt_args_options_boolean *const	option
 		= mut_state->state_value.boolean;
-	const t_minirt_args_parameter_boolean		node = {option, value};
+	const bool									already
+		= already_has(mut_state);
+	const t_minirt_args_parameter_boolean		node = {option, true};
 
-	if (minirt_array_builder_append(mut_state->params_boolean, 1, &node))
-	{
-		mut_state->state_type = MINIRT_ARGS_STATE_ERROR;
-		mut_state->error.type = MINIRT_ARGS_ERROR_MALLOC_FAILURE;
-		return (true);
-	}
-	return (false);
-}
-
-t_err	minirt_args_add_boolean(
-	t_minirt_args_state *mut_state,
-	bool value
-)
-{
-	const t_minirt_args_options_boolean *const	option
-		= mut_state->state_value.boolean;
-
-	if (already_has(mut_state) && (option->on_duplicate
+	if (already && (option->on_duplicate
 			== MINIRT_ARGS_OPTIONS_DUPLICATE_PARAMETER_BOOLEAN_ERROR))
 	{
 		mut_state->state_type = MINIRT_ARGS_STATE_ERROR;
 		mut_state->error.type = MINIRT_ARGS_ERROR_DUPLICATE_PARAMETER_BOOLEAN;
 		mut_state->error.value.duplicate_parameter_boolean.option = option;
+		return (false);
 	}
-	return (add(mut_state, value));
+	if (already)
+		return (false);
+	return (minirt_array_builder_append(mut_state->params_boolean, 1, &node));
 }

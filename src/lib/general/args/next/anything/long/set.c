@@ -12,9 +12,12 @@
 
 #include "args_internal.h"
 
-t_err	minirt_args_next_anything_long_no_v_boolean(
-	t_minirt_args_state *mut_state
+t_err	minirt_args_next_anything_long_set(
+	t_minirt_args_state *mut_state,
+	size_t option_length,
+	const char *arg
 )
 {
-	return (minirt_args_add_boolean(mut_state, true));
+	mut_state->state_type = MINIRT_ARGS_STATE_ANYTHING;
+	return (minirt_args_add_set(mut_state, &arg[3 + option_length]));
 }

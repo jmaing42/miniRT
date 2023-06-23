@@ -35,10 +35,8 @@ static t_minirt_args_type	identify_short(
 {
 	if (!is_first_parameter_char(arg[0]))
 		return (MINIRT_ARGS_TYPE_MALFORMED_PARAMETER);
-	if (!arg[1])
-		return (MINIRT_ARGS_TYPE_SHORT_WITHOUT_VALUE);
 	else
-		return (MINIRT_ARGS_TYPE_SHORT_WITH_VALUE_OR_MULTIPLE_SHORT_BOOLEAN);
+		return (MINIRT_ARGS_TYPE_SHORT);
 }
 
 static t_minirt_args_type	identify_long(

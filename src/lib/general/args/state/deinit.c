@@ -18,10 +18,22 @@
 
 void	minirt_args_state_deinit(t_minirt_args_state *self)
 {
-	minirt_array_builder_free(self->params_string);
-	minirt_array_builder_free(self->params_map);
-	minirt_array_builder_free(self->params_set);
-	minirt_array_builder_free(self->params_boolean);
-	minirt_array_builder_free(self->args);
+	size_t	i;
+
+	if (self->params_string)
+		minirt_array_builder_free(self->params_string);
+	if (self->params_map)
+	{
+		i = (size_t)(-1);
+		while (++i < self->params_map->length)
+			free(((t_minirt_args_map_entry *)self->params_map->array)[i].key);
+		minirt_array_builder_free(self->params_map);
+	}
+	if (self->params_set)
+		minirt_array_builder_free(self->params_set);
+	if (self->params_boolean)
+		minirt_array_builder_free(self->params_boolean);
+	if (self->args)
+		minirt_array_builder_free(self->args);
 	minirt_args_free_error(&self->error);
 }

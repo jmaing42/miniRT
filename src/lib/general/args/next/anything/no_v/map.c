@@ -1,26 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fake_file_name (file name is useless too)          :+:      :+:    :+:   */
+/*   map.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42header-remover <whatever@example.com>    +#+  +:+       +#+        */
+/*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:00 by file history     ###   ########.fr       */
+/*   Updated: 2023/06/23 15:50:50 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "args_internal.h"
 
-#include <stdlib.h>
-
-#include "minirt/common/libc.h"
-#include "minirt/common/array_builder.h"
-
-t_err	minirt_args_add_arg(
-	t_minirt_args_state *mut_state,
-	const char *arg
+t_err	minirt_args_next_anything_no_v_map(
+	t_minirt_args_state *mut_state
 )
 {
-	return (minirt_array_builder_append(mut_state->args, 1, arg));
+	mut_state->state_type = MINIRT_ARGS_STATE_ENTRY;
+	return (false);
 }

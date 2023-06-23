@@ -12,10 +12,15 @@
 
 #include "args_internal.h"
 
-t_err	minirt_args_next_anything_long_no_v_string(
-	t_minirt_args_state *mut_state
+#include "minirt/common/array_builder.h"
+
+void	minirt_args_free_state_ok(
+	t_minirt_args_state *state
 )
 {
-	mut_state->state_type = MINIRT_ARGS_STATE_STRING;
-	return (false);
+	minirt_array_builder_free(state->params_string);
+	minirt_array_builder_free(state->params_map);
+	minirt_array_builder_free(state->params_set);
+	minirt_array_builder_free(state->params_boolean);
+	minirt_array_builder_free(state->args);
 }

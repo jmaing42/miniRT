@@ -12,10 +12,11 @@
 
 #include "args_internal.h"
 
-t_err	minirt_args_next_anything_long_no_v_set(
-	t_minirt_args_state *mut_state
+t_err	minirt_args_next_anything_short_set(
+	t_minirt_args_state *mut_state,
+	const char *arg
 )
 {
-	mut_state->state_type = MINIRT_ARGS_STATE_VALUE;
-	return (false);
+	mut_state->state_type = MINIRT_ARGS_STATE_ANYTHING;
+	return (minirt_args_add_set(mut_state, &arg[2]));
 }

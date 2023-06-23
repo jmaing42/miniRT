@@ -63,8 +63,7 @@ typedef enum e_minirt_args_type
 	MINIRT_ARGS_TYPE_MALFORMED_PARAMETER,
 	MINIRT_ARGS_TYPE_LONG_WITHOUT_VALUE,
 	MINIRT_ARGS_TYPE_LONG_STRING_WITH_VALUE_OR_LONG_BOOLEAN_WITH_VALUE,
-	MINIRT_ARGS_TYPE_SHORT_WITHOUT_VALUE,
-	MINIRT_ARGS_TYPE_SHORT_WITH_VALUE_OR_MULTIPLE_SHORT_BOOLEAN,
+	MINIRT_ARGS_TYPE_SHORT,
 }	t_minirt_args_type;
 
 t_err				minirt_args_state_init(
@@ -123,8 +122,7 @@ t_err				minirt_args_add_set(
 						t_minirt_args_state *mut_state,
 						const char *value);
 t_err				minirt_args_add_boolean(
-						t_minirt_args_state *mut_state,
-						bool value);
+						t_minirt_args_state *mut_state);
 t_err				minirt_args_add_arg(
 						t_minirt_args_state *mut_state,
 						const char *arg);
@@ -157,17 +155,41 @@ t_err				minirt_args_next_anything_short(
 						t_minirt_args_options *options,
 						const char *arg);
 
-t_err				minirt_args_next_anything_long_no_v_string(
-						t_minirt_args_state *mut_state);
-t_err				minirt_args_next_anything_long_no_v_map(
-						t_minirt_args_state *mut_state);
-t_err				minirt_args_next_anything_long_no_v_set(
-						t_minirt_args_state *mut_state);
-t_err				minirt_args_next_anything_long_no_v_boolean(
-						t_minirt_args_state *mut_state);
-t_err				minirt_args_next_anything_long_no_v_unknown(
+t_err				minirt_args_next_anything_unknown(
 						t_minirt_args_state *mut_state,
 						t_minirt_args_options *options,
 						const char *arg);
+t_err				minirt_args_next_anything_no_v_string(
+						t_minirt_args_state *mut_state);
+t_err				minirt_args_next_anything_no_v_map(
+						t_minirt_args_state *mut_state);
+t_err				minirt_args_next_anything_no_v_set(
+						t_minirt_args_state *mut_state);
+t_err				minirt_args_next_anything_no_v_boolean(
+						t_minirt_args_state *mut_state);
+t_err				minirt_args_next_anything_long_string(
+						t_minirt_args_state *mut_state,
+						size_t option_length,
+						const char *arg);
+t_err				minirt_args_next_anything_long_set(
+						t_minirt_args_state *mut_state,
+						size_t option_length,
+						const char *arg);
+t_err				minirt_args_next_anything_short_string(
+						t_minirt_args_state *mut_state,
+						const char *arg);
+t_err				minirt_args_next_anything_short_map(
+						t_minirt_args_state *mut_state,
+						const char *arg);
+t_err				minirt_args_next_anything_short_set(
+						t_minirt_args_state *mut_state,
+						const char *arg);
+t_err				minirt_args_next_anything_short_boolean(
+						t_minirt_args_state *mut_state,
+						t_minirt_args_options *options,
+						const char *arg);
+
+void				minirt_args_free_state_ok(
+						t_minirt_args_state *state);
 
 #endif
