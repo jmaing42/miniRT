@@ -22,43 +22,43 @@ CFLAGS := -Wall -Wextra -Werror
 	ar cr $@.tmp $^
 	mv $@.tmp $@
 
-out/libbranch.a: $(patsubst src/%.c,objs/%.o,$(SRCS))
-out/libbranch.debug.a: $(patsubst src/%.c,objs/%.debug.o,$(SRCS))
-out/libbranch.debug.address.a: $(patsubst src/%.c,objs/%.debug.address.o,$(SRCS))
+out/libbranch.a: $(patsubst src/%.c,build/objs/%.o,$(SRCS))
+out/libbranch.debug.a: $(patsubst src/%.c,build/objs/%.debug.o,$(SRCS))
+out/libbranch.debug.address.a: $(patsubst src/%.c,build/objs/%.debug.address.o,$(SRCS))
 
-objs/%.o: src/%.c
+build/objs/%.o: src/%.c
 	rm -f $@ $@.tmp
 	mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -O -c -o $@.tmp $<
 ifeq ($(USE_DEPS), 1)
-	mkdir -p $$(dirname "deps/$*.d")
-	$(CC) $(CPPFLAGS) -MM -MT $@ -MF deps/$*.d $<
+	mkdir -p $$(dirname "build/deps/$*.d")
+	$(CC) $(CPPFLAGS) -MM -MT $@ -MF build/deps/$*.d $<
 endif
 	mv $@.tmp $@
 
-objs/%.debug.o: src/%.c
+build/objs/%.debug.o: src/%.c
 	rm -f $@ $@.tmp
 	mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -g -c -o $@.tmp $<
 ifeq ($(USE_DEPS), 1)
-	mkdir -p $$(dirname "deps/$*.debug.d")
-	$(CC) $(CPPFLAGS) -MM -MT $@ -MF deps/$*.debug.d $<
+	mkdir -p $$(dirname "build/deps/$*.debug.d")
+	$(CC) $(CPPFLAGS) -MM -MT $@ -MF build/deps/$*.debug.d $<
 endif
 	mv $@.tmp $@
 
-objs/%.debug.address.o: src/%.c
+build/objs/%.debug.address.o: src/%.c
 	rm -f $@ $@.tmp
 	mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -g -fsanitize=address -c -o $@.tmp $<
 ifeq ($(USE_DEPS), 1)
-	mkdir -p $$(dirname "deps/$*.debug.address.d")
-	$(CC) $(CPPFLAGS) -MM -MT $@ -MF deps/$*.debug.address.d $<
+	mkdir -p $$(dirname "build/deps/$*.debug.address.d")
+	$(CC) $(CPPFLAGS) -MM -MT $@ -MF build/deps/$*.debug.address.d $<
 endif
 	mv $@.tmp $@
 
 .PHONY: clean
 clean:
-	rm -rf objs deps
+	rm -rf build
 
 .PHONY: fclean
 fclean: clean
