@@ -6,7 +6,7 @@
 /*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 2023/06/25 02:10:34 by Juyeong Maing    ###   ########.fr       */
+/*   Updated: 2023/06/25 02:20:12 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	test(void)
 
 int	main(void)
 {
+	setvbuf(stdout, NULL, _IOLBF, 0);
 	mock_branch_start(true);
 	test();
 	mock_branch_stop(false);
