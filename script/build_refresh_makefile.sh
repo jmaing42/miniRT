@@ -13,7 +13,7 @@ generate_makefile() {
 
 if [ ! -f ../build/files.txt ]; then
 
-  find ../include ../src -name "*.c" -o -name "*.o" | sort > ../build/files.new.txt
+  find ../include ../src -name "*.c" -o -name "*.h" | sort > ../build/files.new.txt
 
   generate_makefile
 
@@ -29,7 +29,7 @@ else
 
   mv -f ../build/files.txt ../build/files.old.txt
 
-  find ../include ../src -name "*.c" -o -name "*.o" | sort > ../build/files.new.txt
+  find ../include ../src -name "*.c" -o -name "*.h" | sort > ../build/files.new.txt
 
   cmp -s ../build/files.old.txt ../build/files.new.txt || generate_makefile
 

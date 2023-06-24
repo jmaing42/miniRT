@@ -15,7 +15,7 @@ generate_gnumakefile() {
 
 if [ ! -f "../build/files.$MINIRT_PRECISION.txt" ]; then
 
-  find ../include ../src -name "*.c" -o -name "*.o" | sort > "../build/files.$MINIRT_PRECISION.new.txt"
+  find ../include ../src -name "*.c" -o -name "*.h" | sort > "../build/files.$MINIRT_PRECISION.new.txt"
 
   generate_gnumakefile
 
@@ -31,7 +31,7 @@ else
 
   mv -f "../build/files.$MINIRT_PRECISION.txt" ../build/files.old.txt
 
-  find ../include ../src -name "*.c" -o -name "*.o" | sort > ../build/files.new.txt
+  find ../include ../src -name "*.c" -o -name "*.h" | sort > ../build/files.new.txt
 
   cmp -s ../build/files.old.txt ../build/files.new.txt || generate_gnumakefile
 

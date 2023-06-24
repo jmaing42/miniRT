@@ -16,10 +16,6 @@ $(EVERYTHING): build
 	mkdir -p $(@D)
 	cp build/$@ $@
 
-.PHONY: norm
-norm: build
-	(cd build && $(MAKE) -k norm)
-
 .PHONY: build
 build:
 	mkdir -p build && sh script/build_refresh_makefile.sh
@@ -35,3 +31,8 @@ clean_targets:
 .vscode/tasks.json: build
 	(cd build && $(MAKE) tasks.json)
 	cp build/tasks.json .vscode/tasks.json
+
+.PHONY: test norm
+test norm:
+	[ -t 2 ] && printf "\033[0;31m[ERROR]\033[0m" 1>&2 || printf "[ERROR]" 1>&2
+	printf ' test is only available for GNU Make\n' 1>&2

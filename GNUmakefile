@@ -52,3 +52,7 @@ clean_targets:
 .vscode/tasks.json: build
 	$(MAKE_J) -C build -f $(MINIRT_PRECISION).mk tasks.json
 	cp build/tasks.json .vscode/tasks.json
+
+.PHONY: test
+test:
+	find src -type d -name test | sort | xargs -L1 $(MAKE) -C

@@ -87,7 +87,7 @@ done
 find_sources() {
   FIND_SOURCES_SRC_PATH="$1"
 
-  (cd ../src && find "$FIND_SOURCES_SRC_PATH" -name '*.c')
+  (cd ../src && find "$FIND_SOURCES_SRC_PATH" -name '*.c' | grep -v /test/)
 }
 
 # list of objs for given lib

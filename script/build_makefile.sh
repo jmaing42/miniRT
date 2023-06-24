@@ -52,31 +52,6 @@ printf "\t(printf '{\\\\n  \"version\": \"2.0.0\",\\\\n  \"tasks\": [\\\\n' && f
 
 
 # ==============================================================================
-# norminette
-# ==============================================================================
-
-echo '.PHONY: norm'
-
-emit_norm() {
-  printf 'norm: %s.norm\n' "$1"
-  printf '%s.norm: %s\n' "$1" "../$2"
-  printf '\t(cd .. && norminette %s)\n' "./$2"
-  printf "\tmkdir -p \$(@D)\n"
-  printf '\ttouch $@\n'
-}
-
-find ../include -name '*.h' | cut -c 4- | sort | while IFS= read -r FILE
-do
-  emit_norm "norm/root/$FILE" "$FILE"
-done
-
-find ../src -name '*.c' -o -name '*.h' | cut -c 8- | sort | while IFS= read -r FILE
-do
-  emit_norm "norm/$FILE" "src/$FILE"
-done
-
-
-# ==============================================================================
 # util functions
 # ==============================================================================
 
@@ -84,7 +59,7 @@ done
 find_sources() {
   FIND_SOURCES_SRC_PATH="$1"
 
-  (cd ../src && find "$FIND_SOURCES_SRC_PATH" -name '*.c')
+  (cd ../src && find "$FIND_SOURCES_SRC_PATH" -name '*.c' | grep -v /test/)
 }
 
 # list of objs for given lib
@@ -295,12 +270,12 @@ for MINIRT_PRECISION in 0 1 2; do
     print_exe "$exe_name" "$dependency_libs"
   done < ../data/exe.properties
 
-  find ../src/exe -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
+  find ../src/exe -name '*.c' | grep -v /test/ | cut -c 8- | sort | while IFS= read -r FILE
   do
     print_exe_obj "$FILE"
   done
 
-  find ../src/lib -name '*.c' | cut -c 8- | sort | while IFS= read -r FILE
+  find ../src/lib -name '*.c' | grep -v /test/ | cut -c 8- | sort | while IFS= read -r FILE
   do
     print_lib_obj "$FILE"
   done

@@ -1,3 +1,6 @@
+BASE_PATH := ../..
+CURRENT_PATH := test/branch
+
 TARGET := \
 	out/libbranch.a \
 	out/libbranch.debug.a \
@@ -8,8 +11,7 @@ all: $(TARGET)
 
 SRCS := $(shell find src -name "*.c")
 
-CC := $(shell (command -v clang > /dev/null && echo clang) || (command -v gcc > /dev/null && echo gcc) || (command -v cc > /dev/null && echo cc))
-USE_DEPS ?= $(if $(filter gcc clang,$(CC)),1)
+include $(BASE_PATH)/test/mk/cc_use_deps.mk
 
 CPPFLAGS := -Iinclude -Isrc/include
 CFLAGS := -Wall -Wextra -Werror
@@ -54,17 +56,9 @@ ifeq ($(USE_DEPS), 1)
 endif
 	mv $@.tmp $@
 
-.PHONY: norm
-norm: $(patsubst %,norm/%.norm,$(shell find . -name "*.c" -o -name "*.h" | cut -c 3-))
-
-norm/%.norm: %
-	(cd ../.. && norminette ./test/branch/$<)
-	mkdir -p $(@D)
-	touch $@
-
 .PHONY: clean
 clean:
-	rm -rf objs deps norm
+	rm -rf objs deps
 
 .PHONY: fclean
 fclean: clean
@@ -74,4 +68,8 @@ fclean: clean
 re: fclean
 	$(MAKE) all
 
+include $(BASE_PATH)/test/mk/norm.mk
+
+ifeq ($(USE_DEPS), 1)
 include $(shell [ ! -d deps ] || find deps -name "*.d")
+endif

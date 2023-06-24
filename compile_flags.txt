@@ -7,3 +7,4 @@
 -Isrc/include
 -DMINIRT_PRECISION=1
 -Itest/branch/include
+-Itest/mocks/branch/include
