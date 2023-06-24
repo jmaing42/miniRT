@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fake_file_name (file name is useless too)          :+:      :+:    :+:   */
+/*   malloc.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42header-remover <whatever@example.com>    +#+  +:+       +#+        */
+/*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:00 by file history     ###   ########.fr       */
+/*   Updated: 2023/06/25 02:06:43 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,21 @@ typedef void	*(*t_original)(size_t size);
 static void	failed_to_find_original(void)
 {
 	branch_unexpected_error();
-	fputs("Failed to find original malloc() function.", stderr);
+	fputs("Failed to find original malloc() function.\n", stderr);
 	exit(BRANCH_ERROR);
 }
 
 static void	failed_to_allocate_memory(void)
 {
 	branch_unexpected_error();
-	fputs("Failed to allocate memory.", stderr);
+	fputs("Failed to allocate memory.\n", stderr);
 	exit(BRANCH_ERROR);
 }
 
 static void	exit_unexpected_error(void)
 {
 	branch_unexpected_error();
-	fputs("Unexpected error occurred.", stderr);
+	fputs("Unexpected error occurred.\n", stderr);
 	exit(BRANCH_ERROR);
 }
 

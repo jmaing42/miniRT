@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fake_file_name (file name is useless too)          :+:      :+:    :+:   */
+/*   mock_branch_stop.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42header-remover <whatever@example.com>    +#+  +:+       +#+        */
+/*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:00 by file history     ###   ########.fr       */
+/*   Updated: 2023/06/25 02:07:08 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,25 +20,25 @@
 
 static void	not_started(void)
 {
-	fputs("mock is not started.", stderr);
+	fputs("mock is not started.\n", stderr);
 	exit(BRANCH_ERROR);
 }
 
 static void	paused(void)
 {
-	fputs("mock is paused.", stderr);
+	fputs("mock is paused.\n", stderr);
 	exit(BRANCH_ERROR);
 }
 
 static void	opened_fd_count(void)
 {
-	fputs("some fds are not closed properly.", stderr);
+	fputs("some fds are not closed properly.\n", stderr);
 	exit(BRANCH_ERROR);
 }
 
 static void	malloc_count(void)
 {
-	fputs("some memory is not freed properly.", stderr);
+	fputs("some memory is not freed properly.\n", stderr);
 	exit(BRANCH_ERROR);
 }
 

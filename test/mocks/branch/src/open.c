@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fake_file_name (file name is useless too)          :+:      :+:    :+:   */
+/*   open.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: 42header-remover <whatever@example.com>    +#+  +:+       +#+        */
+/*   By: Juyeong Maing <jmaing@student.42seoul.kr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:00 by VCS handles       #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:00 by file history     ###   ########.fr       */
+/*   Updated: 2023/06/25 02:08:48 by Juyeong Maing    ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,14 +37,14 @@ static void	failed(const char *message)
 static void	validate(int flags, unsigned int addition_flags)
 {
 	if (flags & ~(O_CREAT | O_EXCL | O_RDONLY | O_WRONLY | O_RDWR))
-		failed(
-			"Failed to validate open() flags (unknown flags given)");
+		failed("Failed to validate open() flags"
+			" (unknown flags given)\n");
 	if (addition_flags & ~0777)
-		failed(
-			"Failed to validate open() flags (unknown additional flags given)");
+		failed("Failed to validate open() flags"
+			" (unknown additional flags given)\n");
 	if (flags & O_EXCL && !(flags & O_CREAT))
-		failed(
-			"Failed to validate open() flags (O_EXCL given without O_CREAT)");
+		failed("Failed to validate open() flags"
+			" (O_EXCL given without O_CREAT)\n");
 }
 
 static int	real_mock(
@@ -64,14 +64,14 @@ static int	real_mock(
 	{
 		result = original(path, flags, additional_flags);
 		if (result == -1)
-			failed("Failed to open()");
+			failed("Failed to open()\n");
 		return (result);
 	}
 	else
 	{
 		result = original(path, flags);
 		if (result == -1)
-			failed("Failed to open()");
+			failed("Failed to open()\n");
 		return (result);
 	}
 }
@@ -94,7 +94,7 @@ static int	mock(
 				return (-1);
 			return (real_mock(path, flags, additional_flags, original));
 		}
-		failed("Failed to call stat()");
+		failed("Failed to call stat()\n");
 	}
 	if ((flags & (O_CREAT | O_EXCL)) == (O_CREAT | O_EXCL))
 		return (-1);
@@ -110,7 +110,7 @@ int	open(const char *path, int flags, ...)
 	unsigned int		additional_flags;
 
 	if (!original)
-		failed("Failed to find original open() function.");
+		failed("Failed to find original open() function.\n");
 	additional_flags = 0;
 	if (flags & O_CREAT)
 	{
