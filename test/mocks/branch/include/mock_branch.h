@@ -15,7 +15,7 @@
 
 # include <stdbool.h>
 
-void	mock_branch_start(void);
+void	mock_branch_start(bool may_partial);
 void	mock_branch_stop(bool ignore_error);
 void	mock_branch_pause(void);
 void	mock_branch_resume(void);

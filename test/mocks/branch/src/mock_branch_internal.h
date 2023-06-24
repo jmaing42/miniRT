@@ -18,6 +18,7 @@
 
 typedef struct s_mock_branch
 {
+	bool	may_partial;
 	bool	started;
 	bool	paused;
 	size_t	malloc_count;

@@ -57,7 +57,6 @@ static int	real_mock(
 	const int	current = branch(2);
 	int			result;
 
-	failed("Unexpected error occurred.");
 	if (current == 1)
 		return (-1);
 	mock_branch_internal()->opened_fd_count++;

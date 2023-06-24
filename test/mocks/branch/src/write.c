@@ -12,8 +12,9 @@
 
 #include "prelude_gnu_source.h"
 
-#include <stdlib.h>
+#include <unistd.h>
 
+#include <stdlib.h>
 #include <stdio.h>
 
 #include <dlfcn.h>
@@ -21,7 +22,7 @@
 #include "branch.h"
 #include "mock_branch_internal.h"
 
-typedef void	*(*t_original)(size_t size);
+typedef ssize_t	(*t_original)(int fd, const void *buf, size_t count);
 
 static void	failed_to_find_original(void)
 {
@@ -30,10 +31,10 @@ static void	failed_to_find_original(void)
 	exit(BRANCH_ERROR);
 }
 
-static void	failed_to_allocate_memory(void)
+static void	failed_to_write(void)
 {
 	branch_unexpected_error();
-	fputs("Failed to allocate memory.", stderr);
+	fputs("Failed to write.", stderr);
 	exit(BRANCH_ERROR);
 }
 
@@ -44,24 +45,29 @@ static void	exit_unexpected_error(void)
 	exit(BRANCH_ERROR);
 }
 
-void	*malloc(size_t size)
+ssize_t	write(int fd, const void *buf, size_t count)
 {
-	const t_original	original = (t_original)dlsym(RTLD_NEXT, "malloc");
+	const t_original	original = (t_original)dlsym(RTLD_NEXT, "write");
+	const bool			may_partial
+		= (count > 1) && mock_branch_internal()->may_partial;
 	int					current;
-	void				*result;
+	ssize_t				result;
+	size_t				real_count;
 
 	if (!original)
 		failed_to_find_original();
 	if (!mock_branch_internal()->started || mock_branch_internal()->paused)
-		return (original(size));
-	current = branch(2);
+		return (original(fd, buf, count));
+	current = branch(2 + !!may_partial);
 	if (current == -1)
 		exit_unexpected_error();
+	if (current == 1 + !!may_partial)
+		return (-1);
+	real_count = count;
 	if (current == 1)
-		return (NULL);
-	mock_branch_internal()->malloc_count++;
-	result = original(size);
-	if (!result)
-		failed_to_allocate_memory();
+		real_count = count - 1;
+	result = original(fd, buf, real_count);
+	if (result == -1 || (result != -1 && result != (ssize_t)real_count))
+		failed_to_write();
 	return (result);
 }

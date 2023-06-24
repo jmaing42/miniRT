@@ -24,10 +24,11 @@ static void	already_started(void)
 	exit(BRANCH_ERROR);
 }
 
-void	mock_branch_start(void)
+void	mock_branch_start(bool may_partial)
 {
 	if (mock_branch_internal()->started)
 		already_started();
+	mock_branch_internal()->may_partial = may_partial;
 	mock_branch_internal()->malloc_count = 0;
 	mock_branch_internal()->opened_fd_count = 0;
 	mock_branch_internal()->paused = false;
