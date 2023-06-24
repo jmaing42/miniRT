@@ -6,3 +6,4 @@
 -Iinclude
 -Isrc/include
 -DMINIRT_PRECISION=1
+-Itest/branch/include

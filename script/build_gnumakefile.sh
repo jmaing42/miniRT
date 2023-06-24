@@ -284,4 +284,4 @@ do
 done < ../data/exe.properties
 
 printf '\n'
-printf "%s \$(shell [ ! -d deps ] || find deps -name \"*.d\")\n" '-include'
+printf "%s \$(shell [ ! -d deps ] || find deps -name \"*.d\")\n" 'include'
