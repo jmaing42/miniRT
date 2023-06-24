@@ -10,27 +10,43 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "mock_branch.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "branch.h"
-#include "mock_branch_internal.h"
+#include "mock_branch.h"
 
-static void	already_started(void)
+void	test(void)
 {
-	fputs("mock is already started.", stderr);
-	exit(BRANCH_ERROR);
+	void	*first;
+	void	*second;
+
+	puts("start");
+	first = malloc(1);
+	if (!first)
+	{
+		puts("first failed");
+		return ;
+	}
+	puts("first ok");
+	second = malloc(1);
+	if (!second)
+	{
+		puts("second failed");
+		return ;
+	}
+	puts("second ok");
+	free(first);
+	free(second);
+	puts("end");
 }
 
-void	mock_branch_start(bool may_partial)
+int	main(void)
 {
-	if (mock_branch_internal()->started)
-		already_started();
-	mock_branch_internal()->started = true;
-	mock_branch_internal()->may_partial = may_partial;
-	mock_branch_internal()->malloc_count = 0;
-	mock_branch_internal()->opened_fd_count = 0;
-	mock_branch_internal()->paused = false;
+	mock_branch_start(true);
+	test();
+	mock_branch_stop(false);
+	if (branch_all_ok())
+		return (EXIT_SUCCESS);
+	return (BRANCH_OK);
 }

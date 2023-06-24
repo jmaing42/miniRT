@@ -1,0 +1,6 @@
+start
+first failed
+first ok
+second failed
+second ok
+end

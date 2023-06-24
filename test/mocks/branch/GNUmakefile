@@ -1,9 +1,10 @@
 BASE_PATH := ../../..
 CURRENT_PATH := test/mocks/branch
 
-TARGET := out/mock_branch.a
-
-OBJS := $(patsubst src/%.c,build/objs/%.o,$(shell find src -name "*.c"))
+TARGET := \
+	out/libmock_branch.a \
+	out/libmock_branch.debug.a \
+	out/libmock_branch.debug.address.a \
 
 all: $(TARGET)
 .PHONY: all
@@ -23,11 +24,35 @@ ifeq ($(USE_DEPS), 1)
 endif
 	mv $@.tmp $@
 
-$(TARGET): $(OBJS)
+build/objs/%.debug.o: src/%.c
+	rm -f $@ $@.tmp
+	mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -g -c -o $@.tmp $<
+ifeq ($(USE_DEPS), 1)
+	mkdir -p $$(dirname "build/deps/$*.d")
+	$(CC) $(CPPFLAGS) -MM -MT $@ -MF build/deps/$*.d $<
+endif
+	mv $@.tmp $@
+
+build/objs/%.debug.address.o: src/%.c
+	rm -f $@ $@.tmp
+	mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -g -fsanitize=address -c -o $@.tmp $<
+ifeq ($(USE_DEPS), 1)
+	mkdir -p $$(dirname "build/deps/$*.d")
+	$(CC) $(CPPFLAGS) -MM -MT $@ -MF build/deps/$*.d $<
+endif
+	mv $@.tmp $@
+
+%.a:
 	rm -f $@ $@.tmp
 	mkdir -p $(@D)
 	ar cr $@.tmp $^
 	mv $@.tmp $@
+
+out/libmock_branch.a: $(patsubst src/%.c,build/objs/%.o,$(shell find src -name "*.c"))
+out/libmock_branch.debug.a: $(patsubst src/%.c,build/objs/%.debug.o,$(shell find src -name "*.c"))
+out/libmock_branch.debug.address.a: $(patsubst src/%.c,build/objs/%.debug.address.o,$(shell find src -name "*.c"))
 
 .PHONY: clean
 clean:
