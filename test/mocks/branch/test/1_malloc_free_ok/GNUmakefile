@@ -11,9 +11,11 @@ include $(BASE_PATH)/test/mk/test_build.mk
 TEST_TYPE := out_diff
 TEST_DATA_PATH := ./data.txt
 
+include $(BASE_PATH)/test/mocks/branch/mock_branch_include.mk
+
 CFLAGS := -fsanitize=address -g
-CPPFLAGS := -I../../include -I../../../../branch/include
-LDFLAGS := -fsanitize=address
+CPPFLAGS := -I../../include -I../../../../branch/include $(MOCK_BRANCH_CPPFLAGS)
+LDFLAGS := -fsanitize=address $(MOCK_BRANCH_LDFLAGS)
 LOADLIBES := -L../../out -L../../../../branch/out
 LDLIBS := -lmock_branch.debug.address -lbranch.debug.address
 

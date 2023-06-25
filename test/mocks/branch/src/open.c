@@ -10,7 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "prelude_gnu_source.h"
+#ifdef MOCK_BRANCH_NO_WRAP
+# include "prelude_gnu_source.h"
+#endif
 
 #include <fcntl.h>
 
@@ -18,7 +20,9 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#include <dlfcn.h>
+#ifdef MOCK_BRANCH_NO_WRAP
+# include <dlfcn.h>
+#endif
 #include <sys/stat.h>
 #include <errno.h>
 
@@ -32,19 +36,6 @@ static void	failed(const char *message)
 	branch_unexpected_error();
 	fputs(message, stderr);
 	exit(BRANCH_ERROR);
-}
-
-static void	validate(int flags, unsigned int addition_flags)
-{
-	if (flags & ~(O_CREAT | O_EXCL | O_RDONLY | O_WRONLY | O_RDWR))
-		failed("Failed to validate open() flags"
-			" (unknown flags given)\n");
-	if (addition_flags & ~0777)
-		failed("Failed to validate open() flags"
-			" (unknown additional flags given)\n");
-	if (flags & O_EXCL && !(flags & O_CREAT))
-		failed("Failed to validate open() flags"
-			" (O_EXCL given without O_CREAT)\n");
 }
 
 static int	real_mock(
@@ -85,7 +76,14 @@ static int	mock(
 {
 	struct stat	file_stat;
 
-	validate(flags, additional_flags);
+	if (flags & ~(O_CREAT | O_EXCL | O_RDONLY | O_WRONLY | O_RDWR))
+		failed("Failed to validate open() flags (unknown flags given)\n");
+	if (additional_flags & ~0777)
+		failed("Failed to validate open() flags"
+			" (unknown additional flags given)\n");
+	if (flags & O_EXCL && !(flags & O_CREAT))
+		failed("Failed to validate open() flags"
+			" (O_EXCL given without O_CREAT)\n");
 	if (stat(path, &file_stat) == -1)
 	{
 		if (errno == ENOENT)
@@ -102,6 +100,8 @@ static int	mock(
 		return (-1);
 	return (real_mock(path, flags, additional_flags, original));
 }
+
+#ifdef MOCK_BRANCH_NO_WRAP
 
 int	open(const char *path, int flags, ...)
 {
@@ -126,3 +126,33 @@ int	open(const char *path, int flags, ...)
 	}
 	return (mock(path, flags, additional_flags, original));
 }
+
+#else
+
+extern int	__real_open(const char *path, int flags, ...);
+
+int	__wrap_open(const char *path, int flags, ...)
+{
+	const t_original	original = __real_open;
+	va_list				ap;
+	unsigned int		additional_flags;
+
+	if (!original)
+		failed("Failed to find original open() function.\n");
+	additional_flags = 0;
+	if (flags & O_CREAT)
+	{
+		va_start(ap, flags);
+		additional_flags = va_arg(ap, int);
+		va_end(ap);
+	}
+	if (!mock_branch_internal()->started || mock_branch_internal()->paused)
+	{
+		if (flags & O_CREAT)
+			return (original(path, flags, additional_flags));
+		return (original(path, flags));
+	}
+	return (mock(path, flags, additional_flags, original));
+}
+
+#endif

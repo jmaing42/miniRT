@@ -10,16 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "prelude_gnu_source.h"
+#ifdef MOCK_BRANCH_NO_WRAP
+# include "prelude_gnu_source.h"
+#endif
 
 #include <stdlib.h>
 
 #include <stdio.h>
 
-#include <dlfcn.h>
+#ifdef MOCK_BRANCH_NO_WRAP
+# include <dlfcn.h>
+#endif
 
 #include "branch.h"
 #include "mock_branch_internal.h"
+
+#ifdef MOCK_BRANCH_NO_WRAP
 
 typedef void	(*t_original)(void *ptr);
 
@@ -46,3 +52,20 @@ void	free(void *ptr)
 	mock_branch_internal()->malloc_count--;
 	original(ptr);
 }
+
+#else
+
+extern void	__real_free(void *ptr);
+
+void	__wrap_free(void *ptr)
+{
+	if (!mock_branch_internal()->started || mock_branch_internal()->paused)
+	{
+		__real_free(ptr);
+		return ;
+	}
+	mock_branch_internal()->malloc_count--;
+	__real_free(ptr);
+}
+
+#endif

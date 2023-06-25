@@ -10,17 +10,23 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "prelude_gnu_source.h"
+#ifdef MOCK_BRANCH_NO_WRAP
+# include "prelude_gnu_source.h"
+#endif
 
 #include <unistd.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <dlfcn.h>
+#ifdef MOCK_BRANCH_NO_WRAP
+# include <dlfcn.h>
+#endif
 
 #include "branch.h"
 #include "mock_branch_internal.h"
+
+#ifdef MOCK_BRANCH_NO_WRAP
 
 typedef int	(*t_original)(int fd);
 
@@ -44,3 +50,17 @@ int	close(int fd)
 	mock_branch_internal()->opened_fd_count--;
 	return (original(fd));
 }
+
+#else
+
+extern int	__real_close(int fd);
+
+int	__wrap_close(int fd)
+{
+	if (!mock_branch_internal()->started || mock_branch_internal()->paused)
+		return (__real_close(fd));
+	mock_branch_internal()->opened_fd_count--;
+	return (__real_close(fd));
+}
+
+#endif
