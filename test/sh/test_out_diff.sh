@@ -22,4 +22,5 @@ else
       printf '[FAIL] %s\n' "$CURRENT_PATH"
     fi
   fi
+  exit 1
 fi
