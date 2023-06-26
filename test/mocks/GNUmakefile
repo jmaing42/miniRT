@@ -20,10 +20,11 @@ out/branch/%.o:
 
 .PHONY: clean
 clean:
-	$(MAKE) -C branch fclean
+	$(MAKE) -C branch clean
 
 .PHONY: fclean
 fclean: clean
+	$(MAKE) -C branch fclean
 	rm -rf out
 
 .PHONY: re
