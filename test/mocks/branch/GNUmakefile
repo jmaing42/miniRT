@@ -12,6 +12,16 @@ all: $(TARGET)
 CPPFLAGS := -Iinclude -Isrc/include -I$(BASE_PATH)/test/branch/include
 CFLAGS := -Wall -Wextra -Werror
 
+MOCK_BRANCH_UNAME_S := $(shell uname -s)
+ifeq ($(MOCK_BRANCH_UNAME_S),Linux)
+else
+ifeq ($(MOCK_BRANCH_UNAME_S),Darwin)
+CPPFLAGS += -DMOCK_BRANCH_NO_WRAP
+else
+$(error Unrecognized OS: $(MOCK_BRANCH_UNAME_S))
+endif
+endif
+
 include $(BASE_PATH)/test/mk/cc_use_deps.mk
 
 build/objs/%.o: src/%.c
@@ -56,7 +66,7 @@ out/libmock_branch.debug.address.a: $(patsubst src/%.c,build/objs/%.debug.addres
 
 .PHONY: clean
 clean:
-	rm -rf objs deps
+	rm -rf build
 
 .PHONY: fclean
 fclean: clean
