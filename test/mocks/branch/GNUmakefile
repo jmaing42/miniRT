@@ -67,10 +67,12 @@ out/libmock_branch.debug.address.a: $(patsubst src/%.c,build/objs/%.debug.addres
 .PHONY: clean
 clean:
 	rm -rf build
+	$(MAKE) -C test clean
 
 .PHONY: fclean
-fclean: clean
-	rm -rf out
+fclean:
+	rm -rf build out
+	$(MAKE) -C test fclean
 
 .PHONY: re
 re: fclean
