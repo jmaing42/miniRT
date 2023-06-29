@@ -54,3 +54,13 @@ cmake -B builddir -G "Visual Studio 17 2022" -DMINIRT_PRECISION="double"
 # build
 cmake --build builddir
 ```
+
+## Test
+
+Testing is available if GNU Make and AddressSanitizer is available.
+
+```shell
+sh metamake.sh
+V=1 gmake test -s
+# or `make` instead of `gmake`
+```
