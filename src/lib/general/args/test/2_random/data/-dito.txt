@@ -1,0 +1,4 @@
+--detach (-d) (boolean)
+--interactive (-i) (boolean)
+--tty (-t) (boolean)
+END

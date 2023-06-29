@@ -12,6 +12,7 @@
 
 #include "args_internal.h"
 
+#include "minirt/args.h"
 #include "minirt/common/array_builder.h"
 
 static t_err	init_others(t_minirt_args_state *self)
@@ -32,7 +33,8 @@ static t_err	init_others(t_minirt_args_state *self)
 	if (!self->params_set)
 		return (true);
 	self->params_boolean
-		= minirt_array_builder_new(sizeof(char *));
+		= minirt_array_builder_new(
+			sizeof(t_minirt_args_parameter_boolean));
 	if (!self->params_boolean)
 		return (true);
 	return (false);

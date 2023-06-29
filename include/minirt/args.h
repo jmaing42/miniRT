@@ -73,8 +73,6 @@ typedef struct s_minirt_args_options_boolean
 	const char											*name;
 	char												short_name;
 	t_minirt_args_options_duplicate_parameter_boolean	on_duplicate;
-	bool												accept_number;
-	bool												accept_keyword;
 }	t_minirt_args_options_boolean;
 
 typedef enum e_minirt_args_options_unknown_parameter

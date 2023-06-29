@@ -1,0 +1,6 @@
+--detach (-d) (boolean)
+--interactive (-i) (boolean)
+--tty (-t) (boolean)
+--no-newline (-n) (boolean)
+ditnnnnn
+END

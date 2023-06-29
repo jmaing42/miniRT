@@ -1,0 +1,3 @@
+[ERROR] DUPLICATE_PARAMETER
+Duplicate parameter for boolean parameter --tty (-t)
+END
