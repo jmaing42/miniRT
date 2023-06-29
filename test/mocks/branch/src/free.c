@@ -49,6 +49,8 @@ void	free(void *ptr)
 		original(ptr);
 		return ;
 	}
+	if (!ptr)
+		return ;
 	mock_branch_internal()->malloc_count--;
 	original(ptr);
 }
@@ -64,6 +66,8 @@ void	__wrap_free(void *ptr)
 		__real_free(ptr);
 		return ;
 	}
+	if (!ptr)
+		return ;
 	mock_branch_internal()->malloc_count--;
 	__real_free(ptr);
 }

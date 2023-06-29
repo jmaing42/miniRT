@@ -10,50 +10,28 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test.h"
+#include "minirt/args.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
-#include "branch.h"
-#include "mock_branch.h"
-
-extern const t_minirt_args_options	g_options;
-
-static void	test(int argc, char **argv)
+void	minirt_args_free(t_minirt_args *self)
 {
-	t_minirt_args_result	args;
+	size_t	i;
+	size_t	j;
 
-	if (minirt_args(argc, argv, g_options, &args))
+	i = (size_t)-1;
+	while (++i < self->map_count)
 	{
-		if (args.value.error.type == MINIRT_ARGS_ERROR_MALLOC_FAILURE)
-		{
-			if (branch_all_ok())
-				exit(EXIT_FAILURE);
-			exit(BRANCH_OK);
-		}
+		j = (size_t)(-1);
+		while (++j < self->map[i].entry_count)
+			free(self->map[i].entries[i].key);
+		free(self->map[i].entries);
 	}
-	mock_branch_pause();
-	if (print_result(args))
-		exit(BRANCH_ERROR);
-	mock_branch_resume();
-	minirt_args_free_result(&args);
-}
-
-static void	atexit_handler(void)
-{
-	if (branch_all_ok())
-		puts("END");
-}
-
-int	main(int argc, char **argv)
-{
-	atexit(atexit_handler);
-	setvbuf(stdout, NULL, _IOLBF, 0);
-	mock_branch_start(true);
-	test(argc, argv);
-	mock_branch_stop(false);
-	if (branch_all_ok())
-		return (EXIT_SUCCESS);
-	return (BRANCH_OK);
+	i = (size_t)-1;
+	while (++i < self->set_count)
+		free(self->set[i].values);
+	free(self->string);
+	free(self->map);
+	free(self->set);
+	free(self->boolean);
 }

@@ -10,13 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test.h"
+#include "../../test.h"
 
 #include <stdio.h>
 
-t_err	print_result(t_minirt_args_result result)
+t_err	print_error_malformed_parameter(
+	t_minirt_args_error_malformed_parameter error
+)
 {
-	if (result.type == MINIRT_ARGS_RESULT_ERROR)
-		return (print_error(result.value.error));
-	return (print_args(result.value.ok));
+	return (printf("Malformed parameter: %s\n", error.arg) < 0);
 }

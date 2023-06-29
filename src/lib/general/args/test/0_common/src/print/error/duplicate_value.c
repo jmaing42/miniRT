@@ -10,50 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "test.h"
+#include "../../test.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
-#include "branch.h"
-#include "mock_branch.h"
-
-extern const t_minirt_args_options	g_options;
-
-static void	test(int argc, char **argv)
+t_err	print_error_duplicate_value(
+	t_minirt_args_error_duplicate_value error
+)
 {
-	t_minirt_args_result	args;
-
-	if (minirt_args(argc, argv, g_options, &args))
-	{
-		if (args.value.error.type == MINIRT_ARGS_ERROR_MALLOC_FAILURE)
-		{
-			if (branch_all_ok())
-				exit(EXIT_FAILURE);
-			exit(BRANCH_OK);
-		}
-	}
-	mock_branch_pause();
-	if (print_result(args))
-		exit(BRANCH_ERROR);
-	mock_branch_resume();
-	minirt_args_free_result(&args);
-}
-
-static void	atexit_handler(void)
-{
-	if (branch_all_ok())
-		puts("END");
-}
-
-int	main(int argc, char **argv)
-{
-	atexit(atexit_handler);
-	setvbuf(stdout, NULL, _IOLBF, 0);
-	mock_branch_start(true);
-	test(argc, argv);
-	mock_branch_stop(false);
-	if (branch_all_ok())
-		return (EXIT_SUCCESS);
-	return (BRANCH_OK);
+	return (
+		printf("Duplicate value for set parameter --%s",
+			error.option->name) < 0
+		|| (error.option->short_name
+			&& printf(" (-%c)", error.option->short_name) < 0)
+		|| printf(": %s\n", error.value) < 0
+	);
 }
