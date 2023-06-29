@@ -1,0 +1,3 @@
+[ERROR] MALFORMED_PARAMETER
+Malformed parameter: -0
+END

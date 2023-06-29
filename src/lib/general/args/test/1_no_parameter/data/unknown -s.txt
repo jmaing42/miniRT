@@ -1,0 +1,3 @@
+[ERROR] UNKNOWN_PARAMETER
+Unknown parameter: -s
+END

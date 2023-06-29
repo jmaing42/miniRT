@@ -34,4 +34,5 @@ void	minirt_args_free(t_minirt_args *self)
 	free(self->map);
 	free(self->set);
 	free(self->boolean);
+	free(self->args);
 }
