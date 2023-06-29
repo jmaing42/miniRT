@@ -12,7 +12,6 @@
 
 #include "args_internal.h"
 
-#include "minirt/args.h"
 #include "minirt/common/array_builder.h"
 
 static t_err	init_others(t_minirt_args_state *self)
