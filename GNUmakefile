@@ -10,6 +10,8 @@ endif
 
 TMP := $(shell printf "%s" "$(MINIRT_PRECISION)" > .MINIRT_PRECISION.flag)
 
+export MINIRT_PRECISION
+
 clean: clean_minirt_precision_flag
 .PHONY: clean_minirt_precision_flag
 clean_minirt_precision_flag:

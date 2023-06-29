@@ -13,8 +13,8 @@ TEST_DATA_PATH := ./data.txt
 
 include $(BASE_PATH)/test/mocks/branch/mock_branch_include.debug.mk
 
-CFLAGS := -g
-CPPFLAGS := -I../../include -I../../../../branch/include $(MOCK_BRANCH_CPPFLAGS)
+CFLAGS := -Wall -Wextra -Werror -g
+CPPFLAGS := -I../../include -I../../../../branch/include
 LDFLAGS := $(MOCK_BRANCH_LDFLAGS)
 LOADLIBES := -L../../out -L../../../../branch/out
 LDLIBS := -lmock_branch.debug -lbranch.debug $(MOCK_BRANCH_LDLIBS)
