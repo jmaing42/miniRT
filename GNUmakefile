@@ -52,11 +52,13 @@ clean_targets:
 clean: clean_test
 clean_test:
 	$(MAKE) -C test clean
+	find src -name test -type d | xargs -n 1 $(MAKE) clean -C
 
 .PHONY: fclean_test
 fclean: fclean_test
 fclean_test:
 	$(MAKE) -C test fclean
+	find src -name test -type d | xargs -n 1 $(MAKE) fclean -C
 
 .vscode/launch.json: build
 	$(MAKE_J) -C build -f $(MINIRT_PRECISION).mk launch.json
