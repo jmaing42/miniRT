@@ -35,7 +35,7 @@ make MINIRT_PRECISION=1
 If above fails (because your environment has fake gcc/clang), try below
 
 ```shell
-echo "CC = cc" > include.mk
+echo "CC = cc" > common.mk
 
 USE_DEPS=0 make
 ```
