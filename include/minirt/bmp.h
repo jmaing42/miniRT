@@ -41,11 +41,20 @@ typedef struct s_minirt_bmp
  * @return t_err true on malloc() failure
  * @remarks *out may be NULL even if return value indicates non-error
  */
-t_err	minirt_bmp_deserialize(
-			const void *buffer,
-			size_t length,
-			t_minirt_bmp **out);
-char	*minirt_bmp_serialize(
-			const t_minirt_bmp *bmp);
+t_err			minirt_bmp_deserialize(
+					const void *buffer,
+					size_t length,
+					t_minirt_bmp **out);
+char			*minirt_bmp_serialize(
+					const t_minirt_bmp *bmp);
+t_minirt_bmp	*t_minirt_bmp_new(
+					size_t width,
+					size_t height,
+					void (*fill)(
+						void *context,
+						size_t x,
+						size_t y,
+						t_minirt_bmp_pixel *out),
+					void *context);
 
 #endif

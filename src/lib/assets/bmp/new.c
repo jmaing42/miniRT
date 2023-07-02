@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 
-t_minirt_bmp	*new(
+t_minirt_bmp	*t_minirt_bmp_new(
 	size_t width,
 	size_t height,
 	void (*fill)(void *context, size_t x, size_t y, t_minirt_bmp_pixel *out),
