@@ -16,8 +16,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "bmp_internal.h"
-
 typedef struct s_context
 {
 	size_t			offset;

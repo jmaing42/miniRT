@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "bmp_internal.h"
+#include "minirt/bmp.h"
 
 #include <stdlib.h>
 
-t_minirt_bmp	*t_minirt_bmp_new(
+t_minirt_bmp	*minirt_bmp_new(
 	size_t width,
 	size_t height,
 	void (*fill)(void *context, size_t x, size_t y, t_minirt_bmp_pixel *out),
