@@ -47,7 +47,7 @@ t_err			minirt_bmp_deserialize(
 					t_minirt_bmp **out);
 char			*minirt_bmp_serialize(
 					const t_minirt_bmp *bmp);
-t_minirt_bmp	*t_minirt_bmp_new(
+t_minirt_bmp	*minirt_bmp_new(
 					size_t width,
 					size_t height,
 					void (*fill)(
