@@ -587,7 +587,7 @@
         "type": {
           "type": "string",
           "description": "texture, or type of blend operation",
-          "enum": ["filter"]
+          "enum": ["translate"]
         },
         "original": { "$ref": "#/$defs/map" },
         "translate": {
@@ -609,7 +609,7 @@
         "type": {
           "type": "string",
           "description": "texture, or type of blend operation",
-          "enum": ["filter"]
+          "enum": ["scale"]
         },
         "original": { "$ref": "#/$defs/map" },
         "scale": {
