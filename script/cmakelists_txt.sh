@@ -58,7 +58,7 @@ do
     FULL_LIB_NAME="minirt"
   fi
 
-  printf 'file(GLOB_RECURSE SRC_SO_%s %s)\n' "$lib_name" "$(echo "$lib_paths" | xargs -n 1 echo | sed 's#^#"src/lib/#' | sed 's#$#/*.c"#' | xargs)"
+  printf 'file(GLOB_RECURSE SRC_SO_%s %s)\n' "$lib_name" "$(echo "$lib_paths" | xargs -n 1 echo | sed 's#^#"src/lib/#' | sed 's#$#/*.c"#' | tr '\n' ' ')"
   printf "add_library(so_%s.\${MINIRT_PRECISION_VALUE} STATIC \${SRC_SO_%s})\n" "$FULL_LIB_NAME" "$lib_name"
   printf "set_target_properties(so_%s.\${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME \"%s.\${MINIRT_PRECISION_VALUE}\")\n" "$FULL_LIB_NAME" "$FULL_LIB_NAME"
 done < ../data/so.properties
@@ -67,5 +67,5 @@ while IFS="=" read -r exe_name dependencies;
 do
   printf 'file(GLOB_RECURSE SRC_EXE_%s "src/exe/%s/*.c")\n' "$exe_name" "$exe_name"
   printf "add_executable(%s.\${MINIRT_PRECISION_VALUE} \${SRC_EXE_%s})\n" "$exe_name" "$exe_name"
-  printf "target_link_libraries(%s.\${MINIRT_PRECISION_VALUE} %s)\n" "$exe_name" "$(echo "$dependencies" | xargs -n 1 echo | sed s/^/a_minirt_/ | sed "s/$/.\${MINIRT_PRECISION_VALUE}/" | xargs)"
+  printf "target_link_libraries(%s.\${MINIRT_PRECISION_VALUE} %s)\n" "$exe_name" "$(echo "$dependencies" | xargs -n 1 echo | sed s/^/a_minirt_/ | sed "s/$/.\${MINIRT_PRECISION_VALUE}/" | tr '\n' ' ')"
 done < ../data/exe.properties

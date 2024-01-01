@@ -63,7 +63,7 @@ for /f "usebackq delims== tokens=1,2" %%A in ("..\data\so.properties") do (
   set FULL_LIB_NAME=minirt_!LIB_NAME!
   if "!FULL_LIB_NAME!"=="minirt_" set FULL_LIB_NAME=minirt
   set SOURCES=
-  for %%G in (!DEPENDENCIES!) do set SOURCES=!SOURCES! src/lib/%%G/*.c
+  for %%G in (!DEPENDENCIES!) do set SOURCES=!SOURCES! "src/lib/%%G/*.c"
 
   echo file(GLOB_RECURSE SRC_SO_!LIB_NAME!!SOURCES!^)
   echo add_library(so_!FULL_LIB_NAME!.${MINIRT_PRECISION_VALUE} STATIC ${SRC_SO_!LIB_NAME!}^)
