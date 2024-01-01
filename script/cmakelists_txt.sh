@@ -48,7 +48,7 @@ do
 
   printf 'file(GLOB_RECURSE SRC_A_%s "src/lib/%s/*.c")\n' "$lib_name" "$lib_path"
   printf "add_library(a_minirt_%s.\${MINIRT_PRECISION_VALUE} STATIC \${SRC_A_%s})\n" "$lib_name" "$lib_name"
-  printf "set_target_properties(a_minirt_%s.\${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME \"minirt_%s\")\n" "$lib_name" "$lib_name"
+  printf "set_target_properties(a_minirt_%s.\${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME \"minirt_%s.\${MINIRT_PRECISION_VALUE}\")\n" "$lib_name" "$lib_name"
 done < ../data/a.properties
 
 while IFS="=" read -r lib_name lib_paths;

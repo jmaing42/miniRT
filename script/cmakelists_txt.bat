@@ -48,7 +48,7 @@ for /f "usebackq delims== tokens=1,2" %%A in ("..\data\a.properties") do (
   )
   echo file(GLOB_RECURSE SRC_A_%%A "src/lib/!LIB_PATH!/*.c"^)
   echo add_library(a_minirt_%%A.${MINIRT_PRECISION_VALUE} STATIC ${SRC_A_%%A}^)
-  echo set_target_properties(a_minirt_%%A.${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME "minirt_%%A"^)
+  echo set_target_properties(a_minirt_%%A.${MINIRT_PRECISION_VALUE} PROPERTIES OUTPUT_NAME "minirt_%%A.${MINIRT_PRECISION_VALUE}"^)
 )
 
 for /f "usebackq delims== tokens=1,2" %%A in ("..\data\so.properties") do (
